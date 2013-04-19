@@ -1,0 +1,186 @@
+{% extends "layout/template.xhtml" %}
+
+{% block title %}Collect Project :: Tags{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			/* Setting  */
+			var $uic_tag_table = $("#uic_tag_table").dataTable({
+				"bJQueryUI": true,
+				"bPaginate": false,
+				"bFilter":false,
+				"bSort":false,
+				"bInfo":false,
+				"bAutoWidth":false
+			});
+			var $uic_new_button = $("#uic_new_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-document"
+				}
+			});
+			var $uic_open_button = $("#uic_open_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-folder-open"
+				},
+			});				
+			var $uic_delete_button = $("#uic_delete_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-trash"
+				},
+			});
+			{% if tag %}
+				$(":radio").filter('[value={{tag.id}}]').attr('checked', true);
+				showEditDialogForm();
+			{% else %}
+				$uic_open_button.button({ disabled: true });
+				$uic_delete_button.button({ disabled: true });
+				{% if form.errors %}
+					showCreateDialogForm();
+				{% endif %}							
+			{% endif %}
+			
+			/* Events  */
+			$("input:radio").click(function() {					 
+				$uic_open_button.button({ disabled: false });
+				$uic_delete_button.button({ disabled: false });
+			});
+
+			$uic_new_button.click(function() {
+				showCreateDialogForm();
+				return false;
+			});
+			$uic_open_button.click(function(){
+				 redirect(sprintf("/tag/%s/edit",$("input:radio[name=tag_selected]:checked").val()));
+			});
+			$uic_delete_button.click(function(){
+				showDeleteDialog($("input:radio[name=tag_selected]:checked").val());
+			});
+			
+		});
+		
+		function showCreateDialogForm() {
+			$("#id_name").val("");
+			$("#uic_create_dialog").dialog({
+				title: "Adicionar Tag",
+				buttons: [
+					{
+						text: "Salvar",
+						click: function() {
+							$("#uic_create_form").attr("action","/tag/add");  
+							$("#uic_create_form").submit(); 										
+						}
+					},
+					{
+						text: "Cancelar",
+						click: function() {
+							$(this).dialog("close");
+						}
+					}
+				]
+			});				
+		}
+
+		function showEditDialogForm() {
+			$("#uic_create_dialog").dialog({
+				title: "Editar Tag",
+				buttons: [
+					{
+						text: "Salvar",
+						click: function() {
+							{% if tag %}
+								var url = sprintf("/tag/%s/edit",{{tag.id}});
+								$("#uic_create_form").attr("action",url);  
+								$("#uic_create_form").submit();
+							{% endif %}
+						}
+					},
+					{
+						text: "Cancelar",
+						click: function() {
+							$(this).dialog("close");
+						}
+					}
+				]
+			});				
+		}		
+		
+		function showDeleteDialog(tag_id) {
+			$("#uic_delete_dialog").dialog({ 
+				title: "Deletar Tag",
+				buttons: [
+					{
+						text: "Sim",
+						click: function() { 
+							$("#uic_delete_form").attr("action",sprintf("/tag/%s/delete", tag_id));  
+							$("#uic_delete_form").submit(); 
+						}
+					},
+					{
+						text: "N�o",
+						click: function() { 
+							$(this).dialog("close"); 
+						}
+					}					
+				] 
+			});
+		}
+						
+	</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Classsificação</li>
+        <li>Tags</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+
+	<div class="ui-app-header">
+		<div class="ui-app-title">Tags</div>
+		<div class="ui-app-command">
+			<button id="uic_new_button">Novo</button>
+			<button id="uic_open_button">Abrir</button>
+			<button id="uic_delete_button">Deletar</button>
+		</div>
+	</div>
+
+	<table id="uic_tag_table" class="display">
+		<thead>
+			<tr>
+				<th style="width:1%"></th>
+				<th>Tag</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for t in tag_list %}
+				<tr>
+					<td><input type="radio" id="uic_tag_radio" name="tag_selected" value="{{t.id}}"/></td>
+					<td>{{t.name}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	<div id="uic_create_dialog" class="hide">
+		<form id="uic_create_form" method="post">
+			{% csrf_token %}
+			<label>Tag</label>
+			<div>{{form.name}}</div>
+			<div>{{form.name.errors}}</div>
+		</form>
+	</div>
+	
+	<div id="uic_delete_dialog" class="hide">
+		<form id="uic_delete_form" method="post">
+			{% csrf_token %}			
+			Voce tem certeza que deseja deletar este ítem?
+		</form>
+	</div>
+{% endblock %}

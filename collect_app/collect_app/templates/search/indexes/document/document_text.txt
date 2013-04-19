@@ -1,0 +1,15 @@
+{{ object.category.title }}
+{% for tag in object.all_tags %}
+	{{tag.name}}
+{% endfor%}
+{% for docatt in object.all_attributes %}
+	{{docatt.value.value}}
+{% endfor %}
+{{ object.owner.username }}
+{% for docfile in object.all_files %}
+	{{docfile.name}}
+{% endfor %}
+
+
+
+

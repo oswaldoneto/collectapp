@@ -1,0 +1,45 @@
+{% extends "app/security/security_base.xhtml" %}
+
+{% block security_url %}user{% endblock %}
+
+{% block security_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/user_create_form.js"></script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Segurança</li>
+        <li>Usuários</li>
+        <li>Adicionar Usuário</li>
+    </ul>
+{% endblock %}
+
+{% block security_title %}Adicionar Usuário{% endblock %}
+{% block security_content %}
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		{% csrf_token %}						
+		<table class="table_form">
+			<tr>
+				<td class="label"><label>Usuário</label></td>
+				<td class="component">{{form.username}}</td>
+				<td class="error">{{form.username.errors}}</td>						
+			</tr>
+			<tr>
+				<td class="label"><label>Senha</label></td>
+				<td class="component">{{form.password1}}</td>
+				<td class="error">{{form.password1.errors}}</td>						
+			</tr>
+			<tr>
+				<td class="label"><label>Confirmar</label></td>
+				<td class="component">{{form.password2}}</td>
+				<td class="error">{{form.password2.errors}}</td>						
+			</tr>
+		</table>
+		<div class="ui-form-button">
+			<input type="button" value="Salvar" id="uic_save_button"/>
+			<input type="button" value="Cancelar" id="uic_cancel_button"/>
+		</div>				
+		<div class="clear"></div>
+	</form>
+{% endblock %}

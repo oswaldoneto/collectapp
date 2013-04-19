@@ -1,0 +1,297 @@
+{% extends "layout/template.xhtml" %}
+
+{% block title %}Collect Project :: Documento{% endblock %}
+
+{% block import_style %}
+	<style type="text/css">
+	
+		table.attribute_table {
+			border: 1px solid #d4ccb0;
+	        border-collapse:collapse;			
+	        font-size: .9em;
+			width: 100%;	
+			background-color: white;  
+		}
+		
+		table.attribute_table td  {
+			border: 1px solid #d4ccb0;
+			padding: 5px 5px;
+		}
+		
+		table.attribute_table tr > td:first-child {
+			font-weight: bold;
+		}
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+
+	<!-- TODO: Refactor 72 -->
+	{% include "include/upload_form_script.xhtml" %}		
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$("#uic_upload_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-circle-arrow-n"
+				}
+			});
+			
+			$("#uic_remove_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-trash"
+				}
+			});
+
+			$("#uic_back_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-carat-1-w"
+				}
+			});
+			
+			
+			$("#uic_upload_button").click(function(){
+				$("#file").trigger("click");
+				return false;
+			});
+			
+			$("#uic_remove_button").click(function(){
+				var delete_ids = [];
+				$("input[type='checkbox']:checked").each(function() {
+					delete_ids.push($(this).val());	  
+				});
+				if (delete_ids.length > 0) {
+					$.ajaxSetup({ traditional: true });
+					$.post("/api/document/{{params.document}}/deattach",{
+						'ids': delete_ids
+					},function(data){
+						redirect("/document/{{params.document}}/preview");													
+					});
+				}
+				return false;					
+			});
+			
+			$("#uic_back_button").click(function(){
+				history.back(-1);
+			});
+			
+			$("#uic_classify_link").click(function(){
+				redirect(sprintf("/document/%s/classify","{{params.document}}"));
+			});
+			
+			$("#uic_secure_link").click(function(){
+				alert("Aplicação Indisponível");
+			});
+		});	
+	</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Documento</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+	
+	<!-- TODO: Refactor 72 -->
+	{% include "include/upload_form.xhtml" %}
+		
+	<div class="ui-app-header">
+		<div class="ui-app-title">Documento</div>
+		<div class="ui-app-command">
+			<div class="floatr">
+				<button id="uic_remove_button">Remover</button>	
+			</div>
+			<div class="floatr">
+				<button id="uic_upload_button">Anexar</button>
+			</div>
+		</div>
+	</div>
+	<table id="uic_files" class="simple_table">
+		<thead class="ui-widget-header">
+			<th style="width: 5px"></th>
+			<th style="width: 5px"></th>
+			<th style="text-align: left">Título</th>
+			<th style="text-align: left; width: 100px">Tamanho</th>
+			<th style="text-align: left; width: 200px">Modificado</th>	
+		</thead>
+		<tbody class="ui-widget-content">
+			{% if not document %}
+				{% for doc_file in attachment_list %}
+					<tr>
+						<td>
+							<input type="checkbox" name="uic_attach_checkbox" value="{{doc_file.id}}">
+						</td>
+						<td>
+							<a href="{{url_download}}/{{doc_file.name}}">
+							<span class="ui-icon ui-icon-circle-arrow-s"></span>
+							</a>														
+						</td>
+						<td style="text-align: left">{{doc_file.name}}</td>
+						<td style="text-align: left">{{doc_file.size}} Bytes</td>
+						<td style="text-align: left">{{doc_file.updated|date:"d/m/Y "}}</td>				
+					</tr>
+				{% endfor %}			
+			{% else %}
+				<tr>
+					<td class="ui-state-disabled" colspan="4" align="center">Nenhum arquivo anexado</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
+
+
+
+
+	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
+		<div style="float: left">Classificação</div>
+		<div style="float: right; cursor: pointer;" class="">
+			<a id="uic_classify_link"><span class="ui-icon ui-icon-folder-open" style="float: left"></span></a>
+		</div>
+		<div class="clear"></div>		
+	</div>
+	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
+		{% if category %}
+			<div style="float: left; width: 460px;">
+				<div style="font-weight: bold; margin-bottom: 5px;">{{category.title}}</div>
+				<div>
+					<table class="attribute_table">
+						<tbody>
+							{% for doc_att in attribute_list %}
+								<tr><td>{{doc_att.attribute.name}}</td><td>{{doc_att.value.value}}</td></tr>					
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				
+			</div>
+			<div style="float: right; width: 280px;">
+				<div style="font-weight: bold; margin-bottom: 5px;">Tags</div>
+				<div>
+					{% for tag in tag_list %}
+						<p><span class="ui-icon ui-icon-tag" style="float: left;"></span>{{tag.name}}</p>				
+					{% endfor %}
+				</div>
+			</div>
+			<div class="clear"></div>
+		{% else %}
+			<div class="ui-state-disabled">Este documento ainda não foi classificado.</div>		
+		{% endif %}
+	</div>
+	
+	
+	
+	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
+		<div style="float: left">Segurança</div>
+		<div style="float: right; cursor: pointer;">
+			<a id="uic_secure_link">
+				<span class="ui-icon ui-icon-folder-open" style="float: left"></span>
+			</a>
+		</div>
+		<div class="clear"></div>		
+	</div>
+	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
+		{% if test_here %}		
+			<div style="float: left; width: 370px;">
+				<div  style="font-weight: bold; margin-bottom: 5px;">Usuários</div>
+				<div>
+					<table class="attribute_table">
+						<tbody>
+							<tr>
+								<td style="width: 99%">Aaaaaaa</td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>							
+							</tr>
+							<tr>
+								<td>Bbbbbb</td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>							
+							</tr>
+						</tbody>
+					</table>				
+				</div>
+				
+			</div>
+			<div style="float: right; width: 370px;">
+				<div style="font-weight: bold; margin-bottom: 5px;">Grupos</div>
+				<div>
+					<table class="attribute_table">
+						<tbody>
+							<tr>
+								<td style="width: 99%">Gggggg</td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+							</tr>
+							<tr>
+								<td>Hhhhhh</td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>							
+							</tr>
+							<tr>
+								<td>Rrrrrrrr</td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-check"></td>
+								<td><span class="ui-icon ui-icon-close"></td>
+								<td><span class="ui-icon ui-icon-close"></td>							
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>		
+			<div class="clear"></div>		
+		{% else %}
+			<div class="ui-state-disabled">Este documento não possui configuração de acesso.</div>				
+		{% endif %}
+	</div>
+	
+	
+	
+	
+	<!-- Change History -->
+	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
+		<div>Histórico de Alteração</div>
+	</div>
+	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
+		<div>
+			<p><strong>Dono</strong> {{ doc.owner }}</p>			
+		</div>
+		<div class="floatl" style="width: 50%;">
+			<p><strong>Criado em</strong> {{ doc.created }}</p>			
+		</div>
+		<div class="floatr" style="width: 50%;">
+			<p><strong>Alterado em</strong> {{ doc.updated }} <strong>por</strong> {{doc.last_update_user}}</p>						
+		</div>
+		<div class="clear"></div>
+	</div>	
+	
+	
+	
+	
+	
+	
+	{% if show_back_to_search %}
+		<div class="floatr margin_top_default">
+			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
+		</div>
+	{% endif %}
+		
+{% endblock %}

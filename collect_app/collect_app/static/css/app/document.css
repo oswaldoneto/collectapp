@@ -1,0 +1,59 @@
+
+div.stl_document_tab_header {
+	height: 50px;
+	padding: 5px 5px 5px 5px;
+}
+
+div.stl_document_tab_category {
+	float: left;
+	width: 455px;
+}
+
+div.stl_document_tab_category label {
+	width: 100%;
+	display: block;
+}
+
+div.stl_document_tab_id {
+	float: left;
+	width: 150px;
+}
+
+div.stl_document_tab_id label {
+	width: 100%;
+	display: block;
+}
+
+div.stl_document_tab_status {
+	float: left;
+	width: 100px;
+}
+
+div.stl_document_tab_status label {
+	width: 100%;
+	display: block;
+}
+
+div.stl_document_tab_category #id_category_title {
+	width: 300px;
+}
+
+div.stl_document_attribute_list_command {
+	height: 35px;
+}
+
+div.stl_document_attribute_list_command #uic_save_button {
+	float: right;
+}
+
+div.stl_document_file_list_command {
+	height: 35px;
+	float: right;
+}
+
+div.stl_document_file_upload_command {
+	height: 35px;
+}
+
+
+

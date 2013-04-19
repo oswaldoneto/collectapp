@@ -1,0 +1,102 @@
+{% extends "app/category/category_base.xhtml" %}
+
+{% block category_script %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			/* Setting  */
+			$("#uic_category_table").dataTable({
+				"bJQueryUI": true,
+				"bPaginate": true,
+				"sPaginationType": "full_numbers",
+				"bFilter":false,
+				"bSort":true,
+				"bInfo":true,
+				"bAutoWidth":false,
+				"aoColumns": [{ "bSortable": false },null,null,{ "bSortable": false }],
+				"aaSorting": [[ 1, "asc" ]],
+				"oLanguage": default_oLanguage				
+			});
+			$("#uic_open_button").button({ disabled: true });
+			$("#uic_delete_button").button({ disabled: true });
+
+			/* Events */
+			$("input:radio").click(function() {					 
+				$( "#uic_open_button" ).button({ disabled: false });
+				$( "#uic_delete_button" ).button({ disabled: false });
+			});
+				
+			//override from category_base.xhtml 
+			$('#uic_open_button').click(function() {					 
+				 var catId = $("input:radio[name=category_selected]:checked").val();
+				 var url = sprintf('/category/%s/edit',catId);
+				 redirect(url);
+			});
+			
+			//override from category_app.xhtml 
+			$("#uic_delete_button").click(function() {					 				
+				$("#uic_delete_dialog").dialog({ 
+					title:"Excluir Categoria",
+					buttons: [
+					{
+						text: "Yes",
+						click: function() { 
+							$("#uic_form").attr("action", sprintf('/category/%s/delete', $("input:radio[name=category_selected]:checked").val()));  
+							$("#uic_form").submit(); 
+						}
+					},
+					{
+						text: "No",
+						click: function() { 
+							$(this).dialog("close"); 
+						}
+					}					
+				] });
+			});
+		});
+	</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Classificação</li>
+        <li>Categorias</li>
+    </ul>
+{% endblock %}
+
+{% block category_title %}Categorias{% endblock %}
+{% block category_content %}	
+		<form id="uic_form">
+			{% csrf_token %}
+			<table id="uic_category_table" class="display">
+				<thead>
+					<tr>
+						<th style="width:1%"></th>
+						<th style="width:40%">Categoria</th>
+						<th style="width:43%">Descrição</th>								
+						<th style="width:1%">Ativa</th>
+					</tr>
+				</thead>						
+				<tbody>
+					{% for category in categories %}
+						<tr>
+							<td><input type="radio" name="category_selected" value="{{category.id}}"/></td>
+							<td>{{category.title}}</td>
+							<td>{{category.description}}</td>
+							<td>
+								<div>
+									{% if category.active %}
+										<div 	class='ui-icon ui-icon-check' 
+												style='margin-left: auto; margin-right: auto'>																				
+									{% else %}
+										<div 	class='ui-icon ui-icon-close' 
+												style='margin-left: auto; margin-right: auto'>																				
+									{% endif %}
+								</div>									
+							</td>									
+						</tr>
+					{% endfor %}					
+				</tbody>					
+			</table>
+		</form>		
+{% endblock %}

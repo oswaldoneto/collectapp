@@ -1,0 +1,53 @@
+{% extends "layout/template_dialog.xhtml" %}
+
+{% block import_style %}
+	<style type="text/css">
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {			
+			$("#uic_user_table").dataTable({
+		        "sScrollY": "135px",
+		        "bPaginate": false				
+			});
+		});
+		$("a[rel='addgroup_link']").click(function(){
+			$(this).addClass("ui-state-disabled");
+			var querystring = $(this).attr('href');				
+			/* Implement select listener to define what 
+			 * should be done when user is selected. */ 			 
+			fnGroupDialogSelectListener(querystring);			
+			return false;
+		});		
+	</script>
+{% endblock %}
+
+{% block content %}
+	<div style="font-size: 1.3em">
+		<table id="uic_user_table" class="display">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Name</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for group in object_list %}
+					<tr>
+						<!-- TODO: desable button with style ui-state-disabled -->
+						<td width="1%">
+							<a  id="uic_addgroup_link"
+							    rel="addgroup_link"
+							    href="{{group.id}}"
+								class="ui-icon ui-icon-squaresmall-plus">
+							</a>
+						</td>
+						<td>{{group.name}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>	
+	</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "layout/template.xhtml" %}
+
+{% block title %}Collect Project :: Segurança{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/security_base.js"></script>
+	{% block security_script %}{% endblock %}
+	<script type="text/javascript">
+		var security_url = "{% block security_url %}{% endblock %}";
+		var object_id = null;
+		{% if object %}
+			object_id = "{{object.id}}";
+		{% endif %}
+	</script>
+{% endblock %}
+
+{% block content %}
+	<div class="ui-app-header">
+		<div class="ui-app-title">{% block security_title %}{% endblock %}</div>
+		<div class="ui-app-command">
+			<button id="uic_new_button">Novo</button>
+			<button id="uic_open_button">Abrir</button>
+			<button id="uic_delete_button">Deletar</button>
+		</div>
+	</div>
+	{% block security_content %}{% endblock %}
+{% endblock %}

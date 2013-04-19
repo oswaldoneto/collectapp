@@ -1,0 +1,111 @@
+{% extends "app/category/category_base.xhtml" %}
+
+{% block page_index %}0{% endblock %}
+
+{% block category_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {	
+			
+			/* Setting */
+			$uic_save_button = $("#uic_save_button").button();
+			$uic_cancel_button = $("#uic_cancel_button").button();
+			$("#uic_created_textfield").attr("disabled",true);  			
+			$("#uic_updated_textfield").attr("disabled",true);  
+			$("#uic_author_textfield").attr("disabled",true);
+			{% if edit_mode %}
+				$("#uic_form").removeClass();
+			{% else %}
+				$("#uic_delete_button").button({ disabled: true });
+			{% endif %}
+
+			/* Events */
+			$('#uic_save_button').click(function() {					 
+				{% if edit_mode %}
+					var catId = {{category.id}};
+					var url = sprintf("/category/%s/edit",catId);
+					$("#uic_form").attr("action", url);  
+					$("#uic_form").submit(); 						
+				{% else %}
+					$("#uic_form").attr("action", "/category/add");  
+					$("#uic_form").submit(); 											
+				{% endif %}
+			});			
+			$uic_cancel_button.click(function(){
+				$uic_open_button.trigger('click');
+			});
+		});
+	</script>
+{% endblock %}
+
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Classificacao</li>
+        <li>Categorias</li>
+		{% if edit_mode %}
+        	<li>{{category.title}}</a></li>
+		{% else %}
+        	<li>Adicionar Categoria</a></li>
+		{% endif %}        	
+    </ul>
+{% endblock %}
+
+{% block category_title %}
+	{% if edit_mode %}Editar Categoria{% else %}Adicionar Categoria{% endif %}
+{% endblock %}
+
+{% block category_content %}	
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		{% csrf_token %}
+		<table class="table_form">								
+			{% if form.errors %}
+				<tr>
+					<td class="alert" colspan="3">			
+						<div id="uic_tag_feedback" class="ui-widget ui-state-error ui-corner-all ui-feedback clear"> 
+							<span class="ui-icon ui-icon-alert floatl"></span>
+							<p id="uic_tag_message">O formulário não foi salvo pois contém erro{{form.errors|pluralize}}.</p>
+						</div>
+					</td>
+				</tr>
+			{% endif %}						
+			<tr>
+				<td class="label"><label for="id_title">Nome</label></td>
+				<td class="component">{{form.title}}</td>
+				<td class="error">{{form.title.errors}}</td>
+			</tr>
+			<tr>
+				<td class="label"></td>
+				<td class="component">{{form.active}}<label for="id_active">&nbsp;Ativo</label></td>
+				<td class="error">{{form.active.errors}}</td>
+			</tr>						
+			<tr>
+				<td class="label"><label for="id_description">Descrição</label></td>
+				<td class="component">{{form.description}}</td>
+				<td class="error">{{form.description.errors}}</td>
+			</tr>	
+			{% if edit_mode %}
+				<tr>
+					<td class="label"><label>Criado</label></td>
+					<td class="component"><input id="uic_created_textfield" type="text" value="{{category.created}}"/></td>
+					<td class="error"></td>
+				</tr>	
+				<tr>
+					<td class="label"><label>Atualizado</label></td>
+					<td class="component"><input id="uic_updated_textfield" type="text" value="{{category.updated}}"></td>
+					<td class="error"></td>
+				</tr>	
+				<tr>
+					<td class="label"><label>Autor</label></td>
+					<td class="component"><input id="uic_author_textfield" type="text" value="{{category.user}}"></td>
+					<td class="error"></td>
+				</tr>	
+			{% endif %}				
+		</table>					
+		<div class="ui-form-button">
+			<input type="button" value="Salvar" id="uic_save_button">
+			<input type="button" value="Cancelar" id="uic_cancel_button">
+		</div>
+		<div class="clear"></div>
+	</form>
+{% endblock %}

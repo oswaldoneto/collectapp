@@ -1,0 +1,125 @@
+{% extends "layout/template.xhtml" %}
+
+{% block title %}Collect Project :: Documento{% endblock %}
+
+{% block import_style %}
+	<style type="text/css">
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var doc_id = null;
+			/* Setting  */
+			$uic_upload_button = $("#uic_upload_button").button({
+				text: true,
+			});
+			$uic_classify_button = $("#uic_classify_button").button({
+				text: true,
+			});
+			/* Events  */
+			$uic_upload_button.click(function(){
+				$("#file").trigger("click");
+				return false;
+			});
+			$uic_classify_button.click(function(){
+				redirect("/document/new/classify");
+				return false;
+			});
+			$uic_update_div = $("#uic_update_div").addClass("ui-state-disabled");
+			$uic_classify_div = $("#uic_classify_div").addClass("ui-state-disabled");
+			$uic_update_div.mouseover(function(){
+				$uic_update_div.removeClass("ui-state-disabled");
+				$uic_classify_div.addClass("ui-state-disabled");
+			});
+			$uic_classify_div.mouseover(function(){
+				$uic_update_div.addClass("ui-state-disabled");
+				$uic_classify_div.removeClass("ui-state-disabled");
+			});
+		    
+		    
+		    //TODO: Refactor 72
+		    $("#uic_upload_form").fileupload({
+ 				forceIframeTransport: true,
+ 				autoUpload:false,
+				add:function(e,data) {	
+					$.post("/api/document/new",{},function(doc_info){
+						doc_id = doc_info.document_id;
+						$.get( sprintf("/api/document/%s/s3",doc_id),{},function(fields){
+							$("input:hidden[name=AWSAccessKeyId]").val(fields.access_key_id);
+							$("input:hidden[name=policy]").val(fields.policy);
+							$("input:hidden[name=signature]").val(fields.signature);		
+							$("input:hidden[name=acl]").val(fields.acl);		
+							$("input:hidden[name=key]").val(fields.key);		
+							$("input:hidden[name=success_action_status]").val("200");
+							$("#uic_upload_form").attr("action",fields.bucket_url);  					
+							data.submit();
+						});						
+					});
+				},
+				done:function(e,data) {
+					$.post(sprintf("/api/document/%s/attach",doc_id),{
+						name:data.files[0].name,
+						type:data.files[0].type,
+						size:data.files[0].size
+					},function(data){
+						redirect(sprintf("/document/%s/preview",doc_id));						
+					}).error(function(){
+						alert('erro'); 
+					});		
+				},
+		    });
+		    
+		    
+		    			
+		});	
+	</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Documento</li>
+    </ul>
+{% endblock %}
+
+
+{% block content %}	
+
+	<div class="ui-app-header">
+		<div class="ui-app-title">Adicionar documento</div>
+	</div>
+	
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		<div id="uic_update_div" style="float: left; ">
+			<p style="margin-top: 15px;"><b>Selecione um arquivo do seu computador...</b></p>
+			<button id="uic_upload_button" style="margin-top: 15px; width: 350px; height: 50px; font-size: 25px">Upload</button>			
+		</div>
+		<div style="float: left; margin: 0 auto; width: 27px; margin-top: 60px; margin-left:8px; text-align: center">
+			<b>ou</b>
+		</div>
+		<div id="uic_classify_div" style="float: right;">
+			<p style="margin-top: 15px;"><b>Inclua a classificação para um documento...</b></p>
+			<button id="uic_classify_button" style="margin-top: 15px; width: 350px; height: 50px; font-size: 25px">Classificação</button>		
+		</div>
+		<div class="clear"></div>
+	</form>		
+	
+	
+	
+	<!-- TODO: Refactor 72 -->
+	<form id="uic_upload_form" action="" enctype="multipart/form-data">
+		<input type="hidden" name="AWSAccessKeyId" value="" />
+		<input type="hidden" name="policy" value="" />
+		<input type="hidden" name="signature" />
+		<input type="hidden" name="acl" />
+		<input type="hidden" name="key" />
+		<input type="hidden" name="success_action_status" />
+		<span style="display: none"> 
+			<input type="file" name="file" id="file"/>
+		</span>
+	</form>
+				
+{% endblock %}
+

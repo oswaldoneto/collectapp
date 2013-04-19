@@ -1,0 +1,41 @@
+{% extends "layout/template_dialog.xhtml" %}
+
+{% block import_style %}
+	<style type="text/css">
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#uic_attribute_sortable").sortable({
+  				update: function( event, ui ) {
+					var cat_id = {{params.category}};
+					$.ajax({
+					  type: "POST",
+					  url: sprintf("/api/category/%s/attribute/reorder",cat_id),
+					  data:convertArrayToQueryString($("#uic_attribute_sortable").sortable("toArray"),"id")
+					}).done(function(msg) {});  					
+  				}
+			});
+			$("#uic_attribute_sortable").disableSelection();	
+		});
+		
+		function convertArrayToQueryString(array,key) {
+			var param = '';
+			$.each(array,function(k,value){
+				 param += sprintf("%s=%s&",key,value);
+			});
+			console.log(param);
+			return param;
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+	<ul id="uic_attribute_sortable" class="ui-sortable">
+		{% for attribute in object_list %}
+			<li id="{{attribute.id}}" class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>{{attribute.name}}</li>	
+		{% endfor %}
+	</ul>
+{% endblock %}

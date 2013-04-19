@@ -1,0 +1,135 @@
+{% extends "app/security/security_base.xhtml" %}
+
+{% block security_url %}user{% endblock %}
+
+{% block import_style %}
+	<style>
+		#id_username {
+			border: none;
+			background-color: transparent;
+			font-weight: bold;
+		}
+		
+		#id_last_login {
+			border: none;
+			background-color: transparent;
+		} 
+		
+		#id_date_joined {
+			border: none;
+			background-color: transparent;
+		}				
+	</style>
+{% endblock %}
+
+{% block security_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/user_edit_form.js"></script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Segurança</li>
+        <li>Usuários</li>
+        <li>{{form.username.value}}</li>
+    </ul>
+{% endblock %}
+
+{% block security_title %}Editar Usuário{% endblock %}
+{% block security_content %}
+	<div id="uic_delete_dialog" class="hide">Deseja excluir o usuário?</div>
+	<div id="accordion">
+		<h3><a href="#usuario">Dados do Usuário</a></h3>
+		<div>
+			<form id="uic_form" method="post">
+				{% csrf_token %}			
+				{% if form.errors %}
+					<div class="ui-state-error ui-corner-all clear">
+						<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>O formulário contêm errros, favor corrigir antes de continuar.</p>
+					</div>
+				{% endif %}				
+				<table class="table_form">
+					<tr>
+						<td class="label"><div style="width: 90px"></div><label>Usuário</label></td>
+						<td class="component"><b>{{form.username}}</b></td>
+						<td class="error"></td>						
+					</tr>
+					<tr>
+						<td class="label"><label>Nome</label></td>
+						<td class="component">{{form.first_name}}</td>
+						<td class="error">{{form.first_name.errors}}</td>						
+					</tr>
+					<tr>
+						<td class="label"><label>Sobrenome</label></td>
+						<td class="component">{{form.last_name}}</td>
+						<td class="error">{{form.last_name.errors}}</td>						
+					</tr>
+					<tr>
+						<td class="label"><label>E-mail</label></td>
+						<td class="component">{{form.email}}</td>
+						<td class="error">{{form.email.errors}}</td>						
+					</tr>
+					<tr>
+						<td class="label"><label>Acessou em</label></td>
+						<td class="component">{{form.last_login}}</td>
+						<td class="error"></td>						
+					</tr>
+					<tr>
+						<td class="label"><label>Usuário desde</label></td>
+						<td class="component">{{form.date_joined}}</td>
+						<td class="error"></td>						
+					</tr>
+					<tr>
+						<td class="label"><label>Ativo</label></td>
+						<td class="component">{{form.is_active}}</td>
+						<td class="error"></td>						
+					</tr>
+					
+					<tr>
+						<td class="label"><label>Grupos</label></td>
+						<td class="component" colspan="2">{{form.groups}}</td>
+					</tr>
+				</table>
+				<div class="ui-form-button">
+					<input type="button" value="Salvar" id="uic_save_button"/>
+					<input type="button" value="Cancelar" id="uic_cancel_button"/>
+				</div>			
+				<div class="clear"></div>			
+			</form>			
+		</div>   
+		<h3><a href="#permissao">Permissões</a></h3>
+		<div>
+			
+			
+			<!-- Success Feedback -->
+			<div id="uic_success_feedback" class="ui-widget ui-state-highlight ui-corner-all ui-feedback hide"> 
+				<p><span class="ui-icon ui-icon-info floatl"></span>
+				<strong>A permissão do usuário foi alterada.</strong></p>
+			</div>
+
+			<!-- Failure Feedback -->
+			<div id="uic_error_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
+				<p><span class="ui-icon ui-icon-alert floatl"></span> 
+				<strong>Ocorreu um erro em nossos servidores, estamos trabalhando para corrigir.</strong></p>
+			</div>
+			
+			<!-- TODO: Refactor style -->
+			<div style="height: 100px;">
+				<input type="checkbox" id="uic_classify_bundle_check"/>&nbsp;<b>Classificar Documentos</b>
+				<div style="margin-left: 20px;">
+					Permite adicionar, alterar e excluir Categorias.<br>
+					Adicionar, alterar e excluir Atributos de uma Categorias.<br>
+					Associar Tags a uma Categorias.<br>
+					Definir permissões de acesso para Usuários e Grupos de uma Categoria. 
+				</div>
+			</div>
+			<div style="height: 50px">
+				<input type="checkbox" id="uic_accounts_bundle_check"/>&nbsp;<b>Gerenciar contas de usuários e grupos</b>
+				<div style="margin-left: 20px;">
+					Permite adicionar, alterar e excluir Usuário e Grupos.<br>
+					Definir permissões de acesso de Usuários e Grupos.
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

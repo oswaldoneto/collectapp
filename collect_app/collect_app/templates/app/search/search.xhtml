@@ -1,0 +1,277 @@
+{% extends "layout/template.xhtml" %}
+
+{% block title %}Collect Project :: Documento{% endblock %}
+
+{% block import_style %}
+	<style type="text/css">
+		
+		#id_q {
+			width: 450px;
+			height: 23px;
+		}
+		
+		table.table_result {
+			background-color: #ffffff;
+			width: 100%;
+			border: solid 1px #d4ccb0;
+		}
+		table.table_result tr > td {
+			border-bottom: solid 1px #d4ccb0;
+		}
+		table.table_result tr:last-child > td {
+			border-bottom: none;
+		}
+		
+		.ui-paginator {
+			float: right;
+			display: inline;
+			margin: 0px 0px 5px 0px;
+		}
+		.ui-paginator a {
+			text-decoration: none;
+		}
+		
+		
+		
+		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
+		table.attribute_table {
+			border-bottom: 1px solid #d4ccb0;
+	        border-collapse:collapse;			
+	        font-size: .9em;
+			width: 100%;	
+			background-color: white;  
+		}
+		
+		table.attribute_table td  {
+			/*border: 1px solid #d4ccb0;*/
+			padding: 5px 5px;
+		}		
+		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
+		
+
+		
+	
+						
+		
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/** Settings */
+						
+			$uic_search_button = $("#uic_search_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-search"
+				},				
+			});
+			
+			
+			$uic_preview_button = $(".uic_preview_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-document-b"
+				}
+			});
+			$uic_classify_button = $(".uic_classify_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-bookmark"
+				}
+			});
+			$uic_security_button = $(".uic_security_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-key"
+				}
+			});
+			$uic_delete_button = $(".uic_delete_button").button({
+				text: false,
+				icons: {
+					primary: "ui-icon-trash"
+				}				
+			});						
+			
+			/** Events */
+			$uic_search_button.click(function(){
+				$("#uic_form").submit(); 											
+				return false;
+			});
+			
+			$uic_preview_button.click(function() {	
+				redirect(sprintf("/document/%s/preview",this.value));
+				return false;				
+			});
+			$uic_classify_button.click(function(){
+				redirect(sprintf("/document/%s/classify",this.value));
+				return false;
+			});
+			$uic_security_button.click(function(){
+				redirect(sprintf("/document/%s/security",this.value));								
+				return false;
+			});
+			$uic_delete_button.click(function(){
+				var document_id = this.value;
+				$("#uic_delete_dialog").dialog({
+					title:"Deletar Documento",
+					modal:true,
+					buttons:[
+						{
+							text: "Yes",
+							click: function() { 
+								$("#uic_delete_form").attr("action", sprintf("/document/%s/delete",document_id));  
+								$("#uic_delete_form").submit();
+								return false;								
+							}
+						},
+						{
+							text: "No",
+							click: function() { 
+								$(this).dialog("close"); 
+							}
+						}					
+					] 
+				});
+				return false;
+			});
+
+		});	
+	</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Pesquisa</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+	
+
+
+	<div class="ui-app-header">
+		<div class="ui-app-title">Pesquisar Documentos</div>
+	</div>
+	<form id="uic_form" method="get" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		{% csrf_token %}		
+		<div style="float: left">
+			<span>{{form.q}}</span>
+			<button id="uic_search_button">Consultar</button>
+		</div>
+		<div style="float: right; margin-top: 10px;">
+			<p class="ui-state-disabled">Documento{{count|pluralize}} publicado{{count|pluralize}} <b>{{count}}</b></p>
+		</div>
+		<div class="clear"></div>
+	</form>
+
+	{% if query %}
+		<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
+			<div style="float: left"><p></span>Resultado da Busca</p></div>
+			<div style="float: right;">
+				<p style="font-weight: normal;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} encontrado{{page.paginator.count|pluralize}}</p>
+			</div>
+			<div class="clear"></div>		
+		</div>
+		<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
+	        {% if page.has_previous or page.has_next %}
+		        <div class="ui-paginator">
+		        	<span class="floatl">
+		        		{% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}
+		        			<p class="{% if not page.has_previous %}ui-state-disabled{% endif %}"><span class="ui-icon ui-icon-carat-1-w floatl"></span>Anterior</p>
+		        		{% if page.has_previous %}</a>{% endif %}
+		        	</span>
+		        	<span class="ui-icon ui-icon-grip-dotted-vertical floatl"></span>
+		        	<span>{{page.number}} de {{page.paginator.num_pages}}</span>
+		        	<span class="floatr">
+		        		{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}
+			        		<p  class="{% if not page.has_next %}ui-state-disabled{% endif %}">Próximo<span class="ui-icon ui-icon-carat-1-e floatr"></span></p>
+		        		{% if page.has_next %}</a>{% endif %}
+		        	</span>
+		        	<span class="ui-icon ui-icon-grip-dotted-vertical floatr"></span>
+		        </div>	        	
+			{% endif %}
+			<table class="table_result ui-corner-all">
+				{% for result in page.object_list %}
+					<tr>
+						<td>
+							<div style="margin: 5px 5px 5px 5px;">
+	
+								<div style="float: left;">
+									<p style="font-weight: bold; display: inline">
+										{% if result.object.category %}
+											{{result.object.category.title}}
+										{% else %}
+											<span class="ui-state-disabled">Sem Categoria</span>
+										{% endif %}
+									</p>
+									<p style="font-size: 0.8em; display: inline; ">por</p>
+									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.owner.username}}</p>
+									<p style="font-size: 0.8em; display: inline; ">em</p>
+									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.updated}}</p>
+								</div>
+								
+								<div style="float: right" >
+									<form id="uic_delete_form" method="post">
+										{% csrf_token %}		
+										<button class="uic_preview_button" value="{{result.object.id}}">Visualizar</button>
+										<button class="uic_classify_button" value="{{result.object.id}}">Classificar</button>
+										<button class="uic_security_button" value="{{result.object.id}}">Segurança</button>
+										<button class="uic_delete_button" value="{{result.object.id}}">&nbsp;</button>
+										<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>
+									</form>
+								</div>
+								<div class="clear"></div>
+								<div style="float: left; margin-bottom: 5px;">
+									{% for att in result.object.all_attributes %}
+										{% if att.value %}
+										
+											<div style="margin-bottom: 3px;">							
+												<p style="display: inline; float: left;">{{att.value.value}}</p>
+												<div style="display: inline;">
+													<p style="font-size: .7em; font-weight: bold; display: inline;" class="ui-state-disabled">
+														<span class="ui-icon ui-icon-triangle-1-w" style="float: left;"></span>{{att.attribute.name}}
+													</p>
+												</div>
+											</div>
+										{% endif %}					
+									{% endfor %}							
+								</div>
+								<div style="float: right; margin-top: 10px; width: 450px">
+									<table class="attribute_table">
+										<tbody>
+											{% for doc_file in result.object.all_files %}
+												<tr>
+													<td>
+														<a href="{{url_download}}/{{result.object.id}}/{{doc_file.name}}">
+														<span class="ui-icon ui-icon-circle-arrow-s"></span>
+														</a>														
+													</td>
+													<td>{{doc_file.name}}</td>
+													<td>{{doc_file.size}} Bytes</td>
+													<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
+												</tr>					
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+								<div class="clear"></div>							
+								<div>
+									{% for tag in result.object.all_tags  %}
+										<div class="ui-state-active ui-corner-all" style="padding: 2px; margin-right: 3px; float: left">
+											<p style="font-size: 0.8em; font-weight: bold">{{tag.name}}</p>
+										</div>
+									{% endfor %}
+									<div class="clear"></div>							
+								</div>
+	
+							</div>							
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,314 @@
+* {
+	padding: 0;
+	margin: 0;
+}			
+html, body {
+	height: 100%;
+}
+body {
+	background:#F6F6F6;
+}					
+#page {
+	width: 962px;
+	position: relative;
+	background: #fff;
+	margin: 0 auto; 
+	min-height: 100%;
+}
+* html #page {
+	height: 100%;	
+}
+#header {
+	height: 40px;
+	padding: 5px;
+	border-top: none; 
+	border-left: none; 
+	border-right: none;	
+}
+#navigator {
+	float: left;
+	width: 200px;
+	height: 100%;
+}
+#content {
+	margin: 40px 5px 10px 5px;
+}
+#rightpane {
+	float: left;
+	width: 170px;
+}
+
+#leftpane {
+	margin-bottom: 30px;
+	float: right;
+	width: 770px;
+}
+#footer {
+	position: absolute;
+	width: 962px;
+	height: 20px;
+	bottom: 0;
+	border-bottom: none; 
+	border-left: none; 
+	border-right: none;					
+}
+
+
+
+
+
+
+
+
+
+
+.clear {
+	clear: both;
+}
+.hide {
+	display: none;
+}
+
+.floatl {
+	float: left;
+}
+
+.floatr {
+	float: right;
+}
+
+.widthfull {
+	width: 100%;
+}
+
+.centered {
+	margin-left: auto; margin-right: auto
+}
+
+
+
+
+/* default margins */
+.margin_top_default {
+	margin-top: 10px;
+}
+
+.margin_bottom_default {
+	margin-bottom: 10px;
+}
+
+.margin_top_double {
+	margin-top: 20px;	
+}
+
+.margin_auto {
+	margin-right: auto;
+	margin-left: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* override jquery ui style */
+.ui-button-text {
+   font-size: .8em !important;
+} 
+
+
+
+
+ul.errorlist {
+	list-style-type: none;
+	font-size: .8em;
+	color: #b81900;
+}
+
+.error {
+	display: block;
+	padding-left: 80px;
+}
+
+
+
+
+
+
+
+
+
+
+
+.ui-app-header {
+	height: 30px;
+}
+.ui-app-title {
+	float: left; 
+	font-size: 1.2em; 
+	color: #459e00; 
+	font-weight: bold; 
+	margin-top: 6px;		
+	height: 30px;
+}    
+
+.ui-app-command {
+	float: right	
+}
+
+
+
+
+
+
+
+
+
+
+
+.ui-form {
+	padding: 10px 10px 10px 10px;
+}
+
+.ui-form-button {
+	float: right; 
+	padding-top: 10px;
+	padding-bottom: 10px; 
+	padding-right: 10px;
+}
+
+
+
+
+
+
+.ui-feedback {
+	height: 18px; 
+	padding-left: 5px;
+	margin-bottom: 5px;	
+}
+
+
+
+.ui-sortable { 
+	list-style-type: none; 
+	margin: 0; 
+	padding: 0; 
+}
+.ui-sortable li { 
+	margin: 0 3px 3px 3px; 
+	padding: 0.4em; 
+	padding-left: 1.5em; 
+	font-size: 1em; 
+	height: 18px; 
+}
+.ui-sortable span { 
+	position: absolute; 
+	margin-left: -1.3em; 
+}	
+
+
+
+
+
+
+
+
+
+/* Table Form Elements */
+/* ------------------------------*/
+table.table_form {
+	border-spacing: 0px 0px;
+	-moz-border-radius-topleft: 4px; 
+	-webkit-border-top-left-radius: 4px; 
+	border-top-left-radius: 4px; 
+	-moz-border-radius-topright: 4px; 
+	-webkit-border-top-right-radius: 4px; 
+	border-top-right-radius: 4px; 
+	-moz-border-radius-bottomleft: 4px; 
+	-webkit-border-bottom-left-radius: 4px; 
+	border-bottom-left-radius: 4px; 
+	-moz-border-radius-bottomright: 4px; 
+	-webkit-border-bottom-right-radius: 4px; 
+	border-bottom-right-radius: 4px;
+}
+
+table.table_form thead th {
+	-moz-border-radius-topleft: 4px; 
+	-webkit-border-top-left-radius: 4px; 
+	border-top-left-radius: 4px; 
+	-moz-border-radius-topright: 4px; 
+	-webkit-border-top-right-radius: 4px; 
+	border-top-right-radius: 4px; 
+	background: #f6a828 url(theme/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png) 50% 50% repeat-x;
+}
+
+table.table_form tfoot td {
+	-moz-border-radius-bottomleft: 4px; 
+	-webkit-border-bottom-left-radius: 4px; 
+	border-bottom-left-radius: 4px; 
+	-moz-border-radius-bottomright: 4px; 
+	-webkit-border-bottom-right-radius: 4px; 
+	border-bottom-right-radius: 4px;
+	background: #f6a828 url(theme/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png) 50% 50% repeat-x;
+}
+
+table.table_form td {
+	padding: 5px 5px 5px 5px;
+}
+
+table.table_form td.label {
+	text-align: right;
+	width: 1%;
+}
+
+table.table_form td.component {
+	width: 1%;
+}
+
+table.table_form td.error {
+	width: 98%;
+}
+
+table.table_form td.alert {
+	padding: 10px 10px 10px 10px;
+}
+
+
+
+
+
+/* Table Form Elements */
+/* ------------------------------*/
+table.simple_table {
+	width: 100%;
+	clear: both;
+	border-collapse: collapse;
+}
+
+table.simple_table td {
+	padding: 6px 5px;
+}
+
+/* Header */
+table.simple_table thead th {
+	padding: 3px 0px 3px 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

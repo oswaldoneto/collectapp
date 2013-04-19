@@ -1,0 +1,343 @@
+{% extends "layout/template.xhtml" %}
+
+{% block import_style %}
+	<style type="text/css">
+		#id_category {
+			width: 744px			
+		}
+		#uic_tag_table tr:first-child td:first-child {
+			width: 1%;
+		}
+	</style>
+{% endblock %}
+
+{% block import_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/classify_form.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/tag/tag.js"></script>
+{% endblock %}
+
+{% block startup_script %}
+
+	{% include "include/upload_form_script.xhtml" %}	
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			{% if show_tags %}
+				$.get("/api/document/{{params.document}}/tag",{},function(data){
+	
+					//TODO: is it possible become hack behavior part of the tag-it?
+					//hack to disable on tag added event until load current tags,
+					//this don´t allow post request during loading
+					$(document).data("disarm_on_tagadded",false);
+					
+					//tag-it component
+					var $uic_tags = $("#uic_tags").tagit({
+						createTagOnBlur:false,
+		        		availableTags:fnListTagLabel(data.all_tags),
+		    			onBeforeTagAdded:function(event,tag) {
+				        	if (fnGetTagId(tag.text(),data.all_tags) == null) {
+								$("#uic_tag_message").text("Não é uma tag válida");			        		
+								$("#uic_tag_feedback").show("fast");
+								setTimeout(function() {
+							       $("#uic_tag_feedback").hide("slow");
+							    }, 5000);    				
+				        		return false;
+				        	}
+				        	return true;
+		    			},
+		    			onTagAdded: function(event, tag) {
+							if ($(document).data("disarm_on_tagadded")) {
+						        var tag = tag.text().substring(0, tag.text().length-1);
+						        var tag_id = fnGetTagId(tag,data.all_tags);
+								$.ajax({
+									url:sprintf("/api/document/{{params.document}}/tag/%s",tag_id),
+									type:"POST",
+									dataType:"json"
+								});
+							}	        	
+				    	},	    			
+		    			onBeforeTagRemoved:function(event,tag) {
+		    				if (tag.text().length != 0 ) {
+			    				var tag_name = tag.text().substring(0, tag.text().length-1);
+			    				if (fnGetTagId(tag_name,data.category_tags) != null) {
+					    			tag.addClass("ui-state-error");
+									$("#uic_tag_message").text("A tag não pode ser deletada.");			        		
+									$("#uic_tag_feedback").show("fast");
+									setTimeout(function() {
+								    	$("#uic_tag_feedback").hide("slow");
+					    				tag.removeClass("ui-state-error");
+								    }, 5000);    				
+				    				return false;
+				    			}
+				    		}  				
+				    		return true;
+		    			},
+				    	onTagRemoved: function(event, tag) {
+		    				if (tag.text().length != 0 ) {
+			    				var tag_name = tag.text().substring(0, tag.text().length-1);
+						        var tag_id = fnGetTagId(tag_name,data.all_tags);
+								$.ajax({
+									url:sprintf("/api/document/{{params.document}}/tag/%s",tag_id),
+									type:"DELETE",
+									dataType:"json"
+								});
+							}
+						}	        		
+		        	});	        		
+		        	$.each(data.document_tags,function(){
+						$uic_tags.tagit("createTag",this.label);
+					});
+					
+					var $uic_tag_table = $("#uic_tag_table").dataTable({
+						"aaData": fnListTagLabelAndValue(data.all_tags),
+						"bAutoWidth": false,
+					    "aoColumns": [
+				            {   "fnRender": function(obj) {
+								   return sprintf(
+								   	 "<a id='uic_addtag_link' rel='addtag_link' href='%s' class='ui-icon ui-icon-squaresmall-plus'></a>",
+								   	 obj.aData[obj.iDataColumn]
+								   );
+							   	},
+							   	"sWidth":"1px"
+				             },
+				             null
+				        ],				
+				        "sScrollY": "200px",
+				        "bPaginate": false,
+						"oLanguage": {
+							"sSearch": "Buscar",
+							"sInfo": "_TOTAL_ tag(s) encontrada(s)",
+							"sInfoFiltered": "(total _MAX_)",
+						}		        
+					});
+					
+					$("a[rel='addtag_link']").click(function(){
+						$(this).addClass("ui-state-disabled");
+						var tag_id = $(this).attr('href');
+						$uic_tags.tagit("createTag", fnGetTagLabel(tag_id,data.all_tags));
+						return false;
+					});		
+													
+					$(document).data("disarm_on_tagadded",true);	       
+				});
+			{% endif %}
+						
+			/* Setting  */
+			var $dialog = $("<div></div>").dialog({ autoOpen: false, modal:true});
+			$uic_category_select = $("#id_category").multiselect({
+			   multiple: false,
+			   header: "Selecione uma categoria",
+			   selectedList: 1
+			});		
+			$uic_save_button = $("#uic_save_button").button();
+			$uic_cancel_button = $("#uic_cancel_button").button();
+			$uic_back_button = $("#uic_back_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-carat-1-w"
+				}
+			});
+			$("#uic_upload_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-circle-arrow-n"
+				}
+			});			
+			$uic_unclassify_button = $("#uic_unclassify_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-trash"
+				}
+			});
+			$uic_addattr_button = $(".uic_addattr_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-plus"
+				}
+			});
+
+			/* Events */
+			$("#uic_upload_button").click(function(){
+				$("#file").trigger("click");
+				return false;
+			});			
+			$uic_addattr_button.click(function(){
+				{% if params.document %}
+					doc_id = "{{params.document}}";
+					att_id = this.value;
+					$("#uic_form").attr("action", sprintf("/document/%s/classify/attribute/%s/add",doc_id,att_id));  
+					$("#uic_form").submit(); 																 
+				{% endif %}				
+			});			
+			$uic_category_select.change(function() {    
+				var doc_id = "new";
+				{% if params.document %}
+					doc_id = "{{params.document}}"; 
+				{% endif %}
+				redirect(sprintf("/document/%s/classify/category/%s",doc_id,$uic_category_select.val()));
+			});			
+			$uic_save_button.click(function() {
+				$("#uic_form").submit();
+				return false;
+			});			
+			$uic_cancel_button.click(function(){
+				{% if params.document %}
+					redirect(sprintf("/document/%s/preview","{{params.document}}"));
+				{% else %}
+					redirect("/document/new/classify");
+				{% endif %}
+				return false;
+			});		
+			$uic_back_button.click(function(){
+				history.back(-1);
+			});
+			$("#uic_taglist_link").click(function(){
+				$("#uic_tag_dialog").dialog({
+					title:'Tags',
+					width:450,
+					height: 300,
+				});
+				$("#uic_tag_dialog").dialog('open',{ position:'center' });
+			});
+			$uic_unclassify_button.click(function() {					 				
+				$("#uic_delete_dialog").dialog({
+					title:"Deletar Classificação",
+					buttons:[
+						{
+							text: "Yes",
+							click: function() { 
+								$("#uic_form").attr("action", sprintf("/document/%s/classify/delete","{{params.document}}"));  
+								$("#uic_form").submit();
+								return false;								
+							}
+						},
+						{
+							text: "No",
+							click: function() { 
+								$(this).dialog("close"); 
+							}
+						}					
+					] 
+				});
+			});
+		});
+	</script>
+{% endblock %}
+
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Documento</li>
+        <li>Classificação</li>
+    </ul>
+{% endblock %}
+
+
+{% block content %}
+	
+	<!--------------------------------------------->
+	<!-- TODO: Refactor export style to css file -->
+	<!--------------------------------------------->
+	
+	<div class="ui-app-header">
+		<div class="ui-app-title">Classificação do Documento</div>
+		<div class="ui-app-command">
+			{% if show_tags %}
+				<div class="floatr">
+					<button id="uic_unclassify_button">Deletar Classificação</button>
+				</div>
+				<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
+				<div class="floatr">
+					<button id="uic_upload_button">Anexar</button>
+				</div>				
+			{% endif %}
+			{% if params.document %}
+				<div class="floatr">
+					{% include "include/upload_form.xhtml" %}	
+				</div>
+			{% endif %}				
+		</div>
+	</div>
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		{% csrf_token %}				
+
+		<!--------------------------------------------->
+		<!-- TODO: Ticket #1                         -->
+		<!--------------------------------------------->
+			
+		<div class="ui-state-disabled" style="margin-bottom: 5px">
+			{% if not form.category.value %}
+				<p>Selecione uma categoria para começar</p>
+			{% endif %}	
+		</div>
+		<div>{{form.category}}</div>
+		{% if form.category.value %}
+			<table class="table_form">
+				{% for field in form  %}
+					{% if field.html_name != "category" %}
+						<tr>
+							<td class="label">{{field.label}}</td>
+							<td class="component">{{field}}</td>
+							<td class="error">{{field.errors}}</td>					
+						</tr>
+					{% endif %}
+				{% endfor %}
+
+				{% if new_attributes %}
+					{% for new_attr in new_attributes  %}
+						<tr>
+							<td class="label">{{new_attr.name}}</p> 
+							</td>
+							<td class="component">
+								<button class="uic_addattr_button" value="{{new_attr.id}}">Adicionar</button>
+							</td>
+						</tr>
+					{% endfor %}
+				{% endif %}
+
+
+			</table>
+			<div class="ui-form-button">
+				<input type="button" value="Save" id="uic_save_button">
+				<input type="button" value="Cancel" id="uic_cancel_button">
+			</div>			
+		{% endif %}
+		<div class="clear"></div>
+				
+		<!--------------------------------------------->
+		<!-- TODO: Ticket #1                         -->
+		<!--------------------------------------------->
+	</form>
+
+	{% if show_tags %}
+		<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
+			<div style="float: left">Tags</div>		
+			<div style="float: right; cursor: pointer;">
+				<a id="uic_taglist_link"><span class="ui-icon ui-icon-script" style="float: left"></span></a>
+			</div>
+			<div class="clear"></div>		
+		</div>
+		<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
+			<div id="uic_tag_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
+				<span class="ui-icon ui-icon-alert floatl"></span><p id="uic_tag_message"></p>
+			</div>
+			<ul id="uic_tags">
+			</ul>
+			<div class="clear"></div>		
+		</div>
+		<div id="uic_tag_dialog" class="hide">
+			<table id="uic_tag_table" class="display">		
+			</table>			
+		</div>		
+	{% endif %}	
+	
+
+	{% if show_back_to_search %}
+		<div class="floatr margin_top_default">
+			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
+		</div>
+	{% endif %}
+			
+{% endblock %}

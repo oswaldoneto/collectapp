@@ -1,0 +1,42 @@
+
+<script type="text/javascript">
+	$(document).ready(function(){	
+		$("#uic_search_link").click(function(){
+			redirect("/search");
+			return false;
+		});
+		$("#uic_category_link").click(function(){
+			redirect("/category/list");
+			return false;
+		});
+		$("#uic_tag_link").click(function(){
+			redirect("/tag/list");
+			return false;
+		});
+		$("#uic_user_link").click(function(){
+			redirect("/security/user/list");
+			return false;
+		});
+		$("#uic_group_link").click(function(){
+			redirect("/security/group/list");
+			return false;
+		});
+	});
+</script>
+
+<dl class="demos-nav">
+	<dt>Documentos</dt>
+		<dd><a id="uic_newdoc_link" href="/document/new">Incluir</a></dd>
+		<dd><a id="uic_search_link" href="">Pesquisar</a></dd>
+	{% if perms.category.add_category %}
+		<dt>Classificação</dt>
+			<dd><a id="uic_category_link" href="/list">Categorias</a></dd>
+			<dd><a id="uic_tag_link" href="">Tags</a></dd>
+	{% endif %}
+	{% if perms.auth.add_user %}
+		<dt>Segurança</dt>
+			<dd><a id="uic_user_link" href="">Usuários</a></dd>
+			<dd><a id="uic_group_link" href="">Grupos</a></dd>
+	{% endif %}
+</dl>
+

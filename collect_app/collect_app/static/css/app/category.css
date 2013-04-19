@@ -1,0 +1,56 @@
+
+
+
+
+
+
+
+
+
+div.stl_category_list_search {
+	width: 280px;
+	height: 35px;
+	background-color: white;
+	float: left;
+}
+div.stl_category_list_action {
+	height: 35px;
+	float: right;
+}
+
+div.stl_category_form_command {
+	height: 35px;
+}
+
+
+div.stl_category_form_command  #uic_back_button {
+	float: left;
+}
+
+div.stl_category_form_command  #uic_save_button {
+	float: right;
+}
+
+div.stl_category_form_command  #uic_next_button {
+	float: right;
+}
+
+div.stl_category_form_command  #uic_new_button {
+	float: right;
+	margin-right:10px;
+}
+
+div.stl_attribute_list_top_action {
+	height: 35px;
+	float: right;
+}
+
+div.stl_attribute_list_botton_action #uic_back_button {
+	float: left;
+}
+
+div.stl_attribute_list_botton_action #uic_next_button {
+	float: right;
+}
+  
+

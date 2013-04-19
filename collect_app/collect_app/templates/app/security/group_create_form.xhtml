@@ -1,0 +1,39 @@
+{% extends "app/security/security_base.xhtml" %}
+{% block security_url %}group{% endblock %}
+
+{% block security_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/group_create_form.js"></script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Segurança</a></li>
+        <li>Grupos</a></li>
+        <li>Adicionar Grupo</li>
+    </ul>
+{% endblock %}
+
+{% block security_title %}Adicionar Grupo{% endblock %}
+{% block security_content %}
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+		{% csrf_token %}
+		{% if form.errors %}
+			<div class="ui-state-error ui-corner-all clear">
+				<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>O formulário contêm errros, favor corrigir antes de continuar.</p>
+			</div>
+		{% endif %}				
+		<table class="table_form">
+			<tr>
+				<td class="label"><label>Grupo</label></td>
+				<td class="component">{{form.name}}</td>
+				<td class="error">{{form.name.errors}}</td>						
+			</tr>
+		</table>
+		<div class="ui-form-button">
+			<input type="button" value="Salvar" id="uic_save_button"/>
+			<input type="button" value="Cancelar" id="uic_cancel_button"/>
+		</div>		
+		<div class="clear"></div>
+	</form>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "app/category/category_base.xhtml" %}
+
+{% block page_index %}1{% endblock %}
+
+{% block category_script %}
+		<script type="text/javascript">
+			$(document).ready(function(){
+				
+				/* Setting */
+				$uic_save_button = $( "#uic_save_button" ).button();
+				$uic_cancel_button = $( "#uic_cancel_button" ).button();
+				$uic_type_select =  $("#id_type").multiselect({
+				   multiple: false,
+				   header: "Select an option",
+				   noneSelectedText: "Select an Option",
+				   selectedList: 1
+				});				
+				{% if edit_mode %}
+					$uic_type_select.multiselect("disable");
+				{% endif %}
+				
+				/* Events */
+				$uic_save_button.click(function() {					 
+					{% if edit_mode %}
+						var catId = {{category.id}};
+						var attId = {{attribute.id}};
+						var url = sprintf('/category/%s/attribute/%s/edit',catId,attId);
+						$("#uic_form").attr("action", url);  
+						$("#uic_form").submit(); 										
+					{% else %}
+						$("#uic_form").attr("action", "/category/" + {{category.id}} + "/attribute/add");  
+						$("#uic_form").submit(); 					
+					{% endif %}
+				});
+				$uic_cancel_button.click(function() {					 
+					var catId = {{category.id}};
+					var url = sprintf('/category/%s/attribute/list',catId);
+					redirect(url);
+				});
+				
+				
+				
+			});
+		</script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Classify</a></li>
+        <li><a href="#">Categories</a></li>
+        <li><a href="#">{{category.title}}</a></li>
+        <li><a href="#">Attributes</a></li>
+        {% if edit_mode %}
+        	<li><a href="#">{{attribute.name}}</a></li>
+        {% else %}
+        	<li><a href="#">Add attribute</a></li>       	
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block category_title %}
+	{% if edit_mode %}Editar atributo da categoria{% else %}Adicionar atributo da categoria{% endif %}
+{% endblock %}
+
+{% block category_content %}
+	<form id="uic_form" method="post">
+		{% csrf_token %}
+		<table class="table_form" padding="0" >
+			{% if form.errors %}
+				<tr>
+					<td class="alert" colspan="3">
+						<div class="ui-widget">
+							<div class="ui-state-error ui-corner-all"> 
+								<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span> 
+									The form has error{{form.errors|pluralize}}, please correct before continue.</p>
+							</div>
+						</div>
+					</td>
+				</tr>
+			{% endif %}						
+			<tr>
+				<td class="label"><label for="id_name">Nome</label></td>
+				<td class="component">{{form.name}}</td>
+				<td class="error">{{form.name.errors}}</td>
+			</tr>
+			<tr>
+				<td class="label"><label for="id_type">Tipo</label></td>
+				<td class="component">{{form.type}}</td>
+				<td class="error">{{form.type.errors}}</td>
+			</tr>
+			<tr>
+				<td class="label"></td>
+				<td class="component">{{form.required}}<label for="id_required">&nbsp;Obrigatório</label></td>
+				<td class="error">{{form.required.errors}}</td>
+			</tr>						
+		</table>					
+		<div class="ui-form-button">
+			<input type="button" value="Save" id="uic_save_button">
+			<input type="button" value="Cancel" id="uic_cancel_button">
+		</div>
+		<div class="clear"></div>		
+	</form>
+{% endblock %}

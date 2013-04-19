@@ -1,0 +1,111 @@
+{% extends "layout/base.xhtml" %}
+{% block body %}
+
+	<style>
+		.demos-nav, .demos-nav dt, .demos-nav dd, .demos-nav ul, .demos-nav li {
+			margin: 0;
+			padding: 0
+		}
+		
+		.demos-nav dt,
+		.demos-nav h4 {
+			color: #459e00;
+		    font-weight: bold;
+			margin-bottom: 0;
+			padding-left: 8px;
+			padding-bottom:5px;
+			line-height: 1.2em;
+			border-bottom: 1px solid #dfd9c3;
+		}
+		
+		.demos-nav dd a,
+		.demos-nav li a {
+			border-bottom: 1px solid #dfd9c3;
+			display:block;
+			padding: 4px 3px 4px 8px;
+			font-size: 90%;
+			text-decoration: none;
+			color: #312e25 ;
+			margin:2px 0;
+			height:13px;
+		}
+		
+		.demos-nav dd a:hover,
+		.demos-nav dd a:focus,
+		.demos-nav dd a:hover,
+		.demos-nav dd a:focus {
+			background: #fafaf4;
+			color:#000;
+			-moz-border-radius: 5px; -webkit-border-radius: 5px;
+		}
+		 .demos-nav dd a.selected {
+			background: #555;
+			color:#ffffff;
+			-moz-border-radius: 5px; -webkit-border-radius: 5px;
+		}		
+	</style>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){	
+			$("#menu").jBreadCrumb({minimumCompressionElements:7});
+			
+			$("#uic_username_button").click(function(){
+			  	var menu = $(this).children("ul").show().position({
+	                my: "right top",
+	                at: "right bottom",
+	                of: this
+	    		});
+    		    $(document).one("click", function() {
+                    menu.hide();
+                });
+                return false;
+			}).children("ul").hide().menu();
+			
+			$("#uic_changepassword_link").click(function(){
+				redirect("/security/user/password/change");
+				return false;
+			});
+			
+			$("#uic_logout_link").click(function(){
+				redirect("/logout");
+				return false;
+			});
+		});
+	</script>
+
+	<div id="page" 
+		 class="ui-widget ui-widget-content ui-corner-all">		
+		<div id="principal">
+			<div id="header" class="ui-widget-header ui-corner-top">
+				<div style="float: left;">
+					<h1>Collect</h1>
+				</div>
+				<div id="uic_username_button" style="float: right; margin-top: 25px; font-size: .8em; cursor: pointer;">
+					<span>{% if user.is_authenticated %}{{user.username}}{% endif %}</span>
+					<span class="ui-icon ui-icon-triangle-1-s floatr"></span>
+				    <ul style="position: absolute; width: 80px">
+						<li><a id="uic_changepassword_link" href="">Trocar Senha</p></a></li>
+						<li><a id="uic_logout_link" href="">Sair</p></a></li>
+					</ul>
+				</div>				
+			</div>
+			<div id="menu" class="breadCrumb module">
+				{% block trail %}{% endblock %}		
+			</div>
+			<div id="content">
+				<div id="rightpane">
+					{% include "layout/menu.xhtml" %}
+				</div>
+				<div id="leftpane">
+					{% block content %}{% endblock %}	
+				</div>
+			</div>
+			<div class="clear">
+			</div>				
+		</div>
+		<div id="footer" class="ui-widget-header ui-corner-bottom">
+		</div>
+	</div>
+{% endblock %}
+
+

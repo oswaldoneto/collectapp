@@ -1,0 +1,35 @@
+fieldset {
+	border: none;
+}
+form {
+	width: 300px;
+	margin: 130px auto;
+	padding: 20px;
+}
+form fieldset legend {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+form fieldset p {
+	font-weight: normal;
+}		
+form fieldset label {
+	float: left;
+	clear: left;
+	text-align: right;
+	padding: 10px 5px 5px 0px;
+	width: 70px;
+	font-weight: bold;
+}
+form fieldset input.textfield {
+	float: left;
+	width: 215px;
+	margin: 8px 0px 0px 0px;
+	padding: 2px 2px 2px 2px;
+}
+
+form fieldset input.button {
+	float: right;
+	width: 80px;
+	margin: 10px 5px 0px 0px;
+}

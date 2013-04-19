@@ -1,0 +1,434 @@
+{% extends "layout/template.xhtml" %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		
+		var $permission_slider = null;
+		var $user_table = null;
+		var $group_table = null;
+		
+	    var divCellCheck = "<div style='width: 100%;'><span class='ui-icon ui-icon-check' style='margin-left: auto; margin-right: auto'></div>";
+	    var divCellClose = "<div style='width: 100%;'><span class='ui-icon ui-icon-close' style='margin-left: auto; margin-right: auto'></div>";
+
+		//TODO: Don´t work anymore
+		var doc_id = {{document.id}};
+		doc_id = 1;
+		
+		$(document).ready(function() {	
+			
+			var $dialog = $("<div></div>").dialog({ autoOpen: false, modal:true});
+			
+			
+			/* OnLoad ----- */
+			$.get(sprintf("/security/permissions/users/document/%s",doc_id),{}, function(data){
+				$.each(data,function(){
+					fnAddPermUserRow(this);	
+				});
+			})
+			.error(function(){
+				//TODO: Informar usuario 
+			});							
+
+			$.get(sprintf("/security/permissions/groups/document/%s",doc_id),{}, function(data){
+				$.each(data,function(){
+					fnAddPermGroupRow(this);	
+				});
+			})
+			.error(function(){
+				//TODO: Informar usuario 
+			});
+			
+										
+			/* Settings -----  */
+			$permission_slider =  $("#permission_slider").selectToUISlider({
+				label:5,
+				tooltip:true,
+				labelSrc:'text',
+				sliderOptions: {
+				    stop: function(e,ui) {
+						var document_id = 1;	    			
+						var user_id = $("input:radio[name=uic_userselected_radio]:checked").val();
+						var group_id = $("input:radio[name=uic_groupselected_radio]:checked").val();
+						var perm = $permission_slider.val();
+						if (user_id != null) {
+							$.post(sprintf("/security/permission/user/%s/document/%s",user_id,document_id),{
+									permission:perm
+							}, function(data){
+								$.get(sprintf("/security/permission/user/%s/document/%s",user_id,document_id),{}, function(data){		
+									var node = fnGetRow($user_table);
+									$user_table.fnUpdate(fnGetDivCell("read_document",data.permission),node,2);
+									$user_table.fnUpdate(fnGetDivCell("add_document",data.permission),node,3);
+									$user_table.fnUpdate(fnGetDivCell("change_document",data.permission),node,4);
+									$user_table.fnUpdate(fnGetDivCell("publish_document",data.permission),node,5);
+									$user_table.fnUpdate(fnGetDivCell("delete_document",data.permission),node,6);
+								})
+								.error(function(){
+									//TODO: Informar usuario 
+								});							
+							})
+							.error(function(){
+								//TODO: Informar usuario 
+							});							
+						}
+						else if (group_id != null) {
+							$.post(sprintf("/security/permission/group/%s/document/%s",group_id,document_id),{
+									permission:perm
+							}, function(data){
+								$.get(sprintf("/security/permission/group/%s/document/%s",group_id,document_id),{}, function(data){		
+									var node = fnGetRow($group_table);
+									$group_table.fnUpdate(fnGetDivCell("read_document",data.permission),node,2);
+									$group_table.fnUpdate(fnGetDivCell("add_document",data.permission),node,3);
+									$group_table.fnUpdate(fnGetDivCell("change_document",data.permission),node,4);
+									$group_table.fnUpdate(fnGetDivCell("publish_document",data.permission),node,5);
+									$group_table.fnUpdate(fnGetDivCell("delete_document",data.permission),node,6);
+								})
+								.error(function(){
+									//TODO: Informar usuario 
+								});							
+							})
+							.error(function(){
+								//TODO: Informar usuario 
+							});							
+						}
+						else {
+							return false;
+						}
+							
+						
+						
+						
+			    	}
+			  	}
+			}).hide();			
+			
+			$uic_adduser_button = $("#uic_adduser_button").button({
+				icons: {
+					primary: "ui-icon-circle-plus"
+				},
+				text: false
+			});
+			$uic_remuser_button = $("#uic_remuser_button").button({
+				icons: {
+					primary: "ui-icon-circle-minus"
+				},
+				text: false
+			});
+			$user_table = $("#uic_permuser_table").dataTable({
+				"bJQueryUI": true,				
+				"bPaginate": false,
+				"bFilter": false,
+		        "bSort": true,
+		        "bInfo": false,
+		        "bAutoWidth":false,
+		        "sScrollY": "90px",		        
+        		"aoColumns" : [
+            		{ sWidth: "5%","bSortable": false },
+            		{ sWidth: "90%","bSortable": true },
+            		{ sWidth: "1%","bSortable": false },
+            		{ sWidth: "1%","bSortable": false },
+            		{ sWidth: "1%","bSortable": false },
+            		{ sWidth: "1%","bSortable": false },		
+            		{ sWidth: "1%","bSortable": false }
+            	]
+			})
+			$user_table.dataTable().fnAdjustColumnSizing();
+						
+			$uic_addgroup_button =  $("#uic_addgroup_button").button({
+				icons: {
+					primary: "ui-icon-circle-plus"
+				},
+				text: false
+			});
+			$uic_remgroup_button = $("#uic_remgroup_button").button({
+				icons: {
+					primary: "ui-icon-circle-minus"
+				},
+				text: false
+			});
+			$group_table = $("#uic_permgroup_table").dataTable({
+				"bJQueryUI": true,				
+				"bPaginate": false,
+				"bFilter": false,
+		        "bSort": true,
+		        "bInfo": false,
+		        "bAutoWidth":false,
+		        "sScrollY": "90px",		    		        
+        		"aoColumns" : [
+            		{ sWidth: '5%',"bSortable": false },
+            		{ sWidth: '90%',"bSortable": true },
+            		{ sWidth: '1%',"bSortable": false },
+            		{ sWidth: '1%',"bSortable": false },
+            		{ sWidth: '1%',"bSortable": false },
+            		{ sWidth: '1%',"bSortable": false },		
+            		{ sWidth: '1%',"bSortable": false }
+            	]
+			});
+			$group_table.dataTable().fnAdjustColumnSizing();			
+			
+			$uic_back_button = $("#uic_back_button").button({
+				text: true,
+				icons: {
+					primary: "ui-icon-carat-1-w"
+				}
+			});
+								
+			/* Events -----  */
+			$uic_adduser_button.click(function() {
+    			$dialog.load('/security/user/dialog').dialog({title:'Usuários',width:700,height: 300});
+    			$dialog.dialog('open',{ position: 'center' });
+    			return false;				
+			});
+			$uic_remuser_button.click(function() {
+				var user_id = $("input:radio[name=uic_userselected_radio]:checked").val();
+				var document_id = 1;
+				$.ajax({
+					url:sprintf("/security/permission/user/%s/document/%s",user_id,document_id),
+					type:"DELETE",
+					dataType:"json",
+					success: function(data) {
+						$user_table.fnDeleteRow( fnGetRow($user_table) );						
+					}					
+				});
+    			return false;				
+			});
+						
+			$uic_addgroup_button.click(function() {
+    			$dialog.load('/security/group/dialog').dialog({title:'Groups',width:400,height: 300});
+    			$dialog.dialog('open',{ position: 'center' });
+    			return false;				
+			});
+			$uic_remgroup_button.click(function(){
+				var group_id = $("input:radio[name=uic_groupselected_radio]:checked").val();
+				var document_id = 1;
+				$.ajax({
+					url:sprintf("/security/permission/group/%s/document/%s",group_id,document_id),
+					type:"DELETE",
+					dataType:"json",
+					success: function(data) {
+						$group_table.fnDeleteRow( fnGetRow($group_table) );						
+					}					
+				});
+    			return false;				
+			});			
+			
+			$("input:radio").live("click",function() {
+				var user_id = $("input:radio[name=uic_userselected_radio]:checked").val();
+				var group_id = $("input:radio[name=uic_groupselected_radio]:checked").val();
+				var document_id = 1;				
+				var url = null;
+				if (user_id != null) {
+					url = sprintf("/security/permission/user/%s/document/%s",user_id,document_id)
+				}
+				else if (group_id != null) {
+					url = sprintf("/security/permission/group/%s/document/%s",group_id,document_id)
+				}
+				else {
+					return false;
+				}
+				$.get(url,{},function(data){
+					$permission_slider.val(data.permission);
+					$permission_slider.trigger('click');
+				})
+				.error(function(){
+					//TODO: Informar usuario 
+				});
+			});
+			
+			$uic_back_button.click(function(){
+				history.back(-1);
+			});
+			
+		});
+
+
+		/**
+		 * Listening user add event from user dialog. 
+		 */
+		function fnUserDialogSelectListener(user_id) {
+			var document_id = 1;
+			$.post(sprintf("/security/permission/user/%s/document/%s",user_id,document_id),{
+				permission:"read_document"
+			},function(data){
+				$.get(sprintf("/security/permission/user/%s/document/%s",user_id,document_id),{},function(data){
+					fnAddPermUserRow(data);
+				})
+				.error(function(){
+					//TODO: Informar usuario 
+				});
+				return false;				
+			})
+			.error(function(){
+				//TODO: Informar usuario 				
+			});			
+		}
+
+		/**
+		 * Listening group add event from group dialog. 
+		 */
+		function fnGroupDialogSelectListener(group_id) {
+			var document_id = 1;
+			$.post(sprintf("/security/permission/group/%s/document/%s",group_id,document_id),{
+					permission:"read_document"
+			}, function(data){
+				$.get(sprintf("/security/permission/group/%s/document/%s",group_id,document_id),{}, function(data){		
+					fnAddPermGroupRow(data);		
+				})
+				.error(function(){
+					//TODO: Informar usuario 
+				});							
+			})
+			.error(function(){
+				//TODO: Informar usuario 
+			});							
+		}
+		
+		/**
+		 * Add row in the user table
+		 */
+		function fnAddPermUserRow(user_permission) {
+		    $user_table.dataTable().fnAddData([
+		    	"<input type='radio' name='uic_userselected_radio' value='" + user_permission.user_id + "'/>",
+		    	user_permission.username,
+		    	fnGetDivCell("read_document",user_permission.permission),
+		    	fnGetDivCell("add_document",user_permission.permission),
+		    	fnGetDivCell("change_document",user_permission.permission),
+		    	fnGetDivCell("publish_document",user_permission.permission),
+		    	fnGetDivCell("delete_document",user_permission.permission)
+		    ]);
+		}
+
+		/**
+		 * Add row in the group table.
+		 */
+		function fnAddPermGroupRow(group_permission) {
+		    $group_table.dataTable().fnAddData([
+		    	"<input type='radio' name='uic_groupselected_radio' value='" + group_permission.group_id + "'/>",
+		    	group_permission.group_name,
+		    	fnGetDivCell("read_document",group_permission.permission),
+		    	fnGetDivCell("add_document",group_permission.permission),
+		    	fnGetDivCell("change_document",group_permission.permission),
+		    	fnGetDivCell("publish_document",group_permission.permission),
+		    	fnGetDivCell("delete_document",group_permission.permission)
+		    ]);
+		}
+		
+		/**
+		 * Get selected row from group table. 
+		 */
+		function fnGetRow(oTable) {
+			var row = null;
+			$.each(oTable.fnGetNodes(), function() {
+				var indexRow = oTable.fnGetPosition( this );
+				var aData = oTable.fnGetData( indexRow );
+				if ( $(":radio[value="+ $(aData[0]).val() +"]").is(':checked') ) {
+					row = this;
+				}
+			});
+			return row;
+		}
+		
+		/**
+		 * 
+		 */
+		function fnGetDivCell(permission, userpermissions) {
+			if (jQuery.inArray(permission,userpermissions) > -1  ) { 
+				return divCellCheck; 
+			} 
+			else { 
+				return divCellClose; 
+			}		    	
+		}
+	</script>	
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Documento</li>
+        <li>Segurança</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+	<!-- TODO: REFACTOR -->
+	<style>
+		select {margin-right: 1em; float: left;}
+		.ui-slider {clear: both; top: 1.5em;}
+	</style>
+		
+	
+	<div class="ui-app-header">
+		<div class="ui-app-title">Segurança do Documento</div>
+	</div>
+		
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+	
+		<div class="ui-corner-all" id="uic_docsecurity_container" style="height: 400px; margin-left: 5px; margin-right: 5px;">	
+			<div id="uic_permissionslider_container" style="height: 80px; padding-left: 50px; padding-right: 50px;">
+				<select name="permission_slider" id="permission_slider">
+					<option value="read_document">Visualizar</option>
+					<option value="add_document">Criar</option>
+					<option value="change_document">Alterar</option>
+					<option value="publish_document">Publish</option>
+					<option value="delete_document">Delete</option>
+				</select>
+			</div>
+			<div>
+				<div style="float: left; margin-top: 5px"><b>Usuários</b></div>
+				<div style="float: right;">
+					<button id="uic_remuser_button" style="float: right; height: 20px">Remover</button>
+					<button id="uic_adduser_button" style="float: right; height: 20px">Adicionar</button>
+				</div>
+				<div style="height: 150px;">
+					<table id="uic_permuser_table" class="display">
+						<thead>
+							<tr>
+								<th></th>
+								<th style="width: 100px">Usuário</th>
+								<th style="width: 1px">Visualizar</th>
+								<th style="width: 1px">Criar</th>
+								<th style="width: 1px">Alterar</th>
+								<th style="width: 1px">Publicar</th>
+								<th style="width: 1px">Deletar</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+			<div>
+				<div style="float: left; margin-top: 10px;"><b>Grupos</b></div>
+				<div style="float: right; margin-top: 5px;">
+					<button id="uic_remgroup_button" style="float: right; height: 20px">Remover</button>
+					<button id="uic_addgroup_button" style="float: right; height: 20px">Adicionar</button>
+				</div>
+				<div style="height: 95px">
+					<table id="uic_permgroup_table" class="display">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Grupo</th>
+								<th style="width: 1%">Visualizar</th>
+								<th style="width: 1%">Criar</th>
+								<th style="width: 1%">Alterar</th>
+								<th style="width: 1%">Publicar</th>
+								<th style="width: 1%">Deletar</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>				
+			</div>
+		</div>
+	</form>		
+	
+	{% if show_back_to_search %}
+		<div class="floatr margin_top_default">
+			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
+		</div>
+	{% endif %}
+			
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "layout/template_dialog.xhtml" %}
+
+{% block import_style %}
+	<style type="text/css">
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript">
+		$(document).ready(function() {	
+		    $("#fileupload").fileupload({
+ 				forceIframeTransport: true,
+ 				autoUpload:false,
+				add:function(e,data) {
+					alert("Upload...");
+					data.submit();
+				},
+				done:function(e,data) {
+					alert("Upload finalizado.");					
+				},
+		    });
+		});
+	</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form id="fileupload" action="{{bucketURL}}" method="POST" enctype="multipart/form-data">
+		<label>Access Key ID</label>
+		<input type="text" name="AWSAccessKeyId" value="{{AWSAccessKeyId}}" />
+		<br>
+		<label>Encoded Policy</label>
+		<input type="text" name="policy" value="{{encodedPolicy}}" />
+		<br>
+		<label>Encoded Signature</label>
+		<input type="text" name="signature" value="{{encodedSignature}}" />
+		<br>
+		<label>ACL</label>
+		<input type="text" name="acl" value="public-read" />
+		<br>		
+		<label>Key</label>
+		<input type="text" name="key" value="document/{{document.id}}/${filename}" />
+		<br>
+		<label>success_action_status</label>
+		<input type="text" name="success_action_status" value="200" />
+		<br>
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="file"/>
+                </span>
+            </div>
+        </div>        
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layout/base.xhtml" %}
+{% block body %}
+	<div id="page" class="ui-widget ui-widget-content ui-corner-all">		
+		<div id="principal">
+			<div id="header" class="ui-widget-header ui-corner-top">
+				<div style="float: left;">
+					<h1>Collect</h1>
+				</div>
+			</div>
+			<div id="content">
+				<div id="centerpane">
+					{% block content %}{% endblock %}	
+				</div>
+			</div>
+			<div class="clear">
+			</div>				
+		</div>
+		<div id="footer" class="ui-widget-header ui-corner-bottom">
+		</div>
+	</div>
+{% endblock %}
+
+
