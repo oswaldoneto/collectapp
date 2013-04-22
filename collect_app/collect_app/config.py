@@ -1,7 +1,7 @@
 '''
 Created on 15/04/2013
 
-@author: mauricos
+@author: Oswaldo
 '''
 import os
 import ConfigParser
