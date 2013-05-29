@@ -1,14 +1,6 @@
-from django.contrib.auth.models import User, Group
-from django.http import HttpResponseBadRequest
-from django.views.generic.base import View
-from document.guardianutil import modify_permission, get_user_permission, \
-    clear_permission
-from document.models import Document
-from guardian.shortcuts import get_perms, get_groups_with_perms
 from security.views import JSONResponseMixin
+from django.views.generic.base import View
 from tag.models import Tag
-from django.shortcuts import get_object_or_404
-from category.models import Category
 
 class TagListView(JSONResponseMixin, View):
     def get(self,request):

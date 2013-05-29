@@ -1,5 +1,7 @@
 {% extends "layout/template.xhtml" %}
 
+{% load guardian_tags %}
+
 {% block import_style %}
 	<style type="text/css">
 		#id_category {
@@ -22,7 +24,7 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+						
 			{% if show_tags %}
 				$.get("/api/document/{{params.document}}/tag",{},function(data){
 	

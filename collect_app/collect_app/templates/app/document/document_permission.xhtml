@@ -1,0 +1,201 @@
+{% extends "layout/template.xhtml" %}
+
+{% load jsonify %}
+{% load verbatim %}
+
+{% block startup_script %}
+	<script>
+		//TODO: SECURITY ISSUE USER DATA
+		$(document).data("document_id",'{{document.id}}') 
+		$(document).data("users",'{{users|jsonify}}');
+		$(document).data("groups",'{{groups|jsonify}}');
+	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_permission.js"></script>
+{% endblock %}
+
+{% block trail %}
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li>Documento</li>
+        <li>Permissões</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+	
+	<!-- Permissão de Usuários -->
+	<script id="uic_user_template" type="text/x-jquery-tmpl">
+		{% verbatim %}
+		<div class="margin_bottom_default">
+			<div class="floatl">
+				<i class="icon-user margin_right_default"></i>${name}	
+			</div>
+			<div class="floatr">
+				<span class="margin_lr_double">
+					{{if read == "True"}}
+						<a rel="uic_user_remove_read_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>					
+					{{else}}
+						<a rel="uic_user_add_read_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>										
+					{{/if}}
+					Visualizar
+					</a>
+				</span>
+				<span class="margin_lr_double"> 
+					{{if change == "True"}}
+						<a rel="uic_user_remove_change_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>							
+					{{else}}
+						<a rel="uic_user_add_change_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>
+					{{/if}}
+					Alterar
+				</span>				
+				<span class="margin_lr_double"> 
+					<a href=""> 
+					{{if exclude == "True"}}
+						<a rel="uic_user_remove_delete_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>
+					{{else}}
+						<a rel="uic_user_add_delete_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>
+					{{/if}}
+					Excluir
+					</a> 					
+				</span>				
+			</div>
+			<div class="clear"></div>
+		</div>
+		{% endverbatim %}			
+	</script>
+	
+	<!-- Permissão de Grupos -->
+	<script id="uic_group_template" type="text/x-jquery-tmpl">
+		{% verbatim %}
+		<div class="margin_bottom_default">
+			<div class="floatl">
+				<i class="icon-group margin_right_default"></i>${name}	
+			</div>
+			<div class="floatr">
+				<span class="margin_lr_double">
+					{{if read == "True"}}
+						<a rel="uic_group_remove_read_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>					
+					{{else}}
+						<a rel="uic_group_add_read_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>										
+					{{/if}}
+					Visualizar
+					</a>
+				</span>
+				<span class="margin_lr_double"> 
+					{{if change == "True"}}
+						<a rel="uic_group_remove_change_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>							
+					{{else}}
+						<a rel="uic_group_add_change_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>
+					{{/if}}
+					Alterar
+				</span>				
+				<span class="margin_lr_double"> 
+					<a href=""> 
+					{{if exclude == "True"}}
+						<a rel="uic_group_remove_delete_permission_link" href="${id}">
+							<i class="icon-check icon-large"></i>
+						</a>
+					{{else}}
+						<a rel="uic_group_add_delete_permission_link" href="${id}">
+							<i class="icon-check-empty icon-large"></i>
+						</a>
+					{{/if}}
+					Excluir
+					</a> 					
+				</span>				
+			</div>
+			<div class="clear"></div>
+		</div>
+		{% endverbatim %}			
+	</script>	
+
+	<div class="ui-app-header">
+		<div class="ui-app-title">Permissões do Documento</div>
+	</div>
+
+	<!-- Todos Usuários -->
+	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all hide">
+		<div class="floatl">
+			<i class="icon-globe margin_right_default"></i><b>Todos Usuários</b>
+		</div>
+		<div class="floatr">
+			<span class="margin_lr_double">
+				<a id="uic_read_public_permission_link" href="${id}">
+					<i class="icon-large"></i> Visualizar
+				</a>
+			</span>
+			<span class="margin_lr_double">
+				<a id="uic_change_public_permission_link" href="${id}">
+					<i class="icon-large"></i> Alterar
+				</a>
+			</span>
+			<span class="margin_lr_double">
+				<a id="uic_delete_public_permission_link" href="${id}">
+					<i class="icon-large"></i> Excluir
+				</a>
+			</span>
+		</div>
+		<div class="clear"></div>
+	</form>	
+	
+	<!-- Usuários -->
+	<div class="ui-wireframe">
+		<div class="ui-widget-header ui-corner-top margin_top_default">
+			<div class="floatl">Usuários</div>
+			<div class="floatr">
+				<a id="uic_classify_link"><span class="ui-icon ui-icon-search floatr"></span></a>
+			</div>
+			<div class="clear"></div>		
+		</div>
+		<div class="ui-widget-content ui-corner-bottom" style="">
+			<div id="uic_users_container"></div>
+			<div>
+				<i class="icon-user  margin_right_default"></i><input id="uic_users_autocomplete" />
+			</div>			
+		</div>
+	</div>
+
+	<!-- Grupos -->
+	<div class="ui-wireframe">
+		<div class="ui-widget-header ui-corner-top margin_top_default">
+			<div class="floatl">Grupos</div>
+			<div class="floatr">
+				<a id="uic_classify_link"><span class="ui-icon ui-icon-search floatr"></span></a>
+			</div>
+			<div class="clear"></div>		
+		</div>
+		<div class="ui-widget-content ui-corner-bottom" style="">
+			<div id="uic_group_container"></div>
+			<div>
+				<i class=" icon-group margin_right_default"></i><input id="uic_groups_autocomplete" />
+			</div>
+		</div>
+	</div>	
+
+	{% if show_back_to_search %}
+		<div class="floatr margin_top_default">
+			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
+		</div>
+	{% endif %}
+			
+{% endblock %}

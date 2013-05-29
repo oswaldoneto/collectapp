@@ -1,5 +1,7 @@
 {% extends "layout/template.xhtml" %}
 
+{% load guardian_tags %}
+
 {% block title %}Collect Project :: Documento{% endblock %}
 
 {% block import_style %}
@@ -81,7 +83,7 @@
 					primary: "ui-icon-bookmark"
 				}
 			});
-			$uic_security_button = $(".uic_security_button").button({
+			$uic_permission_button = $(".uic_permission_button").button({
 				text: true,
 				icons: {
 					primary: "ui-icon-key"
@@ -108,8 +110,8 @@
 				redirect(sprintf("/document/%s/classify",this.value));
 				return false;
 			});
-			$uic_security_button.click(function(){
-				redirect(sprintf("/document/%s/security",this.value));								
+			$uic_permission_button.click(function(){
+				redirect(sprintf("/document/%s/permission",this.value));								
 				return false;
 			});
 			$uic_delete_button.click(function(){
@@ -195,81 +197,95 @@
 			{% endif %}
 			<table class="table_result ui-corner-all">
 				{% for result in page.object_list %}
-					<tr>
-						<td>
-							<div style="margin: 5px 5px 5px 5px;">
-	
-								<div style="float: left;">
-									<p style="font-weight: bold; display: inline">
-										{% if result.object.category %}
-											{{result.object.category.title}}
-										{% else %}
-											<span class="ui-state-disabled">Sem Categoria</span>
-										{% endif %}
-									</p>
-									<p style="font-size: 0.8em; display: inline; ">por</p>
-									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.owner.username}}</p>
-									<p style="font-size: 0.8em; display: inline; ">em</p>
-									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.updated}}</p>
-								</div>
-								
-								<div style="float: right" >
-									<form id="uic_delete_form" method="post">
-										{% csrf_token %}		
-										<button class="uic_preview_button" value="{{result.object.id}}">Visualizar</button>
-										<button class="uic_classify_button" value="{{result.object.id}}">Classificar</button>
-										<button class="uic_security_button" value="{{result.object.id}}">Segurança</button>
-										<button class="uic_delete_button" value="{{result.object.id}}">&nbsp;</button>
-										<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>
-									</form>
-								</div>
-								<div class="clear"></div>
-								<div style="float: left; margin-bottom: 5px;">
-									{% for att in result.object.all_attributes %}
-										{% if att.value %}
-										
-											<div style="margin-bottom: 3px;">							
-												<p style="display: inline; float: left;">{{att.value.value}}</p>
-												<div style="display: inline;">
-													<p style="font-size: .7em; font-weight: bold; display: inline;" class="ui-state-disabled">
-														<span class="ui-icon ui-icon-triangle-1-w" style="float: left;"></span>{{att.attribute.name}}
-													</p>
+					{% get_obj_perms user for result.object as "document_permissions" %}
+					{% if "read_document" in document_permissions or "change_document" in document_permissions or "delete_document" in document_permissions %}
+						<tr>
+							<td>
+								<div style="margin: 5px 5px 5px 5px;">
+		
+									<div style="float: left;">
+										<p style="font-weight: bold; display: inline">
+											{% if result.object.category %}
+												{{result.object.category.title}}
+											{% else %}
+												<span class="ui-state-disabled">Sem Categoria</span>
+											{% endif %}
+										</p>
+										<p style="font-size: 0.8em; display: inline; ">por</p>
+										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.owner.username}}</p>
+										<p style="font-size: 0.8em; display: inline; ">em</p>
+										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.updated}}</p>
+									</div>
+									
+									<div style="float: right" >
+										<form id="uic_delete_form" method="post">
+											{% csrf_token %}		
+											<button class="uic_preview_button" value="{{result.object.id}}">Visualizar</button>
+											{% if "change_document" in document_permissions %}
+												<button class="uic_classify_button" value="{{result.object.id}}">Classificar</button>
+												<button class="uic_permission_button" value="{{result.object.id}}">Permissões</button>
+											{% else %}	
+												<button class="uic_classify_button" value="{{result.object.id}}" disabled>Classificar</button>
+												<button class="uic_permission_button" value="{{result.object.id}}" disabled>Permissões</button>
+											{% endif %}
+											{% if "delete_document" in document_permissions %}
+												<button class="uic_delete_button" value="{{result.object.id}}">&nbsp;</button>									
+											{% else %}
+												<button class="uic_delete_button" value="{{result.object.id}}" disabled>&nbsp;</button>																				
+											{% endif %}
+											<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>
+										</form>
+									</div>
+									<div class="clear"></div>
+									<div style="float: left; margin-bottom: 5px;">
+										{% for att in result.object.all_attributes %}
+											{% if att.value %}
+											
+												<div style="margin-bottom: 3px;">							
+													<p style="display: inline; float: left;">{{att.value.value}}</p>
+													<div style="display: inline;">
+														<p style="font-size: .7em; font-weight: bold; display: inline;" class="ui-state-disabled">
+															<span class="ui-icon ui-icon-triangle-1-w" style="float: left;"></span>{{att.attribute.name}}
+														</p>
+													</div>
 												</div>
-											</div>
-										{% endif %}					
-									{% endfor %}							
-								</div>
-								<div style="float: right; margin-top: 10px; width: 450px">
-									<table class="attribute_table">
-										<tbody>
-											{% for doc_file in result.object.all_files %}
-												<tr>
-													<td>
-														<a href="{{url_download}}/{{result.object.id}}/{{doc_file.name}}">
-														<span class="ui-icon ui-icon-circle-arrow-s"></span>
-														</a>														
-													</td>
-													<td>{{doc_file.name}}</td>
-													<td>{{doc_file.size}} Bytes</td>
-													<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
-												</tr>					
-											{% endfor %}
-										</tbody>
-									</table>
-								</div>
-								<div class="clear"></div>							
-								<div>
-									{% for tag in result.object.all_tags  %}
-										<div class="ui-state-active ui-corner-all" style="padding: 2px; margin-right: 3px; float: left">
-											<p style="font-size: 0.8em; font-weight: bold">{{tag.name}}</p>
-										</div>
-									{% endfor %}
+											{% endif %}					
+										{% endfor %}							
+									</div>
+									<div style="float: right; margin-top: 10px; width: 450px">
+										<table class="attribute_table">
+											<tbody>
+												{% for doc_file in result.object.all_files %}
+													<tr>
+														<td>
+															<a href="{{url_download}}/{{result.object.id}}/{{doc_file.name}}">
+															<span class="ui-icon ui-icon-circle-arrow-s"></span>
+															</a>														
+														</td>
+														<td>{{doc_file.name}}</td>
+														<td>{{doc_file.size}} Bytes</td>
+														<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
+													</tr>					
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
 									<div class="clear"></div>							
-								</div>
-	
-							</div>							
-						</td>
-					</tr>
+									<div>
+										{% for tag in result.object.all_tags  %}
+											<div class="ui-state-active ui-corner-all" style="padding: 2px; margin-right: 3px; float: left">
+												<p style="font-size: 0.8em; font-weight: bold">{{tag.name}}</p>
+											</div>
+										{% endfor %}
+										<div class="clear"></div>							
+									</div>
+		
+								</div>							
+							</td>
+						</tr>				
+					{% endif %}
+
+
 				{% endfor %}
 			</table>
 		</div>

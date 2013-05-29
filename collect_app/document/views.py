@@ -8,11 +8,11 @@ from django.forms.formsets import formset_factory
 from document.forms import DocumentForm, DocumentClassifyForm,\
     DocumentClassifyMetaclass
 from django.views.generic.base import TemplateView, View, RedirectView
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect,\
+    HttpResponseForbidden
 import json
 from django import http
-from django.contrib.auth.models import Group
-from document.guardianutil import modify_permission
+from django.contrib.auth.models import Group, User
 from document.jsonutil import parseGroupPermission,\
     parseGroupPermissions
 from django.contrib.comments import get_form
@@ -27,6 +27,9 @@ from django.utils import simplejson
 from ext.db.models.query import InheritanceQuerySet
 from document.models import *
 from collect_app import settings
+from django.utils.decorators import method_decorator
+from guardian.decorators import permission_required_or_403, permission_required
+from guardian.shortcuts import get_perms
 
 def comes_from_search(request):
     if 'HTTP_REFERER' in request.META:             
@@ -48,11 +51,20 @@ class PreviewDocView(TemplateView):
         context.update({'attachment_list':doc_attach})
         context.update({'tag_list':doc_tags})
         context.update({'show_back_to_search':comes_from_search(self.request)})
-        
         #TODO: Refactor 72
         context.update({'url_download':"https://%s/%s/document/%s" % (settings.config.get_s3_host(),settings.config.get_s3_bucket(),doc.id)})
-
-        return context
+        return context    
+    def dispatch(self, *args, **kwargs):
+        #TODO: Refactor move to decorator method similar permission_required_or_403 from django guardian but allow multiples permission check
+        disp = super(PreviewDocView, self).dispatch(*args, **kwargs)
+        doc = get_object_or_404(Document,id=self.kwargs['document'])
+        perms = get_perms(self.request.user, doc) 
+        if "read_document" in perms or "change_document" in perms or "delete_document" in perms: 
+            return disp
+        else:
+            return HttpResponseForbidden()
+        
+    
     
 class ClassifyDocView(FormView):
     template_name="app/document/document_classify_form.xhtml"
@@ -85,8 +97,18 @@ class ClassifyDocView(FormView):
     def form_valid(self, form):
         document = form.save(self.request)
         self.success_url = self.get_success_url() % document.id
-        return super(ClassifyDocView,self).form_valid(form)
+        return super(ClassifyDocView,self).form_valid(form)    
+    def dispatch(self, *args, **kwargs):
+        #TODO: Refactor move to decorator method similar permission_required_or_403 from django guardian but allow multiples permission check
+        disp = super(ClassifyDocView, self).dispatch(*args, **kwargs)
+        if 'document' in self.kwargs:
+            doc = get_object_or_404(Document,id=self.kwargs['document'])
+            perms = get_perms(self.request.user, doc) 
+            if "change_document" not in perms: 
+                return HttpResponseForbidden()
+        return disp
     
+
 class ClassifyDocDeleteView(BaseDeleteView):
     success_url = "/document/%s/preview"
     def get_object(self, queryset=None):
@@ -115,6 +137,50 @@ class DocumentDeleteView(DeleteView):
     def get_object(self, queryset=None):
         obj = Document.objects.get(id=self.kwargs["document"])
         return obj
+    
+class PermissionDocView(TemplateView):
+    template_name = "app/document/document_permission.xhtml"
+    def get_context_data(self, **kwargs):
+        context = super(PermissionDocView,self).get_context_data(**kwargs)
+        context.update({'users':User.objects.all()})
+        context.update({'groups':Group.objects.all()})
+        context.update({'document':get_object_or_404(Document,id=self.kwargs['document'])})
+        context.update({'show_back_to_search':comes_from_search(self.request)})
+        return context
+    @method_decorator(permission_required_or_403('document.change_document', (Document, 'id', 'document')))
+    def dispatch(self, *args, **kwargs):
+        return super(PermissionDocView, self).dispatch(*args, **kwargs)
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+# TODO: REFACTOR migrate to class based generic views            
+def security(request, id):
+    document = Document.objects.get(id=id)
+    show_back_to_search = comes_from_search(request)
+    return render_to_response('app/document/document_security.xhtml',
+                              locals(),
+                              context_instance=RequestContext(request))
+    
+    
+    
     
         
         
@@ -159,13 +225,6 @@ class AttachmentDocView(ListView):
 
 
 
-# TODO: REFACTOR migrate to class based generic views            
-def security(request, id):
-    document = Document.objects.get(id=id)
-    show_back_to_search = comes_from_search(request)
-    return render_to_response('app/document/document_security.xhtml',
-                              locals(),
-                              context_instance=RequestContext(request))
 
 
 # TODO: REFACTOR migrate to class based generic views     

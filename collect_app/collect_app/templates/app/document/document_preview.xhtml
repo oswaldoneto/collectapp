@@ -1,5 +1,8 @@
 {% extends "layout/template.xhtml" %}
 
+{% load guardian_tags %}
+{% load verbatim %}
+
 {% block title %}Collect Project :: Documento{% endblock %}
 
 {% block import_style %}
@@ -25,41 +28,54 @@
 {% endblock %}
 
 {% block startup_script %}
+	{% get_obj_perms user for doc as "document_permissions" %}
 
+	<script>
+		$(document).data("document_id",'{{params.document}}') 
+	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_preview.js"></script>
+		
 	<!-- TODO: Refactor 72 -->
 	{% include "include/upload_form_script.xhtml" %}		
 
 	<script type="text/javascript">
 		$(document).ready(function() {
 			
-			$("#uic_upload_button").button({
+			/* Setting*/
+			$uic_upload_button = $("#uic_upload_button").button({
 				text: true,
 				icons: {
 					primary: "ui-icon-circle-arrow-n"
 				}
 			});
-			
-			$("#uic_remove_button").button({
+			$uic_remove_button = $("#uic_remove_button").button({
 				text: true,
 				icons: {
 					primary: "ui-icon-trash"
 				}
 			});
-
-			$("#uic_back_button").button({
+			$uic_back_button = $("#uic_back_button").button({
 				text: true,
 				icons: {
 					primary: "ui-icon-carat-1-w"
 				}
 			});
-			
-			
-			$("#uic_upload_button").click(function(){
+			//Upload and Remove Button Setting Startup Logic
+			{% if "change_document" not in document_permissions %}
+				$("input[type='checkbox']").hide();
+				$uic_upload_button.hide();	
+				$uic_remove_button.hide();
+				$("#uic_classify_link").hide();				
+				$("#uic_secure_link").hide();				
+			{% endif %}
+									
+			/* Events */
+			$uic_upload_button.click(function(){
 				$("#file").trigger("click");
 				return false;
 			});
 			
-			$("#uic_remove_button").click(function(){
+			$uic_remove_button.click(function(){
 				var delete_ids = [];
 				$("input[type='checkbox']:checked").each(function() {
 					delete_ids.push($(this).val());	  
@@ -73,8 +89,7 @@
 					});
 				}
 			});
-			
-			$("#uic_back_button").click(function(){
+			$uic_back_button.click(function(){
 				history.back(-1);
 			});
 			
@@ -83,7 +98,7 @@
 			});
 			
 			$("#uic_secure_link").click(function(){
-				alert("Aplicação Indisponível");
+				redirect(sprintf("/document/%s/permission","{{params.document}}"));
 			});
 		});	
 	</script>
@@ -97,6 +112,89 @@
 {% endblock %}
 
 {% block content %}
+
+	<!-- Permissão de Usuários -->
+	<script id="uic_user_template" type="text/x-jquery-tmpl">
+		{% verbatim %}
+		<div class="margin_bottom_default">
+			<div class="floatl">
+				<i class="icon-user margin_right_default"></i>${name}	
+			</div>
+			<div class="floatr">
+				<span class="margin_lr_double">
+					{{if read == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Visualizar
+					</a>
+				</span>
+				<span class="margin_lr_double"> 
+					{{if change == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Alterar
+				</span>				
+				<span class="margin_lr_double"> 
+					<a href=""> 
+					{{if exclude == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Excluir
+					</a> 					
+				</span>				
+			</div>
+			<div class="clear"></div>
+		</div>
+		{% endverbatim %}			
+	</script>
+	
+	<!-- Permissão de Grupos -->
+	<script id="uic_group_template" type="text/x-jquery-tmpl">
+		{% verbatim %}
+		<div class="margin_bottom_default">
+			<div class="floatl">
+				<i class="icon-group margin_right_default"></i>${name}	
+			</div>
+			<div class="floatr">
+				<span class="margin_lr_double">
+					{{if read == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Visualizar
+					</a>
+				</span>
+				<span class="margin_lr_double"> 
+					{{if change == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Alterar
+				</span>				
+				<span class="margin_lr_double"> 
+					<a href=""> 
+					{{if exclude == "True"}}
+						<i class="icon-ok icon-large"></i>
+					{{else}}
+						<i class="icon-remove icon-large"></i>
+					{{/if}}
+					Excluir
+					</a> 					
+				</span>				
+			</div>
+			<div class="clear"></div>
+		</div>
+		{% endverbatim %}			
+	</script>		
+
 	
 	<!-- TODO: Refactor 72 -->
 	{% include "include/upload_form.xhtml" %}
@@ -187,7 +285,7 @@
 	
 	
 	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
-		<div style="float: left">Segurança</div>
+		<div style="float: left">Permissões</div>
 		<div style="float: right; cursor: pointer;">
 			<a id="uic_secure_link">
 				<span class="ui-icon ui-icon-folder-open" style="float: left"></span>
@@ -196,73 +294,9 @@
 		<div class="clear"></div>		
 	</div>
 	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-		{% if test_here %}		
-			<div style="float: left; width: 370px;">
-				<div  style="font-weight: bold; margin-bottom: 5px;">Usuários</div>
-				<div>
-					<table class="attribute_table">
-						<tbody>
-							<tr>
-								<td style="width: 99%">Aaaaaaa</td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>							
-							</tr>
-							<tr>
-								<td>Bbbbbb</td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>							
-							</tr>
-						</tbody>
-					</table>				
-				</div>
-				
-			</div>
-			<div style="float: right; width: 370px;">
-				<div style="font-weight: bold; margin-bottom: 5px;">Grupos</div>
-				<div>
-					<table class="attribute_table">
-						<tbody>
-							<tr>
-								<td style="width: 99%">Gggggg</td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-							</tr>
-							<tr>
-								<td>Hhhhhh</td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>							
-							</tr>
-							<tr>
-								<td>Rrrrrrrr</td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-check"></td>
-								<td><span class="ui-icon ui-icon-close"></td>
-								<td><span class="ui-icon ui-icon-close"></td>							
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>		
-			<div class="clear"></div>		
-		{% else %}
-			<div class="ui-state-disabled">Este documento não possui configuração de acesso.</div>				
-		{% endif %}
+		<div id="uic_users_container"></div>
+		<div id="uic_group_container"></div>
 	</div>
-	
-	
 	
 	
 	<!-- Change History -->

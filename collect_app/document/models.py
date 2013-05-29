@@ -1,15 +1,19 @@
 from itertools import chain
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 
 from tag.models import Tag
 from ext.db.models.query import InheritanceQuerySet
 from category.models import Category, Attribute
+from django.contrib import auth
+from django.dispatch.dispatcher import receiver
+from django.db.models.signals import post_save, post_init, pre_init
+from guardian.shortcuts import assign
 
 class Document(models.Model):
 	
-	class Meta:permissions = (('read_document', 'Can read document'), ('publish_document', 'Can publish document'),)
+	class Meta:permissions = (('read_document', 'Can read document'),)
 
 	category = models.ForeignKey(Category, null=True)
 	created = models.DateField(auto_now=True)
@@ -46,7 +50,22 @@ class Document(models.Model):
 				abstract_value.delete()
 			self.category = None
 			self.save()
+			
+@receiver(post_save,sender=Document)
+def assign_owner_permissions(sender,**kwargs):
+	if kwargs['created'] == True:
+		doc = kwargs['instance']
+		owner = doc.owner
+		assign("read_document",owner,doc)
+		assign("change_document",owner,doc)
+		assign("delete_document",owner,doc)
+		
+		
 
+class DocumentPublicPermission(models.Model):
+	document = models.ForeignKey(Document)
+	permission = models.ForeignKey(Permission)
+	
 class DocumentAttachment(models.Model):
 	name = models.CharField(max_length=255, editable=False)
 	size = models.IntegerField(editable=False)
