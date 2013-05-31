@@ -26,6 +26,8 @@ urlpatterns = patterns('',
 	url(r'', include('tag.urls')),
 	# Status App
 	url(r'', include('status.urls')),
+	# Error App
+	url(r'', include('error.urls')),
 )
 
 if settings.DEBUG:	

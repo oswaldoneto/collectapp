@@ -194,7 +194,7 @@ function fnRefreshPublicContainer(document_id) {
 			$uic_delete_public_permission_link.children("i").addClass("icon-check-empty");				
 		}
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});	
 }
 function fnRefreshUserContainer(document_id) {
