@@ -20,7 +20,7 @@ function fnRefreshUserContainer(document_id) {
 			$("#uic_user_template").tmpl(parameters).appendTo("#uic_users_container").live();
 		});
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnRefreshGroupContainer(document_id) {
@@ -40,7 +40,7 @@ function fnRefreshGroupContainer(document_id) {
 			$("#uic_group_template").tmpl(parameters).appendTo("#uic_group_container").live();
 		});
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnHasPermission(perm, permlist) {

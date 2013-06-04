@@ -214,7 +214,7 @@ function fnRefreshUserContainer(document_id) {
 			$("#uic_user_template").tmpl(parameters).appendTo("#uic_users_container").live();
 		});
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnRefreshGroupContainer(document_id) {
@@ -234,7 +234,7 @@ function fnRefreshGroupContainer(document_id) {
 			$("#uic_group_template").tmpl(parameters).appendTo("#uic_group_container").live();
 		});
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnAddUserPermission(user_id,document_id,permission) {
@@ -243,7 +243,7 @@ function fnAddUserPermission(user_id,document_id,permission) {
 			fnRefreshUserContainer(document_id);
 		}
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnAddGroupPermission(group_id,document_id,permission) {
@@ -252,7 +252,7 @@ function fnAddGroupPermission(group_id,document_id,permission) {
 			fnRefreshGroupContainer(document_id);
 		}
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnRemoveUserPermission(user_id,document_id,permission) {
@@ -282,7 +282,7 @@ function fnRemoveGroupPermission(group_id,document_id,permission) {
 function fnAddPublicPermission(document_id,permission) {
 	$.post(sprintf("/api/document/%s/permission/%s/public",document_id,permission),{}, function(data){
 	}).error(function(){
-		alert('Erro');
+		redirectToErrorPage();
 	});							
 }
 function fnRemovePublicPermission(document_id,permission) {

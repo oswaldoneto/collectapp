@@ -87,7 +87,7 @@ class DocUserPermissionsView(JSONResponseMixin, View):
         return self.render_to_response(self.__parseUserPermissions(user_perms))
     def __parseUserPermissions(self,user_permissions):
         return  [ dict([('user_id',perms.id),('username',perms.username),('permission',user_permissions[perms])]) for perms in user_permissions ]    
-    @method_decorator(permission_required_or_403('document.change_document', (Document, 'id', 'document')))
+    @method_decorator(permission_required_or_403('document.read_document', (Document, 'id', 'document')))
     def dispatch(self, *args, **kwargs):
         return super(DocUserPermissionsView, self).dispatch(*args, **kwargs)
         
@@ -105,7 +105,7 @@ class DocGroupPermissionsView(JSONResponseMixin, View):
             permission.append(('permission',group_permissions[perms]))
             permissions.append(dict(permission))
         return permissions
-    @method_decorator(permission_required_or_403('document.change_document', (Document, 'id', 'document')))
+    @method_decorator(permission_required_or_403('document.read_document', (Document, 'id', 'document')))
     def dispatch(self, *args, **kwargs):
         return super(DocGroupPermissionsView, self).dispatch(*args, **kwargs)
     

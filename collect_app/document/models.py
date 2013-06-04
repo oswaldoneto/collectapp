@@ -69,7 +69,7 @@ class DocumentPublicPermission(models.Model):
 class DocumentAttachment(models.Model):
 	name = models.CharField(max_length=255, editable=False)
 	size = models.IntegerField(editable=False)
-	type = models.CharField(max_length=64, editable=False)
+	type = models.CharField(max_length=255, editable=False)
 	created = models.DateTimeField(auto_now_add=True, editable=False)
 	updated = models.DateTimeField(auto_now=True, auto_now_add=True, editable=False)
 	document = models.ForeignKey(Document)
