@@ -114,11 +114,9 @@ class DocumentAttribute(models.Model):
 		abstract_value.delete()
 		super(DocumentAttribute,self).delete(using=using)
 		
-	
 	def set_native_value(self, native_value):
 		self.native_value = native_value	
-		print self.native_value
 		
-		
+
 		
 		
