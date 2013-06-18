@@ -43,7 +43,8 @@
 		    $("#uic_upload_form").fileupload({
  				forceIframeTransport: true,
  				autoUpload:false,
-				add:function(e,data) {	
+				add:function(e,data) {
+					pleaseWait();						
 					$.post("/api/document/new",{},function(doc_info){
 						doc_id = doc_info.document_id;
 						$.get( sprintf("/api/document/%s/s3",doc_id),{},function(fields){
@@ -105,8 +106,6 @@
 		</div>
 		<div class="clear"></div>
 	</form>		
-	
-	
 	
 	<!-- TODO: Refactor 72 -->
 	<form id="uic_upload_form" action="" enctype="multipart/form-data">

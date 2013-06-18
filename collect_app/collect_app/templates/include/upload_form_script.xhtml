@@ -4,6 +4,7 @@
 			forceIframeTransport: true,
 			autoUpload:false,
 			add:function(e,data) {
+				pleaseWait();						
 				//TODO: Recfator 72				
 				$.get("/api/document/{{params.document}}/s3",{},function(fields){
 					$("input:hidden[name=AWSAccessKeyId]").val(fields.access_key_id);

@@ -1,6 +1,8 @@
 {% extends "layout/template.xhtml" %}
 
 {% load guardian_tags %}
+{% load permission_checker %}
+
 {% load verbatim %}
 
 {% block title %}Collect Project :: Documento{% endblock %}
@@ -28,6 +30,8 @@
 {% endblock %}
 
 {% block startup_script %}
+
+	{% get_public_perms doc as public_permissions %}
 	{% get_obj_perms user for doc as "document_permissions" %}
 
 	<script>
@@ -61,7 +65,7 @@
 				}
 			});
 			//Upload and Remove Button Setting Startup Logic
-			{% if "change_document" not in document_permissions %}
+			{% if "change_document" not in public_permissions and "change_document" not in document_permissions %}
 				$("input[type='checkbox']").hide();
 				$uic_upload_button.hide();	
 				$uic_remove_button.hide();

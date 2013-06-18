@@ -1,6 +1,7 @@
 {% extends "layout/template.xhtml" %}
 
 {% load guardian_tags %}
+{% load permission_checker %}
 
 {% block title %}Collect Project :: Documento{% endblock %}
 
@@ -197,12 +198,12 @@
 			{% endif %}
 			<table class="table_result ui-corner-all">
 				{% for result in page.object_list %}
+					{% get_public_perms result.object as public_permissions %}
 					{% get_obj_perms user for result.object as "document_permissions" %}
-					{% if "read_document" in document_permissions or "change_document" in document_permissions or "delete_document" in document_permissions %}
+					{% if "read_document" in public_permissions or "change_document" in public_permissions or "delete_document" in public_permissions or "read_document" in document_permissions or "change_document" in document_permissions or "delete_document" in document_permissions %}
 						<tr>
 							<td>
 								<div style="margin: 5px 5px 5px 5px;">
-		
 									<div style="float: left;">
 										<p style="font-weight: bold; display: inline">
 											{% if result.object.category %}

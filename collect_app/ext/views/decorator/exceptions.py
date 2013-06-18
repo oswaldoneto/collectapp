@@ -1,0 +1,2 @@
+class DocPermDecoratorError(Exception):
+    pass

@@ -11,7 +11,7 @@ class TextSearchForm(ModelSearchForm):
         kwords = iter(set(query.split()))
         sqs = self.searchqueryset
         for kword in kwords:
-            sqs = sqs.filter_or(content__contains=kword)
+            sqs = sqs.filter_or(content__startswith=kword)
         if self.load_all:
             sqs = sqs.load_all()
         return sqs

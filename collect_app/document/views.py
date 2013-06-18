@@ -30,6 +30,7 @@ from collect_app import settings
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_403, permission_required
 from guardian.shortcuts import get_perms
+from ext.views.decorator.docperm import document_permission_or_403
 
 def comes_from_search(request):
     if 'HTTP_REFERER' in request.META:             
@@ -54,15 +55,9 @@ class PreviewDocView(TemplateView):
         #TODO: Refactor 72
         context.update({'url_download':"https://%s/%s/document/%s" % (settings.config.get_s3_host(),settings.config.get_s3_bucket(),doc.id)})
         return context    
+    @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))    
     def dispatch(self, *args, **kwargs):
-        #TODO: Refactor move to decorator method similar permission_required_or_403 from django guardian but allow multiples permission check
-        disp = super(PreviewDocView, self).dispatch(*args, **kwargs)
-        doc = get_object_or_404(Document,id=self.kwargs['document'])
-        perms = get_perms(self.request.user, doc) 
-        if "read_document" in perms or "change_document" in perms or "delete_document" in perms: 
-            return disp
-        else:
-            return HttpResponseForbidden()
+        return super(PreviewDocView, self).dispatch(*args, **kwargs)
         
     
     
@@ -98,16 +93,9 @@ class ClassifyDocView(FormView):
         document = form.save(self.request)
         self.success_url = self.get_success_url() % document.id
         return super(ClassifyDocView,self).form_valid(form)    
+    @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
-        #TODO: Refactor move to decorator method similar permission_required_or_403 from django guardian but allow multiples permission check
-        disp = super(ClassifyDocView, self).dispatch(*args, **kwargs)
-        if 'document' in self.kwargs:
-            doc = get_object_or_404(Document,id=self.kwargs['document'])
-            perms = get_perms(self.request.user, doc) 
-            if "change_document" not in perms: 
-                return HttpResponseForbidden()
-        return disp
-    
+        return super(ClassifyDocView, self).dispatch(*args, **kwargs)
 
 class ClassifyDocDeleteView(BaseDeleteView):
     success_url = "/document/%s/preview"
@@ -147,11 +135,10 @@ class PermissionDocView(TemplateView):
         context.update({'document':get_object_or_404(Document,id=self.kwargs['document'])})
         context.update({'show_back_to_search':comes_from_search(self.request)})
         return context
-    @method_decorator(permission_required_or_403('document.change_document', (Document, 'id', 'document')))
+    @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(PermissionDocView, self).dispatch(*args, **kwargs)
     
-
 
 
 
