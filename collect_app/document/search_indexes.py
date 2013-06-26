@@ -8,7 +8,7 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True,use_template=True)
     updated = indexes.DateTimeField(model_attr='updated')
     owner = indexes.CharField(model_attr='owner__username',indexed=True)
-    category = indexes.CharField(model_attr='category__title',faceted=True)
+    category = indexes.CharField(model_attr='category__title',faceted=True,null=True)
     tags = indexes.MultiValueField()
 
     def get_model(self):
