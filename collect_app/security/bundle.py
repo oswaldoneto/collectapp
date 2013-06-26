@@ -3,6 +3,9 @@ PERMISSION_BUNDLE = {
         'add_category',
         'change_category',
         'delete_category',
+        'add_tag',
+        'change_tag',
+        'delete_tag',
     ),
     'manageacc_bundle':(
         'add_permission',

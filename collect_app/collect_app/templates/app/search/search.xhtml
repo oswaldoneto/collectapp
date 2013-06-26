@@ -2,6 +2,7 @@
 
 {% load guardian_tags %}
 {% load permission_checker %}
+{% load highlight %}
 
 {% block title %}Collect Project :: Documento{% endblock %}
 
@@ -71,52 +72,29 @@
 				},				
 			});
 			
-			
-			$uic_preview_button = $(".uic_preview_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-document-b"
-				}
-			});
-			$uic_classify_button = $(".uic_classify_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-bookmark"
-				}
-			});
-			$uic_permission_button = $(".uic_permission_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-key"
-				}
-			});
-			$uic_delete_button = $(".uic_delete_button").button({
-				text: false,
-				icons: {
-					primary: "ui-icon-trash"
-				}				
-			});						
-			
 			/** Events */
 			$uic_search_button.click(function(){
 				$("#uic_form").submit(); 											
 				return false;
 			});
+						
+			$("a[rel=uic_preview_link]").live("click",function(){
+				redirect(sprintf("/document/%s/preview",$(this).attr('href')));
+				return false;
+			});
+			  
+			$("a[rel=uic_classify_link]").live("click",function(){
+				redirect(sprintf("/document/%s/classify",$(this).attr('href')));
+				return false;
+			});
+
+			$("a[rel=uic_permission_link]").live("click",function(){
+				redirect(sprintf("/document/%s/permission",$(this).attr('href')));								
+				return false;
+			});
 			
-			$uic_preview_button.click(function() {	
-				redirect(sprintf("/document/%s/preview",this.value));
-				return false;				
-			});
-			$uic_classify_button.click(function(){
-				redirect(sprintf("/document/%s/classify",this.value));
-				return false;
-			});
-			$uic_permission_button.click(function(){
-				redirect(sprintf("/document/%s/permission",this.value));								
-				return false;
-			});
-			$uic_delete_button.click(function(){
-				var document_id = this.value;
+			$("a[rel=uic_delete_link]").live("click",function(){
+				var document_id = $(this).attr('href');								
 				$("#uic_delete_dialog").dialog({
 					title:"Deletar Documento",
 					modal:true,
@@ -139,6 +117,35 @@
 				});
 				return false;
 			});
+			
+			
+			
+			$("a[rel=uic_category_facelet_link]").live("click",function(){
+				$("#id_selected_category").val($(this).attr('href'));
+				$("#uic_form").submit(); 
+				return false;
+			});
+			
+			
+			$("#uic_clear_category_facelet_link").click(function(){
+				$("#id_selected_category").val('');
+				$("#uic_form").submit(); 
+				return false;
+			});
+			
+			$("a[rel=uic_tag_facelet_link]").live("click",function(){
+				$("#id_selected_tag").val($(this).attr('href'));
+				$("#uic_form").submit(); 
+				return false;
+			});
+			
+			
+			$("#uic_clear_tag_facelet_link").click(function(){
+				$("#id_selected_tag").val('');
+				$("#uic_form").submit(); 
+				return false;
+			});			
+
 
 		});	
 	</script>
@@ -151,15 +158,45 @@
     </ul>
 {% endblock %}
 
+{% block context_menu %}
+	<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
+		<dl class="ui-context-menu">
+			<dt>Categorias
+			{% if form.selected_category.value %}
+				<a id="uic_clear_category_facelet_link">
+				<span class="floatr"><i class="icon-reply"></i></span>
+				</a>
+			{% endif %}
+			</dt>
+			{% for cat in categories.fields.category %}
+				<dd><a rel="uic_category_facelet_link" href="{{cat.0}}">{{cat.0}} ({{cat.1}})</a></dd>
+			{% endfor %}
+		</dl>
+	</div>
+	<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
+		<dl class="ui-context-menu">
+			<dt>Tags
+			{% if form.selected_tag.value %}
+				<a id="uic_clear_tag_facelet_link">
+				<span class="floatr"><i class="icon-reply"></i></span>
+				</a>
+			{% endif %}
+			</dt>			
+			{% for tag in tags.fields.tags %}
+				<dd><a rel="uic_tag_facelet_link" href="{{tag.0}}">{{tag.0}} ({{tag.1}})</a></dd>
+			{% endfor %}
+		</dl>
+	</div>
+{% endblock %}
+
 {% block content %}
-	
-
-
 	<div class="ui-app-header">
 		<div class="ui-app-title">Pesquisar Documentos</div>
 	</div>
 	<form id="uic_form" method="get" class="ui-form ui-widget ui-widget-content ui-corner-all">
-		{% csrf_token %}		
+		{% csrf_token %}
+		{{form.selected_category}}		
+		{{form.selected_tag}}			
 		<div style="float: left">
 			<span>{{form.q}}</span>
 			<button id="uic_search_button">Consultar</button>
@@ -169,6 +206,8 @@
 		</div>
 		<div class="clear"></div>
 	</form>
+	
+	
 
 	{% if query %}
 		<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
@@ -207,30 +246,38 @@
 									<div style="float: left;">
 										<p style="font-weight: bold; display: inline">
 											{% if result.object.category %}
-												{{result.object.category.title}}
+												{% highlight result.object.category.title with query %}
 											{% else %}
 												<span class="ui-state-disabled">Sem Categoria</span>
 											{% endif %}
 										</p>
 										<p style="font-size: 0.8em; display: inline; ">por</p>
-										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.owner.username}}</p>
+										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{% highlight result.object.owner.username with query %}</p>
 										<p style="font-size: 0.8em; display: inline; ">em</p>
-										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{{result.object.updated}}</p>
+										<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{% highlight result.object.updated with query %}</p>
 									</div>
 									
 									<div style="float: right" >
 										<form id="uic_delete_form" method="post">
 											{% csrf_token %}		
-											<button class="uic_preview_button" value="{{result.object.id}}">Visualizar</button>
+											<a rel="uic_preview_link" href="{{result.object.id}}" class="margin_lr_default">
+												<b><i class="icon-eye-open icon-large"></i><span class="hide"> Visualizar</span></b>
+											</a>
 											{% if "change_document" in document_permissions %}
-												<button class="uic_classify_button" value="{{result.object.id}}">Classificar</button>
-												<button class="uic_permission_button" value="{{result.object.id}}">Permissões</button>
+												<a rel="uic_classify_link" href="{{result.object.id}}" class="margin_lr_default">
+													<b><i class="icon-archive icon-large"></i><span class="hide"> Classificar</span></b>
+												</a>												
+												<a rel="uic_permission_link" href="{{result.object.id}}" class="margin_lr_default">
+													<b><i class="icon-unlock-alt icon-large"></i><span class="hide"> Permissões</span></b>
+												</a>									
 											{% else %}	
 												<button class="uic_classify_button" value="{{result.object.id}}" disabled>Classificar</button>
 												<button class="uic_permission_button" value="{{result.object.id}}" disabled>Permissões</button>
 											{% endif %}
 											{% if "delete_document" in document_permissions %}
-												<button class="uic_delete_button" value="{{result.object.id}}">&nbsp;</button>									
+												<a rel="uic_delete_link" href="{{result.object.id}}" class="margin_lr_default">
+													<b><i class="icon-trash icon-large"></i><span class="hide"> Excluir</span></b>
+												</a>								
 											{% else %}
 												<button class="uic_delete_button" value="{{result.object.id}}" disabled>&nbsp;</button>																				
 											{% endif %}
@@ -241,9 +288,8 @@
 									<div style="float: left; margin-bottom: 5px;">
 										{% for att in result.object.all_attributes %}
 											{% if att.value %}
-											
 												<div style="margin-bottom: 3px;">							
-													<p style="display: inline; float: left;">{{att.value.value}}</p>
+													<p style="display: inline; float: left;">{% highlight att.value.value with query %}</p>
 													<div style="display: inline;">
 														<p style="font-size: .7em; font-weight: bold; display: inline;" class="ui-state-disabled">
 															<span class="ui-icon ui-icon-triangle-1-w" style="float: left;"></span>{{att.attribute.name}}
@@ -263,7 +309,7 @@
 															<span class="ui-icon ui-icon-circle-arrow-s"></span>
 															</a>														
 														</td>
-														<td>{{doc_file.name}}</td>
+														<td>{% highlight doc_file.name with query %}</td>
 														<td>{{doc_file.size}} Bytes</td>
 														<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
 													</tr>					
@@ -275,7 +321,7 @@
 									<div>
 										{% for tag in result.object.all_tags  %}
 											<div class="ui-state-active ui-corner-all" style="padding: 2px; margin-right: 3px; float: left">
-												<p style="font-size: 0.8em; font-weight: bold">{{tag.name}}</p>
+												<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
 											</div>
 										{% endfor %}
 										<div class="clear"></div>							

@@ -35,9 +35,12 @@ class Config(ConfigParser.SafeConfigParser):
     
     def get_ix_engine(self, default=None):
         return self.get('index', 'ix_engine')
-
-    def get_ix_path(self, default=None):
-        return self.get('index', 'ix_path')
+    
+    def get_ix_url(self, default=None):
+        return self.get('index', 'ix_url')
+    
+    def get_ix_name(self, default=None):
+        return self.get('index', 'ix_name')
 
     def get_s3_bucket(self, default=None):
         return self.get('s3', 's3_bucket')

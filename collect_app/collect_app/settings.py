@@ -26,11 +26,19 @@ DATABASES = {
     }
 }
 
+#HAYSTACK_CONNECTIONS = {
+#    'default': {
+#        'ENGINE': config.get_ix_engine(),
+#        'PATH': config.get_ix_path(),
+#        'INCLUDE_SPELLING':True, 
+#    },
+#}
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': config.get_ix_engine(),
-        'PATH': config.get_ix_path(),
-        'INCLUDE_SPELLING':True, 
+        'URL': config.get_ix_url(),
+        'INDEX_NAME':config.get_ix_name(), 
     },
 }
 

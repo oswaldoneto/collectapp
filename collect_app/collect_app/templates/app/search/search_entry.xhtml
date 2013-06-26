@@ -1,0 +1,88 @@
+{% extends "layout/template.xhtml" %}
+
+{% block import_style %}
+<style type="text/css">
+	#search_wrapper {
+		height: 30px;
+		width: 100%;
+		background-color: #FFFFFF;
+		border: 1px solid #dfd9c3;
+	}
+	
+	#search_wrapper i {
+		margin-top: 7px;
+		margin-right: 12px;
+	}
+	
+	#search_wrapper input {
+		color: #2e2e2e;
+		border: none;
+		float: left;
+		width: 95%;
+		height: 100%;
+		text-indent: 1em;
+		float: left;
+	}
+	.facet_search {
+		margin: auto auto;	
+		width: 500px;
+		margin-top: 20px;
+	}
+	.facet_search div {
+		width: 49%;
+	}
+	
+</style>
+{% endblock %}
+
+{% block startup_script %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		/** Settings */						
+		/** Events */
+		$("#q").focus(function(){
+			if ($(this).val() == '') {
+				$(this).attr( 'placeholder','O que você está procurando?');
+			}
+		}).blur(function(){
+			if ($(this).val() == '') {
+				$(this).attr( 'placeholder','');
+			}			
+		});
+		
+		
+	});	
+</script>
+{% endblock %}
+
+{% block trail %}
+<ul>
+    <li><a href="#">Home</a></li>
+    <li>Pesquisa</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="ui-app-header">
+	<div class="ui-app-title">Pesquisar</div>
+</div>
+
+<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+	<div id="search_wrapper">
+		<input id="q" name="q" type="text" placeholder="" autocomplete="off">
+		<i class="icon-search icon-large floatr"></i>
+	</div>
+</form>	
+
+<div class="facet_search">
+	<div class="floatl ui-widget ui-widget-content ui-corner-all">
+		{{facets}}
+	</div>
+	<div class="floatr ui-widget ui-widget-content ui-corner-all">
+		Bla
+	</div>
+	<div class="clear"></div>
+</div>
+
+{% endblock %}

@@ -6,7 +6,6 @@
 			margin: 0;
 			padding: 0
 		}
-		
 		.demos-nav dt,
 		.demos-nav h4 {
 			color: #459e00;
@@ -17,7 +16,6 @@
 			line-height: 1.2em;
 			border-bottom: 1px solid #dfd9c3;
 		}
-		
 		.demos-nav dd a,
 		.demos-nav li a {
 			border-bottom: 1px solid #dfd9c3;
@@ -29,7 +27,6 @@
 			margin:2px 0;
 			height:13px;
 		}
-		
 		.demos-nav dd a:hover,
 		.demos-nav dd a:focus,
 		.demos-nav dd a:hover,
@@ -43,6 +40,55 @@
 			color:#ffffff;
 			-moz-border-radius: 5px; -webkit-border-radius: 5px;
 		}		
+		
+		
+		
+		
+		
+		
+		
+		
+		.ui-context-menu, .ui-context-menu dt, .ui-context-menu dd, .ui-context-menu ul, .ui-context-menu li {
+			margin: 0;
+			padding: 0
+		}
+		.ui-context-menu dt,
+		.ui-context-menu h4 {
+		    font-weight: bold;
+			margin-bottom: 0;
+			margin-top: 2px;
+			padding-left: 8px;
+			padding-bottom:2px;
+			line-height: 1.2em;
+			padding-right: 8px;			
+
+		}
+		.ui-context-menu dd a,
+		.ui-context-menu li a {
+
+			display:block;
+			padding: 4px 3px 4px 8px;
+			font-size: 90%;
+			text-decoration: none;
+			color: #312e25 ;
+			margin:2px 0;
+			height:13px;
+		}
+		.ui-context-menu dd a:hover,
+		.ui-context-menu dd a:focus,
+		.ui-context-menu dd a:hover,
+		.ui-context-menu dd a:focus {
+			background: #ffffff;
+			color:#000;
+			-moz-border-radius: 5px; -webkit-border-radius: 5px;
+		}
+		 .ui-context-menu dd a.selected {
+			background: #555;
+			color:#ffffff;
+			-moz-border-radius: 5px; -webkit-border-radius: 5px;
+		}			
+		
+		
 	</style>
 	
 	<script type="text/javascript">
@@ -80,7 +126,7 @@
 				<div style="float: left;">
 					<h1>Collect</h1>
 				</div>
-				<div id="uic_username_button" style="float: right; margin-top: 25px; font-size: .8em; cursor: pointer;">
+				<div id="uic_username_button" style="float: right; margin-top: 15px; font-size: .8em; cursor: pointer;">
 					<span class="floatl">{% if user.is_authenticated %}{{user.username}}{% endif %}</span>
 					<span class="ui-icon ui-icon-triangle-1-s floatr"></span>
 				    <ul style="position: absolute; width: 80px">
@@ -95,6 +141,7 @@
 			<div id="content">
 				<div id="rightpane">
 					{% include "layout/menu.xhtml" %}
+					{% block context_menu %}{% endblock %}
 				</div>
 				<div id="leftpane">
 					{% block content %}{% endblock %}	
