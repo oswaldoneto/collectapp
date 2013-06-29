@@ -1,0 +1,44 @@
+#search_wrapper {
+	height: 30px;
+	width: 100%;
+	background-color: #FFFFFF;
+	border: 1px solid #dfd9c3;
+}
+#search_wrapper i {
+	margin-top: 7px;
+	margin-right: 12px;
+}
+#search_wrapper input {
+	color: #2e2e2e;
+	border: none;
+	float: left;
+	width: 95%;
+	height: 100%;
+	text-indent: 1em;
+	float: left;
+	font-weight: bold;
+}
+.facet_search {
+	margin: auto auto;	
+	width: 500px;
+	margin-top: 20px;
+}
+.facet_search div {
+	width: 49%;
+}
+
+.ui-paginator {
+	width: 100%; 
+	text-align: center;
+	margin-bottom: 5px;
+}
+.ui-paginator a {
+	text-decoration: none;
+}
+
+.row1 {
+	background: #fff;	
+}
+.row2 {
+	background-color: #FAFAFA;
+}
