@@ -3,6 +3,7 @@
 {% load guardian_tags %}
 {% load permission_checker %}
 {% load highlight %}
+{% load kilobytefy %}
 
 {% block title %}Collect Project :: Documento{% endblock %}
 
@@ -131,34 +132,38 @@
 
 {% block context_menu %}
 	{% if query %}
-		<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
-			<dl class="ui-context-menu">
-				<dt>Categorias
-				{% if form.selected_category.value %}
-					<a id="uic_clear_category_facelet_link">
-					<span class="floatr"><i class="icon-reply"></i></span>
-					</a>
-				{% endif %}
-				</dt>
-				{% for cat in categories.fields.category %}
-					<dd><a rel="uic_category_facelet_link" href="{{cat.0}}">{{cat.0}} ({{cat.1}})</a></dd>
-				{% endfor %}
-			</dl>
-		</div>
-		<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
-			<dl class="ui-context-menu">
-				<dt>Tags
-				{% if form.selected_tag.value %}
-					<a id="uic_clear_tag_facelet_link">
-					<span class="floatr"><i class="icon-reply"></i></span>
-					</a>
-				{% endif %}
-				</dt>			
-				{% for tag in tags.fields.tags %}
-					<dd><a rel="uic_tag_facelet_link" href="{{tag.0}}">{{tag.0}} ({{tag.1}})</a></dd>
-				{% endfor %}
-			</dl>
-		</div>
+		{% if categories %}
+			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
+				<dl class="ui-context-menu">
+					<dt>Categorias
+					{% if form.selected_category.value %}
+						<a id="uic_clear_category_facelet_link">
+						<span class="floatr"><i class="icon-reply"></i></span>
+						</a>
+					{% endif %}
+					</dt>
+					{% for cat in categories.fields.category %}
+						<dd><a rel="uic_category_facelet_link" href="{{cat.0}}">{{cat.0}} ({{cat.1}})</a></dd>
+					{% endfor %}
+				</dl>
+			</div>
+		{% endif %}
+		{% if tags %}
+			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
+				<dl class="ui-context-menu">
+					<dt>Tags
+					{% if form.selected_tag.value %}
+						<a id="uic_clear_tag_facelet_link">
+						<span class="floatr"><i class="icon-reply"></i></span>
+						</a>
+					{% endif %}
+					</dt>			
+					{% for tag in tags.fields.tags %}
+						<dd><a rel="uic_tag_facelet_link" href="{{tag.0}}">{{tag.0}} ({{tag.1}})</a></dd>
+					{% endfor %}
+				</dl>
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}
 
@@ -295,7 +300,7 @@
 														</a>														
 													</td>
 													<td>{% highlight doc_file.name with query %}</td>
-													<td>{{doc_file.size}} Bytes</td>
+													<td>{{doc_file.size|kilobytefy}}</td>
 													<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
 												</tr>					
 											{% endfor %}

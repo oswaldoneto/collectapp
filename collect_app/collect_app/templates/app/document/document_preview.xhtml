@@ -2,6 +2,7 @@
 
 {% load guardian_tags %}
 {% load permission_checker %}
+{% load kilobytefy %}
 
 {% load verbatim %}
 
@@ -235,7 +236,7 @@
 							</a>														
 						</td>
 						<td style="text-align: left">{{doc_file.name}}</td>
-						<td style="text-align: left">{{doc_file.size}} Bytes</td>
+						<td style="text-align: left">{{doc_file.size|kilobytefy}} Bytes</td>
 						<td style="text-align: left">{{doc_file.updated|date:"d/m/Y "}}</td>				
 					</tr>
 				{% endfor %}			

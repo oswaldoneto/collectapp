@@ -22,13 +22,15 @@ class DocTagView(JSONResponseMixin, View):
         doc = Document.objects.get(id=document)
         tag = Tag.objects.get(id=tag)
         doc.tags.add(tag)
-        doc.save()
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(None)
     def delete(self,request,document,tag):
         doc = Document.objects.get(id=document)
         tag = Tag.objects.get(id=tag)
         doc.tags.remove(tag)
-        doc.save()
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(None)
     
 class DocTagListView(JSONResponseMixin, View):
@@ -60,6 +62,7 @@ class DocAttachView(JSONResponseMixin, View):
         #TODO: Refactor
         # Refresh updated field and force reindex for search engine. 
         # Maybe there is a way to handle with Event/listener pattern. Could be?   
+        doc.last_update_user = request.user        
         doc.save()
         return self.render_to_response(None)
 
@@ -76,6 +79,8 @@ class DocDeattachView(JSONResponseMixin, View):
             k.delete()
             #Deleta do banco de dados
             doc_attach.delete()
+            doc.last_update_user = request.user
+            doc.save()  
         return self.render_to_response(None)
     
 
@@ -115,11 +120,15 @@ class DocUserPermissionView(JSONResponseMixin, View):
         user = User.objects.get(id=user)
         doc = Document.objects.get(id=document)
         assign(permission,user,doc)
+        doc.last_update_user = request.user
+        doc.save()          
         return self.render_to_response(get_perms(user,doc))
     def delete(self,request,document,permission,user):
         usr = User.objects.get(id=user)
         doc = Document.objects.get(id=document)
         remove_perm(permission,usr,doc)
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(get_perms(usr,doc))
     @method_decorator(document_permission_or_403(('change_document',),'document'))    
     def dispatch(self, *args, **kwargs):
@@ -130,11 +139,15 @@ class DocGroupPermissionView(JSONResponseMixin, View):
         grp = Group.objects.get(id=group)
         doc = Document.objects.get(id=document)
         assign(permission,grp,doc)
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(get_perms(grp,doc))
     def delete(self,request,document,permission,group):
         grp = Group.objects.get(id=group)
         doc = Document.objects.get(id=document)
         remove_perm(permission,grp,doc)
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(get_perms(grp,doc))
     @method_decorator(document_permission_or_403(('change_document',),'document'))        
     def dispatch(self, *args, **kwargs):
@@ -156,12 +169,16 @@ class DocPublicPermissionView(JSONResponseMixin, View):
         p = Permission.objects.filter(codename=permission)
         pp = DocumentPublicPermission(document=doc,permission=p[0])
         pp.save()
+        doc.last_update_user = request.user
+        doc.save()   
         return self.render_to_response(None)
     def delete(self,request,document,permission):
         doc = Document.objects.get(id=document)
         p = Permission.objects.filter(codename=permission)
         pp = DocumentPublicPermission.objects.filter(document=doc,permission=p[0])
         pp.delete()
+        doc.last_update_user = request.user
+        doc.save()  
         return self.render_to_response(None)
     @method_decorator(document_permission_or_403(('change_document',),'document'))    
     def dispatch(self, *args, **kwargs):

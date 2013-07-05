@@ -12,7 +12,7 @@
 				"bSort":true,
 				"bInfo":true,
 				"bAutoWidth":false,
-				"aoColumns": [{ "bSortable": false },null,null,{ "bSortable": false }],
+				"aoColumns": [{ "bSortable": false },null,null],
 				"aaSorting": [[ 1, "asc" ]],
 				"oLanguage": default_oLanguage				
 			});
@@ -74,7 +74,6 @@
 						<th style="width:1%"></th>
 						<th style="width:40%">Categoria</th>
 						<th style="width:43%">Descrição</th>								
-						<th style="width:1%">Ativa</th>
 					</tr>
 				</thead>						
 				<tbody>
@@ -83,17 +82,6 @@
 							<td><input type="radio" name="category_selected" value="{{category.id}}"/></td>
 							<td>{{category.title}}</td>
 							<td>{{category.description}}</td>
-							<td>
-								<div>
-									{% if category.active %}
-										<div 	class='ui-icon ui-icon-check' 
-												style='margin-left: auto; margin-right: auto'>																				
-									{% else %}
-										<div 	class='ui-icon ui-icon-close' 
-												style='margin-left: auto; margin-right: auto'>																				
-									{% endif %}
-								</div>									
-							</td>									
 						</tr>
 					{% endfor %}					
 				</tbody>					

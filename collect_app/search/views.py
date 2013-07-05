@@ -10,12 +10,15 @@ from haystack.query import SearchQuerySet
 
 class TextSearchView(SearchView):
     def extra_context(self):
-        #Facet     
-        sqs = SearchQuerySet()
-        for item in self.results:
-            sqs = sqs.filter(id=item.pk)
-        categories = sqs.facet("category").facet_counts()    
-        tags = sqs.facet("tags").facet_counts()  
+        #Facet  
+        categories = None
+        tags = None   
+        if self.results:
+            sqs = SearchQuerySet()
+            for item in self.results:
+                sqs = sqs.filter(id=item.pk)
+                categories = sqs.facet("category").facet_counts()    
+                tags = sqs.facet("tags").facet_counts()  
         #TODO: Refactor 72 eliminar o url_download
         return {
             'categories':categories,  

@@ -23,7 +23,7 @@ class DocumentClassifyMetaclass(type):
     FIELD_NAME_PREFIX = "field"
     
     def __call__(self, *args, **kwargs):        
-        form_fields = [(self.CATEGORY_FIELD_NAME,CategoryModelChoiceField(queryset=Category.objects.all(),empty_label=""))]
+        form_fields = [(self.CATEGORY_FIELD_NAME,CategoryModelChoiceField(queryset=Category.objects.all().order_by("title"),empty_label=""))]
         initial = kwargs['initial']
         if self.DOCUMENT_FIELD_NAME in initial and self.CATEGORY_FIELD_NAME in initial:
             doc = get_object_or_404(Document,pk=initial[self.DOCUMENT_FIELD_NAME])
@@ -37,7 +37,7 @@ class DocumentClassifyMetaclass(type):
         return  super(DocumentClassifyMetaclass,self).__call__(*args, **kwargs)
     def __form_fields_from_category(self,category_id):
         cat = Category.objects.get(id=category_id)
-        attrs = Attribute.objects.filter(category=cat).exclude(active=False)
+        attrs = Attribute.objects.filter(category=cat).order_by('order')
         form_fields = []
         for attr in attrs:
             form_fields.append(self.__field(attr))
@@ -91,5 +91,6 @@ class DocumentClassifyForm(BaseForm):
         for doc_attr in doc_attrs:
             doc_attr.document = doc
             doc_attr.save()
+        doc.last_update_user = request.user
         doc.save()
         return doc

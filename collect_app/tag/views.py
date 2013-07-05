@@ -3,6 +3,7 @@ from tag.forms import TagForm
 from tag.models import Tag
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
+from document.search_indexes import DocumentIndex
 
 class TagCreateView(CreateView):    
     form_class = TagForm
@@ -32,6 +33,12 @@ class TagEditView(UpdateView):
         context = super(TagEditView,self).get_context_data(**kwargs)
         context['tag_list'] = Tag.objects.all()
         return context
+    
+    def form_valid(self, form):
+        response = super(TagEditView,self).form_valid(form) 
+        #TODO: Refactor #124 and #125 
+        DocumentIndex().update()        
+        return response  
     @method_decorator(login_required)
     @method_decorator(permission_required("tag.change_tag"))    
     def dispatch(self, request, *args, **kwargs):

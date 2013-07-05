@@ -1,15 +1,12 @@
 from itertools import chain
-
 from django.db import models
 from django.contrib.auth.models import User, Permission
-
+from django.dispatch.dispatcher import receiver
+from django.db.models.signals import post_save
+from guardian.shortcuts import assign
 from tag.models import Tag
 from ext.db.models.query import InheritanceQuerySet
 from category.models import Category, Attribute
-from django.contrib import auth
-from django.dispatch.dispatcher import receiver
-from django.db.models.signals import post_save, post_init, pre_init
-from guardian.shortcuts import assign
 
 class Document(models.Model):
 	

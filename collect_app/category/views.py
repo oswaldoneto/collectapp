@@ -1,6 +1,6 @@
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -15,17 +15,21 @@ from tag.models import Tag
 from django.contrib import messages
 from document.models import Document, DocumentAttribute
 from django.views.generic.list import ListView
+from document.search_indexes import DocumentIndex
 
 
 class AttributeOrderView(ListView):
 	model=Attribute
-	queryset=Attribute.objects.all().order_by('order')
 	template_name="app/category/attribute_order_dialog.xhtml"	
 	def get_context_data(self,**kwargs):
 		context = super(AttributeOrderView,self).get_context_data(**kwargs)
 		context.update({'params': self.kwargs})
 		return context
-
+	def get_queryset(self):
+		cat = get_object_or_404(Category,pk=self.kwargs['category'])
+		self.queryset = Attribute.objects.filter(category=cat).order_by('order')
+		return super(AttributeOrderView,self).get_queryset()
+		
 
 
 
@@ -81,7 +85,9 @@ def edit(request, category):
 	if request.method == 'POST':
 		form = CategoryForm(request.POST,instance=cat)
 		if form.is_valid():
-			form.save()
+			form.save()			
+			#TODO: Refactor #124 and #125
+			DocumentIndex().update()
 			return HttpResponseRedirect('/category/%s/edit' % cat.id)							
 	else:
 		form = CategoryForm(instance=cat)
