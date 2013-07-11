@@ -15,6 +15,7 @@
 				   noneSelectedText: "Select an Option",
 				   selectedList: 1
 				});				
+				
 				{% if edit_mode %}
 					$uic_type_select.multiselect("disable");
 				{% endif %}
@@ -22,6 +23,7 @@
 				/* Events */
 				$uic_save_button.click(function() {					 
 					{% if edit_mode %}
+						$uic_type_select.multiselect("enable");
 						var catId = {{category.id}};
 						var attId = {{attribute.id}};
 						var url = sprintf('/category/%s/attribute/%s/edit',catId,attId);

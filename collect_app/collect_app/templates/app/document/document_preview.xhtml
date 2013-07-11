@@ -53,18 +53,13 @@
 					primary: "ui-icon-circle-arrow-n"
 				}
 			});
-			$uic_remove_button = $("#uic_remove_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-trash"
-				}
-			});
 			$uic_back_button = $("#uic_back_button").button({
 				text: true,
 				icons: {
 					primary: "ui-icon-carat-1-w"
 				}
 			});
+			$uic_remove_button = $("#uic_remove_button");
 			//Upload and Remove Button Setting Startup Logic
 			{% if "change_document" not in public_permissions and "change_document" not in document_permissions %}
 				$("input[type='checkbox']").hide();
@@ -75,12 +70,7 @@
 			{% endif %}
 									
 			/* Events */
-			$uic_upload_button.click(function(){
-				$("#file").trigger("click");
-				return false;
-			});
-			
-			$uic_remove_button.click(function(){
+			$uic_remove_button.click(function(e){				
 				var delete_ids = [];
 				$("input[type='checkbox']:checked").each(function() {
 					delete_ids.push($(this).val());	  
@@ -201,20 +191,23 @@
 	</script>		
 
 	
-	<!-- TODO: Refactor 72 -->
-	{% include "include/upload_form.xhtml" %}
-		
+	<!-- TODO: Refactor 72 -->	
 	<div class="ui-app-header">
 		<div class="ui-app-title">Documento</div>
 		<div class="ui-app-command">
-			<div class="floatr">
-				<button id="uic_remove_button">Remover</button>	
+			<div class="floatr margin_top_default">
+				<a id="uic_remove_button">				
+					<span class="margin_lr">
+						<i class="icon-trash icon-large"></i> <b>Remover</b>
+					</span>
+				</a>					
 			</div>
-			<div class="floatr">
-				<button id="uic_upload_button">Anexar</button>
+			<div class="floatr margin_top_default">
+				{% include "include/upload_form.xhtml" %}
 			</div>
 		</div>
 	</div>
+	
 	<table id="uic_files" class="simple_table">
 		<thead class="ui-widget-header">
 			<th style="width: 5px"></th>
@@ -232,7 +225,7 @@
 						</td>
 						<td>
 							<a href="{{url_download}}/{{doc_file.name}}">
-							<span class="ui-icon ui-icon-circle-arrow-s"></span>
+								<i class="icon-cloud-download icon-large"></i>
 							</a>														
 						</td>
 						<td style="text-align: left">{{doc_file.name}}</td>

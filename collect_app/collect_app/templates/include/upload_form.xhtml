@@ -1,3 +1,25 @@
+
+<style>
+	
+	.file-input-wrapper {
+	    overflow: hidden;
+	    position: relative;
+	}
+	.file-input-wrapper > input[type="file"] {
+	    font-size: 200px;
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    opacity: 0;
+	}
+	.file-input-wrapper > .btn-file-input {
+	    display: inline-block;
+	}
+	.file-input-wrapper:hover > .btn-file-input {
+	    background-color: #aaa;
+	}
+</style>
+
 <form id="uic_upload_form" action="" enctype="multipart/form-data">
 	<input type="hidden" name="AWSAccessKeyId" value="" />
 	<input type="hidden" name="policy" value="" />
@@ -5,7 +27,12 @@
 	<input type="hidden" name="acl" />
 	<input type="hidden" name="key" />
 	<input type="hidden" name="success_action_status" />
-	<span style="display: none"> 
-		<input type="file" name="file" id="file"/>
-	</span>
+	<div class="file-input-wrapper">
+		<div id="btn-file-input">
+			<span class="margin_lr_double">
+				<i class="icon-cloud-upload  icon-large"></i> <b>Upload</b>
+			</span>
+		</div>		
+	  	<input type="file" name="file" id="file"/>
+	</div>
 </form>

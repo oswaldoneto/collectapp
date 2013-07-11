@@ -3,7 +3,6 @@ $(document).ready(function() {
 	var document_id = $(document).data("document_id");	
 	fnRefreshUserContainer(document_id);
 	fnRefreshGroupContainer(document_id);
-	
 });
 function fnRefreshUserContainer(document_id) {
 	jQuery('#uic_users_container div').html(''); //clear div element
