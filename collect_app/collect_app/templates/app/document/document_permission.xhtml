@@ -10,6 +10,7 @@
 		$(document).data("users",'{{users|jsonify}}');
 		$(document).data("groups",'{{groups|jsonify}}');
 	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_permission.js"></script>
 {% endblock %}
 
@@ -19,6 +20,10 @@
         <li>Documento</li>
         <li>Permissões</li>
     </ul>
+{% endblock %}
+
+{% block context_menu %}
+	{% include "app/document/document_context_menu.xhtml" %}
 {% endblock %}
 
 {% block content %}
@@ -192,10 +197,13 @@
 		</div>
 	</div>	
 
+	<!-- TODO: REMOVE -->
 	{% if show_back_to_search %}
+		<!--
 		<div class="floatr margin_top_default">
 			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
 		</div>
+		-->
 	{% endif %}
 			
 {% endblock %}

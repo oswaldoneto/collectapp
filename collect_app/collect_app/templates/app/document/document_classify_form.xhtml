@@ -16,14 +16,15 @@
 {% endblock %}
 
 {% block import_script %}
+	<script>
+		$(document).data("document_id",'{{params.document}}') 
+	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/classify_form.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/tag/tag.js"></script>
 {% endblock %}
 
 {% block startup_script %}
-
-	{% include "include/upload_form_script.xhtml" %}	
-
 	<script type="text/javascript">
 		$(document).ready(function() {
 						
@@ -238,6 +239,9 @@
     </ul>
 {% endblock %}
 
+{% block context_menu %}
+	{% include "app/document/document_context_menu.xhtml" %}
+{% endblock %}
 
 {% block content %}
 	
@@ -253,15 +257,7 @@
 					<button id="uic_unclassify_button">Deletar Classificação</button>
 				</div>
 				<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
-				<div class="floatr">
-					<button id="uic_upload_button">Anexar</button>
-				</div>				
 			{% endif %}
-			{% if params.document %}
-				<div class="floatr">
-					{% include "include/upload_form.xhtml" %}	
-				</div>
-			{% endif %}				
 		</div>
 	</div>
 	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
@@ -337,11 +333,13 @@
 		</div>		
 	{% endif %}	
 	
-
+	<!-- TODO: Remove -->
 	{% if show_back_to_search %}
+		<!--
 		<div class="floatr margin_top_default">
 			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
 		</div>
+		-->
 	{% endif %}
 			
 {% endblock %}

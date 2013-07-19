@@ -1,0 +1,36 @@
+<form id="uic_delete_form" method="post">
+	{% csrf_token %}
+	<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>		
+</form>
+
+<div class="ui-widget ui-widget-content ui-corner-all margin_top_default">
+	<dl class="ui-context-menu">
+		<dt>Documento</dt>
+		<dd><span>
+			<a>
+			{% include "app/document/upload_form.xhtml" %}
+			</a>		
+		</span></dd>
+		<dd><span>
+			<a id="uic_dcm-preview_link" href="">
+				<i class="icon-th-list icon"></i> Visualizar
+			</a>
+		</span></dd>	
+		<dd><span>
+			<a id="uic_dcm-classify_link" href="">
+				<i class="icon-archive icon"></i> Classificação
+			</a>
+		</span></dd>	
+		<dd><span>
+			<a id="uic_dcm-permission_link" href="">
+				<i class="icon-unlock-alt icon"></i> Permissões
+			</a>
+		</span></dd>	
+		<dd><span>
+			<a id="uic_dcm-delete_link" href="">
+				<i class="icon-trash icon"></i> Deletar
+			</a>
+		</span></dd>	
+	</dl>
+</div>
+

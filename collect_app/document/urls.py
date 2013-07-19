@@ -16,9 +16,6 @@ from document.views import ClassifyDocView, PreviewDocView,\
 urlpatterns = patterns('',
                        
     #Class Based Generic Views    
-    (r'^document/new$', login_required(TemplateView.as_view(
-        template_name="app/document/document_new.xhtml"
-    ))),                             
     (r'^document/new/classify$',login_required(FormView.as_view(
         template_name="app/document/document_classify_form.xhtml",
         form_class = DocumentClassifyForm        

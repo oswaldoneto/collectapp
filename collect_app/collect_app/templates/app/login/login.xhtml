@@ -13,21 +13,19 @@
 			{% csrf_token %}
 			<fieldset>
 				<input type="hidden" name="next" value="{{next}}">
-				<legend>Seja bem-vindo</legend>
-				<p>Identifique-se para iniciar</p>
 				<br>
 				{% if form.errors %}
 					<div class="ui-state-error ui-corner-all clear">
-						<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>O usuário ou senha incorreto.</p>
+						<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>Usuário ou senha incorreto.</p>
 					</div>
 				{% endif %}				
-				<label for="id_username">Usuario:</label>
+				<label for="id_username">Usuario</label>
 				<input id="id_username" type="text" name="username" maxlength="30" class="textfield"/>
 				<div class="error">{% if form.errors  %}{{form.username.errors}}{% endif  %}</div>				
-				<label for="id_password">Senha:</label>
+				<label for="id_password">Senha</label>
 				<input type="password" name="password" id="id_password" class="textfield" />		
 				<div class="error">{% if form.errors  %}{{form.password.errors}}{% endif  %}</div>				
-				<input type="submit" value="Login" id="uic_login" class="button" />
+				<input type="submit" value="Conectar" id="uic_login" class="button" />
 			</fieldset>
 		</form>
 	</div>

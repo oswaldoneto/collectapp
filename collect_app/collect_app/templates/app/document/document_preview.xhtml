@@ -38,60 +38,29 @@
 	<script>
 		$(document).data("document_id",'{{params.document}}') 
 	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_preview.js"></script>
-		
-	<!-- TODO: Refactor 72 -->
-	{% include "include/upload_form_script.xhtml" %}		
-
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
 			/* Setting*/
-			$uic_upload_button = $("#uic_upload_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-circle-arrow-n"
-				}
-			});
-			$uic_back_button = $("#uic_back_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-carat-1-w"
-				}
-			});
-			$uic_remove_button = $("#uic_remove_button");
 			//Upload and Remove Button Setting Startup Logic
 			{% if "change_document" not in public_permissions and "change_document" not in document_permissions %}
-				$("input[type='checkbox']").hide();
-				$uic_upload_button.hide();	
-				$uic_remove_button.hide();
 				$("#uic_classify_link").hide();				
 				$("#uic_secure_link").hide();				
-			{% endif %}
-									
+			{% endif %}				
 			/* Events */
-			$uic_remove_button.click(function(e){				
-				var delete_ids = [];
-				$("input[type='checkbox']:checked").each(function() {
-					delete_ids.push($(this).val());	  
-				});
-				if (delete_ids.length > 0) {
-					$.ajaxSetup({ traditional: true });
-					$.post("/api/document/{{params.document}}/deattach",{
-						'ids': delete_ids
-					},function(data){
-						redirect("/document/{{params.document}}/preview");													
-					});
-				}
+			$("a[rel=uic_delete_file_link]").click(function(){
+				$.ajaxSetup({ traditional: true });
+				$.post("/api/document/{{params.document}}/deattach",{
+					'ids': [$(this).attr('href')]
+				},function(data){
+					redirect("/document/{{params.document}}/preview");													
+				});				
+				return false;
 			});
-			$uic_back_button.click(function(){
-				history.back(-1);
-			});
-			
 			$("#uic_classify_link").click(function(){
 				redirect(sprintf("/document/%s/classify","{{params.document}}"));
 			});
-			
 			$("#uic_secure_link").click(function(){
 				redirect(sprintf("/document/%s/permission","{{params.document}}"));
 			});
@@ -103,7 +72,12 @@
     <ul>
         <li><a href="#">Home</a></li>
         <li>Documento</li>
+        <li>Visualizar</li>
     </ul>
+{% endblock %}
+
+{% block context_menu %}
+	{% include "app/document/document_context_menu.xhtml" %}
 {% endblock %}
 
 {% block content %}
@@ -193,36 +167,21 @@
 	
 	<!-- TODO: Refactor 72 -->	
 	<div class="ui-app-header">
-		<div class="ui-app-title">Documento</div>
-		<div class="ui-app-command">
-			<div class="floatr margin_top_default">
-				<a id="uic_remove_button">				
-					<span class="margin_lr">
-						<i class="icon-trash icon-large"></i> <b>Remover</b>
-					</span>
-				</a>					
-			</div>
-			<div class="floatr margin_top_default">
-				{% include "include/upload_form.xhtml" %}
-			</div>
-		</div>
+		<div class="ui-app-title">Visualizar Documento</div>
 	</div>
 	
 	<table id="uic_files" class="simple_table">
 		<thead class="ui-widget-header">
 			<th style="width: 5px"></th>
-			<th style="width: 5px"></th>
 			<th style="text-align: left">Título</th>
 			<th style="text-align: left; width: 100px">Tamanho</th>
 			<th style="text-align: left; width: 200px">Modificado</th>	
+			<th style="width: 5px"></th>
 		</thead>
 		<tbody class="ui-widget-content">
 			{% if not document %}
 				{% for doc_file in attachment_list %}
 					<tr>
-						<td>
-							<input type="checkbox" name="uic_attach_checkbox" value="{{doc_file.id}}">
-						</td>
 						<td>
 							<a href="{{url_download}}/{{doc_file.name}}">
 								<i class="icon-cloud-download icon-large"></i>
@@ -231,6 +190,11 @@
 						<td style="text-align: left">{{doc_file.name}}</td>
 						<td style="text-align: left">{{doc_file.size|kilobytefy}} Bytes</td>
 						<td style="text-align: left">{{doc_file.updated|date:"d/m/Y "}}</td>				
+						<td>
+							<a rel="uic_delete_file_link" href="{{doc_file.id}}">
+								<i class="icon-trash icon-large"></i>
+							</a>
+						</td>
 					</tr>
 				{% endfor %}			
 			{% else %}
@@ -264,7 +228,6 @@
 						</tbody>
 					</table>
 				</div>
-				
 			</div>
 			<div style="float: right; width: 280px;">
 				<div style="font-weight: bold; margin-bottom: 5px;">Tags</div>
@@ -276,7 +239,7 @@
 			</div>
 			<div class="clear"></div>
 		{% else %}
-			<div class="ui-state-disabled">Este documento ainda não foi classificado.</div>		
+			<div class="ui-state-disabled">Sem classificação</div>		
 		{% endif %}
 	</div>
 	
@@ -314,15 +277,15 @@
 		<div class="clear"></div>
 	</div>	
 	
-	
-	
-	
-	
-	
+	<!-- TODO: REMOVE -->
 	{% if show_back_to_search %}
-		<div class="floatr margin_top_default">
-			<button id="uic_back_button">Voltar para Resultado da Busca</button>		
-		</div>
+		<!--
+		<a>
+		<span id="uic_back_button" class="floatl margin_top_double">
+			<i class="icon-arrow-left icon-large"></i> <b>Voltar</b>
+		</span>
+		</a>
+		-->
 	{% endif %}
 		
 {% endblock %}
