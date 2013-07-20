@@ -6,7 +6,7 @@
 {% block startup_script %}
 	<script>
 		//TODO: SECURITY ISSUE USER DATA
-		$(document).data("document_id",'{{document.id}}') 
+		$(document).data("document_id",'{{doc.id}}') 
 		$(document).data("users",'{{users|jsonify}}');
 		$(document).data("groups",'{{groups|jsonify}}');
 	</script>

@@ -34,9 +34,9 @@
 
 	{% get_public_perms doc as public_permissions %}
 	{% get_obj_perms user for doc as "document_permissions" %}
-
+		
 	<script>
-		$(document).data("document_id",'{{params.document}}') 
+		$(document).data("document_id",'{{params.document}}')
 	</script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_preview.js"></script>

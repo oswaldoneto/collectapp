@@ -278,7 +278,6 @@ table.simple_table thead th {
 }
 .ui-context-menu dd a,
 .ui-context-menu li a {
-
 	display:block;
 	padding: 4px 3px 4px 8px;
 	font-size: 90%;
@@ -287,6 +286,8 @@ table.simple_table thead th {
 	margin:2px 0;
 	height:13px;
 }
+
+
 .ui-context-menu dd a:hover,
 .ui-context-menu dd a:focus,
 .ui-context-menu dd a:hover,

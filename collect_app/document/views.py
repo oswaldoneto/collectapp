@@ -88,6 +88,7 @@ class ClassifyDocView(FormView):
             doc = get_object_or_404(Document,id=self.kwargs['document'])
             context.update({'show_tags':True if doc.category else False})
             context.update({'new_attributes':doc.all_new_attributes()})
+            context.update({'doc':doc})            
         return context
     def form_valid(self, form):
         document = form.save(self.request)
@@ -132,7 +133,8 @@ class PermissionDocView(TemplateView):
         context = super(PermissionDocView,self).get_context_data(**kwargs)
         context.update({'users':User.objects.all()})
         context.update({'groups':Group.objects.all()})
-        context.update({'document':get_object_or_404(Document,id=self.kwargs['document'])})
+        #context.update({'document':get_object_or_404(Document,id=self.kwargs['document'])})
+        context.update({'doc':get_object_or_404(Document,id=self.kwargs['document'])})
         context.update({'show_back_to_search':comes_from_search(self.request)})
         return context
     @method_decorator(document_permission_or_403(('change_document',),'document'))

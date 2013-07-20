@@ -1,4 +1,8 @@
 $(document).ready(function(){	
+	$("#uic_newdoc_link").click(function(){
+		redirect("/document/new/classify");
+		return false;
+	});
 	$("#uic_search_link").click(function(){
 		redirect("/search");
 		return false;

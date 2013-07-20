@@ -1,11 +1,11 @@
 $(document).ready(function(){	
 	
-    var document_id = $(document).data("document_id");				
-
+    var document_id = $(document).data("document_id");		
+    
 	//TODO: Refactor 72
     $("#uic_new_upload_form").fileupload({
 		forceIframeTransport: true,
-		autoUpload:false,
+		autoUpload:true,
 		add:function(e,data) {
 			pleaseWait();						
 			$.post("/api/document/new",{},function(doc_info){
@@ -38,7 +38,9 @@ $(document).ready(function(){
     //TODO: Refactor 72
 	$('#uic_upload_form').fileupload({
 		forceIframeTransport:true,
-		add: function(e,data) {		
+		autoUpload:true,
+		add: function(e,data) {	
+			pleaseWait();					
 			var document_id = $(document).data("document_id");				
 			$.get(sprintf("/api/document/%s/s3",document_id),{},function(fields){
 				$("#uic_upload_form input:hidden[name=AWSAccessKeyId]").val(fields.access_key_id);
