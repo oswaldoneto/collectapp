@@ -71,7 +71,7 @@ class CharValue(AbstractValue):
 	value = models.CharField(max_length=100,null=True)
 
 class IntegerValue(AbstractValue):
-	value = models.IntegerField(null=True)
+	value = models.BigIntegerField(null=True)
 	
 class DateValue(AbstractValue):
 	value = models.DateField(null=True)
