@@ -51,7 +51,7 @@ class DocumentClassifyMetaclass(type):
         return form_fields
     def __field(self,attr):
         if attr.type == 'N':
-            form_field = forms.IntegerField(label=attr.name,required=attr.required)
+            form_field = forms.IntegerField(label=attr.name,required=attr.required,min_value=1, max_value=999999999999999999)
         elif attr.type == 'S':
             form_field = forms.CharField(label=attr.name,required=attr.required) 
         elif attr.type == 'D':
