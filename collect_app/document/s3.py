@@ -21,7 +21,6 @@ class FormFieldsView(JSONResponseMixin, View):
             "policy":base64.b64encode(self.get_policy()),
             "signature":base64.b64encode(hmac.new(settings.config.get_aws_secret_access_key(), base64.b64encode(self.get_policy()), sha).digest()),
             "acl":ACL,
-            "key":"document/%s/${filename}" % document,
         })
     def get_policy(self):
         expiration_date = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(time.time()+10000))

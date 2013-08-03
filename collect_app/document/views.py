@@ -42,7 +42,9 @@ class PreviewDocView(TemplateView):
     def get_context_data(self, **kwargs):
         doc = get_object_or_404(Document,id=self.kwargs['document'])
         doc_attributes = doc.all_attributes()
-        doc_attach = DocumentAttachment.objects.filter(document=doc)
+                
+        doc_attach = DocumentAttach.objects.filter(document=doc)
+        
         doc_tags = doc.all_tags()
         #set context
         context = super(PreviewDocView,self).get_context_data(**kwargs)
@@ -53,7 +55,7 @@ class PreviewDocView(TemplateView):
         context.update({'tag_list':doc_tags})
         context.update({'show_back_to_search':comes_from_search(self.request)})
         #TODO: Refactor 72
-        context.update({'url_download':"https://%s/%s/document/%s" % (settings.config.get_s3_host(),settings.config.get_s3_bucket(),doc.id)})
+        context.update({'url_download':"https://%s/%s" % (settings.config.get_s3_host(),settings.config.get_s3_bucket())})
         return context    
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))    
     def dispatch(self, *args, **kwargs):

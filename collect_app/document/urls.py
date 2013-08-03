@@ -8,7 +8,7 @@ from document.s3 import FormFieldsView
 from document.api import DocTagView, DocTagListView, DocAttachView,\
     DocDeattachView, DocNewView, DocUserPermissionView, DocGroupPermissionView,\
     DocPublicPermissionView, DocUserPermissionsView, DocGroupPermissionsView,\
-    DocPublicPermissionsView
+    DocPublicPermissionsView, DocNewAttachView
 from document.views import ClassifyDocView, PreviewDocView,\
     ClassifyDocDeleteView, ClassifyDocAttributeCreateView, DocumentDeleteView,\
     PermissionDocView
@@ -42,6 +42,8 @@ urlpatterns = patterns('',
     (r'^api/document/(?P<document>\d+)/permissions/user$', DocUserPermissionsView.as_view()),
     (r'^api/document/(?P<document>\d+)/permissions/group$', DocGroupPermissionsView.as_view()),
     (r'^api/document/(?P<document>\d+)/permissions/public$', DocPublicPermissionsView.as_view()),
+    
+    (r'^api/document/new/attach/key/(?P<key>\w+)$', csrf_exempt(DocNewAttachView.as_view())),
     
     
     

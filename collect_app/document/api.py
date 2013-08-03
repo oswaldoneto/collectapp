@@ -2,7 +2,7 @@ from security.views import JSONResponseMixin
 from django.views.generic.base import View
 from django.contrib.auth.models import User, Group, Permission
 from document.models import Document, DocumentAttachment,\
-    DocumentPublicPermission
+    DocumentPublicPermission, DocumentAttach
 from django.http import HttpResponseBadRequest
 from guardian.shortcuts import get_perms, get_groups_with_perms, assign,\
     remove_perm, get_users_with_perms
@@ -16,6 +16,7 @@ from document.guardianutil import clear_permission
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_403
 from ext.views.decorator.docperm import document_permission_or_403
+from storage.models import FileStorage
 
 class DocTagView(JSONResponseMixin, View):
     def post(self,request,document,tag):
@@ -44,12 +45,25 @@ class DocTagListView(JSONResponseMixin, View):
     def dict_tag(self,tag_objects):  
         return [({"value":tag.id,"label":tag.name}) for tag in tag_objects]
     
+#TODO: DEPRECATED
 class DocNewView(JSONResponseMixin, View):
     def post(self,request):
         doc = Document(owner=self.request.user,last_update_user=self.request.user)
         doc.save()
         return self.render_to_response({"document_id":doc.id})
-                                    
+
+class DocNewAttachView(JSONResponseMixin, View):
+    def post(self,request,key):
+        #create document
+        doc = Document(owner=self.request.user,last_update_user=self.request.user)
+        doc.save()
+        #create document attachment
+        fs = get_object_or_404(FileStorage,key=key)
+        attach = DocumentAttach(document=doc,file=fs)
+        attach.save()
+        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
+        
+#TODO: DEPRECATED                                    
 class DocAttachView(JSONResponseMixin, View):
     def post(self,request,document):
         doc = get_object_or_404(Document,pk=document)        

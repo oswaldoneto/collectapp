@@ -7,6 +7,7 @@ from guardian.shortcuts import assign
 from tag.models import Tag
 from ext.db.models.query import InheritanceQuerySet
 from category.models import Category, Attribute
+from storage.models import FileStorage
 
 class Document(models.Model):
 	
@@ -32,7 +33,7 @@ class Document(models.Model):
 		doc_attr_ids = [(d.attribute.id) for d in DocumentAttribute.objects.filter(document=self)]
 		return Attribute.objects.filter(category=self.category).exclude(id__in=doc_attr_ids).exclude(active=False)
 	def all_files(self):
-		return DocumentAttachment.objects.filter(document=self)
+		return DocumentAttach.objects.filter(document=self)
 	def remove_category(self):
 		if self.category:
 			for doc_attr in DocumentAttribute.objects.filter(document=self):
@@ -62,6 +63,10 @@ class DocumentAttachment(models.Model):
 	type = models.CharField(max_length=255, editable=False)
 	created = models.DateTimeField(auto_now_add=True, editable=False)
 	updated = models.DateTimeField(auto_now=True, auto_now_add=True, editable=False)
+	document = models.ForeignKey(Document)
+	
+class DocumentAttach(models.Model):
+	file = models.ForeignKey(FileStorage)
 	document = models.ForeignKey(Document)
 
 class AbstractValue(models.Model):
