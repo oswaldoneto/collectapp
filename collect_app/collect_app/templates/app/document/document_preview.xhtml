@@ -78,7 +78,12 @@
 			});
 			
 			$("a[rel=uic_download-file_link]").click(function(){
-				alert( $(this).attr('href') );
+				var key = $(this).attr('href');
+				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
+					window.location=data; 
+				}).error(function(){
+					alert("Erro ao obter a url do arquivo");
+				});					
 				return false;				
 			});
 			

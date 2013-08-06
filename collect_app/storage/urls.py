@@ -6,7 +6,6 @@ from storage.api import StorageReserveKeyView, StorageMetadataRefreshView,\
 urlpatterns = patterns('',
     (r'^api/storage/reserve-key$', csrf_exempt(StorageReserveKeyView.as_view())),
     (r'^api/storage/metadata/refresh/key/(?P<key>\w+)$', csrf_exempt(StorageMetadataRefreshView.as_view())),
-    (r'^api/storage/key/(?P<key>\w+)$', csrf_exempt(StorageAccessURLView.as_view())),
-        
+    (r'^api/storage/key/(?P<key>\w+)$', csrf_exempt(StorageAccessURLView.as_view())), 
 )
     

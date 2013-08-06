@@ -1,9 +1,4 @@
-import base64
-import uuid
 from django.db import models
-from django.dispatch.dispatcher import receiver
-from django.db.models.signals import pre_save
-from django.db.models.fields import CharField
 from storage.fields import UUIDField
 
 class FileStorage(models.Model):   

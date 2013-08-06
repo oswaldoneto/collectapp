@@ -11,12 +11,17 @@ import simplejson
 from boto.s3.connection import S3Connection
 import django
 from django.http import HttpResponseNotFound
+import boto
+from boto.s3.key import Key
 
 class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
-        bucket_url = "http://%s/%s" % (settings.config.get_s3_host(),settings.config.get_s3_bucket())
-        return self.render_to_response(None)
-    
+        fs = FileStorage.objects.filter(key=key)[0]
+        response_headers = {'response-content-disposition': ("attachment;filename=%s" % fs.filename)}        
+        c = boto.connect_s3()
+        url = c.generate_url(900, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers)                       
+        return self.render_to_response(url)
+        
 
 
 class StorageReserveKeyView(JSONResponseMixin, View):
