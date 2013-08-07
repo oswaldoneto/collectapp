@@ -8,7 +8,7 @@ from document.s3 import FormFieldsView
 from document.api import DocTagView, DocTagListView, DocAttachView,\
     DocDeattachView, DocNewView, DocUserPermissionView, DocGroupPermissionView,\
     DocPublicPermissionView, DocUserPermissionsView, DocGroupPermissionsView,\
-    DocPublicPermissionsView, DocNewAttachView
+    DocPublicPermissionsView, DocNewAttachView, DocDetachView
 from document.views import ClassifyDocView, PreviewDocView,\
     ClassifyDocDeleteView, ClassifyDocAttributeCreateView, DocumentDeleteView,\
     PermissionDocView
@@ -32,18 +32,28 @@ urlpatterns = patterns('',
     #JSON API
     (r'^api/document/(?P<document>\d+)/tag/(?P<tag>\d+)$', csrf_exempt(DocTagView.as_view())),
     (r'^api/document/(?P<document>\d+)/tag$', csrf_exempt(DocTagListView.as_view())),
-    (r'^api/document/(?P<document>\d+)/s3$', csrf_exempt(FormFieldsView.as_view())),
-    (r'^api/document/(?P<document>\d+)/attach$', csrf_exempt(DocAttachView.as_view())),
-    (r'^api/document/(?P<document>\d+)/deattach', csrf_exempt(DocDeattachView.as_view())),
-    (r'^api/document/new$',csrf_exempt(DocNewView.as_view())),
     (r'^api/document/(?P<document>\d+)/permission/(?P<permission>\w+)/user/(?P<user>\d+)$', csrf_exempt(DocUserPermissionView.as_view())),
     (r'^api/document/(?P<document>\d+)/permission/(?P<permission>\w+)/group/(?P<group>\d+)$', csrf_exempt(DocGroupPermissionView.as_view())),
     (r'^api/document/(?P<document>\d+)/permission/(?P<permission>\w+)/public$', csrf_exempt(DocPublicPermissionView.as_view())),
     (r'^api/document/(?P<document>\d+)/permissions/user$', DocUserPermissionsView.as_view()),
     (r'^api/document/(?P<document>\d+)/permissions/group$', DocGroupPermissionsView.as_view()),
     (r'^api/document/(?P<document>\d+)/permissions/public$', DocPublicPermissionsView.as_view()),
+
+    # TODO: Deprecated resources remove all references to this service before milestone v0.8.21
+    #(r'^api/document/(?P<document>\d+)/s3$', csrf_exempt(FormFieldsView.as_view())),
+    #(r'^api/document/(?P<document>\d+)/attach$', csrf_exempt(DocAttachView.as_view())),
+    #(r'^api/document/(?P<document>\d+)/deattach', csrf_exempt(DocDeattachView.as_view())),
+    #(r'^api/document/new$',csrf_exempt(DocNewView.as_view())),
     
     (r'^api/document/new/attach/key/(?P<key>\w+)$', csrf_exempt(DocNewAttachView.as_view())),
+    (r'^api/document/(?P<document>\d+)/attach/key/(?P<key>\w+)$', csrf_exempt(DocAttachView.as_view())),
+    (r'^api/document/(?P<document>\d+)/detach/key/(?P<key>\w+)$', csrf_exempt(DocDetachView.as_view())),
+    
+    
+    
+    
+    
+    
     
     
     

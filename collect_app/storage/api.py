@@ -17,13 +17,17 @@ from boto.s3.key import Key
 class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
         fs = FileStorage.objects.filter(key=key)[0]
-        response_headers = {'response-content-disposition': ("attachment;filename=%s" % fs.filename)}        
+        response_headers_visualize = {'response-content-disposition': ("filename=%s" % fs.filename)}
+        response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % fs.filename)}
         c = boto.connect_s3()
-        url = c.generate_url(900, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers)                       
-        return self.render_to_response(url)
+        url_visualize = c.generate_url(10, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_visualize)
+        url_download = c.generate_url(10, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_download)
+        return self.render_to_response({
+            'filename':fs.filename,
+            'url_to_preview':url_visualize,
+            'url_to_download':url_download,
+        })
         
-
-
 class StorageReserveKeyView(JSONResponseMixin, View):
     def get(self,request):
         return self.post(request)
@@ -37,7 +41,7 @@ class StorageReserveKeyView(JSONResponseMixin, View):
             "access_key_id":settings.config.get_aws_access_key_id(),
             "policy":base64.b64encode(self.get_policy()),
             "signature":base64.b64encode(hmac.new(settings.config.get_aws_secret_access_key(), base64.b64encode(self.get_policy()), sha).digest()),
-            "acl":"public-read",
+            "acl":"authenticated-read",
             "key":key,
             "success_action_status":"200",
         }  
@@ -47,7 +51,7 @@ class StorageReserveKeyView(JSONResponseMixin, View):
             "expiration": expiration_date,
             "conditions": [
                 {"bucket": settings.config.get_s3_bucket()},
-                {"acl": "public-read"},
+                {"acl": "authenticated-read"},
                 ["starts-with","$key",""],
                 ["starts-with","$x-amz-meta-filename",""],
                 ["starts-with","$Content-Type",""],

@@ -1,9 +1,30 @@
 
-//Teste Git Branch - Pull Request solicitado inclusao
-
 $(document).ready(function(){	
 	
-    $("#uic_new_upload_form").fileupload({
+	upload_file_form_listener($("#uic_new_upload_form"),function(key) {
+		$.post(sprintf("/api/document/new/attach/key/%s",key),{},function(attach_data){
+			//Sucess upload transaction
+			redirect(sprintf("/document/%s/preview",attach_data.document_id));						
+		}).error(function(){ 
+			//404 indicates file not found
+			alert('Falha ao associar o arquivo ao documento.'); 			
+		});		
+	});
+	
+	upload_file_form_listener($("#uic_upload_form"),function(key) {
+		var document_id = $(document).data("document_id");
+		$.post(sprintf("/api/document/%s/attach/key/%s",document_id,key),{},function(attach_data){
+			//Sucess upload transaction
+			redirect(sprintf("/document/%s/preview",attach_data.document_id));						
+		}).error(function(){ 
+			//404 indicates file not found
+			alert('Falha ao associar o arquivo ao documento.'); 			
+		});				
+	});
+});
+
+function upload_file_form_listener(form,callback) {
+	form.fileupload({
 		forceIframeTransport: true,
 		autoUpload:true,
 		add:function(e,data) {
@@ -15,15 +36,15 @@ $(document).ready(function(){
 			}			
 			//Reserve Key immediately before submit form 
 			$.post("/api/storage/reserve-key",{},function(key){
-				$("#uic_new_upload_form input:hidden[name=AWSAccessKeyId]").val(key.access_key_id);
-				$("#uic_new_upload_form input:hidden[name=policy]").val(key.policy);
-				$("#uic_new_upload_form input:hidden[name=signature]").val(key.signature);		
-				$("#uic_new_upload_form input:hidden[name=acl]").val(key.acl);		
-				$("#uic_new_upload_form input:hidden[name=key]").val(key.key);
-				$("#uic_new_upload_form input:hidden[name=x-amz-meta-filename]").val(filename);								
-				$("#uic_new_upload_form input:hidden[name=Content-Type]").val(getMIMEType(filename));								
-				$("#uic_new_upload_form input:hidden[name=success_action_status]").val(key.success_action_status);
-				$("#uic_new_upload_form ").attr("action",key.bucket_url);  				
+				$(data.form).find("input:hidden[name=AWSAccessKeyId]").val(key.access_key_id);
+				$(data.form).find("input:hidden[name=policy]").val(key.policy);
+				$(data.form).find("input:hidden[name=signature]").val(key.signature);		
+				$(data.form).find("input:hidden[name=acl]").val(key.acl);		
+				$(data.form).find("input:hidden[name=key]").val(key.key);
+				$(data.form).find("input:hidden[name=x-amz-meta-filename]").val(filename);								
+				$(data.form).find("input:hidden[name=Content-Type]").val(getMIMEType(filename));								
+				$(data.form).find("input:hidden[name=success_action_status]").val(key.success_action_status);
+				$(data.form).attr("action",key.bucket_url);  				
 				data.key = key.key;					
 				data.submit();
 			}).error(function(){ 
@@ -33,52 +54,14 @@ $(document).ready(function(){
 		done:function(e,data) {
 			//Callback for both success or failure s3 response.
 			$.post(sprintf("/api/storage/metadata/refresh/key/%s",data.key),{},function(refresh_data){		
-				$.post(sprintf("/api/document/new/attach/key/%s",data.key),{},function(attach_data){
-					//Sucess upload transaction
-					redirect(sprintf("/document/%s/preview",attach_data.document_id));						
-				}).error(function(){ 
-					//404 indicates file not found
-					alert('Falha ao associar o arquivo ao documento.'); 			
-				});		
+				callback(data.key);
 			}).error(function(){ 
 				//404 indicates file not found
 				alert('Falha na transferência do arquivo.'); 			
 			});	
 		},
     });	
-    
-    //TODO: Refactor 72
-    var document_id = $(document).data("document_id");		    
-	$('#uic_upload_form').fileupload({
-		forceIframeTransport:true,
-		autoUpload:true,
-		add: function(e,data) {	
-			pleaseWait();					
-			var document_id = $(document).data("document_id");			
-			$.get(sprintf("/api/document/%s/s3",document_id),{},function(fields){
-				$("#uic_upload_form input:hidden[name=AWSAccessKeyId]").val(fields.access_key_id);
-				$("#uic_upload_form input:hidden[name=policy]").val(fields.policy);
-				$("#uic_upload_form input:hidden[name=signature]").val(fields.signature);		
-				$("#uic_upload_form input:hidden[name=acl]").val(fields.acl);		
-				$("#uic_upload_form input:hidden[name=key]").val(fields.key);		
-				$("#uic_upload_form input:hidden[name=success_action_status]").val("200");
-				$("#uic_upload_form").attr("action",fields.bucket_url);  
-				data.submit();	
-			});		        
-		},
-		done:function(e,data) {
-			$.post(sprintf("/api/document/%s/attach",document_id),{
-				name:data.files[0].name,
-				type:data.files[0].type,
-				size:data.files[0].size
-			},function(data){
-				redirect(sprintf("/document/%s/preview",document_id));						
-			}).error(function(){
-				alert('erro'); 
-			});	
-		},			
-	});
-});
+}
 
 function getMIMEType(filename) {
 	var mime_type = {

@@ -45,26 +45,15 @@ class DocTagListView(JSONResponseMixin, View):
     def dict_tag(self,tag_objects):  
         return [({"value":tag.id,"label":tag.name}) for tag in tag_objects]
     
-#TODO: DEPRECATED
+# TODO: Deprecated resources remove all references to this service before milestone v0.8.21
 class DocNewView(JSONResponseMixin, View):
     def post(self,request):
         doc = Document(owner=self.request.user,last_update_user=self.request.user)
         doc.save()
         return self.render_to_response({"document_id":doc.id})
-
-class DocNewAttachView(JSONResponseMixin, View):
-    def post(self,request,key):
-        #create document
-        doc = Document(owner=self.request.user,last_update_user=self.request.user)
-        doc.save()
-        #create document attachment
-        fs = get_object_or_404(FileStorage,key=key)
-        attach = DocumentAttach(document=doc,file=fs)
-        attach.save()
-        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
         
-#TODO: DEPRECATED                                    
-class DocAttachView(JSONResponseMixin, View):
+# TODO: Deprecated resources remove all references to this service before milestone v0.8.21                                 
+class DocAttachView2(JSONResponseMixin, View):
     def post(self,request,document):
         doc = get_object_or_404(Document,pk=document)        
         attach = DocumentAttachment()
@@ -80,6 +69,7 @@ class DocAttachView(JSONResponseMixin, View):
         doc.save()
         return self.render_to_response(None)
 
+# TODO: Deprecated resources remove all references to this service before milestone v0.8.21
 class DocDeattachView(JSONResponseMixin, View):
     def post(self,request,document):
         doc = get_object_or_404(Document,pk=document)        
@@ -97,8 +87,47 @@ class DocDeattachView(JSONResponseMixin, View):
             doc.save()  
         return self.render_to_response(None)
     
+    
+class DocNewAttachView(JSONResponseMixin, View):
+    def post(self,request,key):
+        #create document
+        doc = Document(owner=self.request.user,last_update_user=self.request.user)
+        doc.save()
+        #create document attachment
+        fs = get_object_or_404(FileStorage,key=key)
+        attach = DocumentAttach(document=doc,file=fs)
+        attach.save()
+        #save to rebuild index
+        doc.save()
+        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
 
-
+class DocAttachView(JSONResponseMixin, View):
+    def post(self,request,document,key):
+        #create document
+        doc = get_object_or_404(Document,pk=document)
+        #create document attachment
+        fs = get_object_or_404(FileStorage,key=key)
+        attach = DocumentAttach(document=doc,file=fs)
+        attach.save()
+        #uplad last user and rebuild index
+        doc.last_update_user = request.user   
+        doc.save()
+        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
+    
+class DocDetachView(JSONResponseMixin, View):
+    def delete(self,request,document,key):
+        doc = get_object_or_404(Document,pk=document)
+        fs = get_object_or_404(FileStorage,key=key)
+        doc_attach = get_object_or_404(DocumentAttach,document=doc,file=fs)
+        #remove from s3
+        conn = S3Connection()
+        bucket = conn.get_bucket(settings.config.get_s3_bucket())
+        bucket.get_key(fs.key).delete()
+        #remove from database
+        doc_attach.delete()
+        fs.delete()
+        return self.render_to_response(None)
+    
 
 class DocUserPermissionsView(JSONResponseMixin, View):
     def get(self,request,document):
