@@ -37,7 +37,7 @@ class DocumentClassifyMetaclass(type):
         return  super(DocumentClassifyMetaclass,self).__call__(*args, **kwargs)
     def __form_fields_from_category(self,category_id):
         cat = Category.objects.get(id=category_id)
-        attrs = Attribute.objects.filter(category=cat).order_by('order')
+        attrs = Attribute.objects.filter(category=cat,active=True).order_by('order')
         form_fields = []
         for attr in attrs:
             form_fields.append(self.__field(attr))

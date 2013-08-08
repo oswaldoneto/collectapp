@@ -27,13 +27,12 @@
 		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
 		table.attribute_table {
 	        border-collapse:collapse;			
-	        font-size: .9em;
 			width: 100%;	
 		}
 		
 		table.attribute_table td  {
 			/*border: 1px solid #d4ccb0;*/
-			padding: 5px 5px;
+			padding: 0px 3px;
 		}		
 		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
 		</style>
@@ -289,19 +288,18 @@
 										{% endif %}					
 									{% endfor %}							
 								</div>
-								<div style="float: right; margin-top: 10px; width: 450px">
+								<div style="float: right; margin-top: 10px; width: 400px">
 									<table class="attribute_table">
 										<tbody>
-											{% for doc_file in result.object.all_files %}
+											{% for attach in result.object.all_files %}
 												<tr>
-													<td>
-														<a href="{{url_download}}/{{result.object.id}}/{{doc_file.name}}">
-														<span class="ui-icon ui-icon-circle-arrow-s"></span>
-														</a>														
+													<td width="1px">
+														<span><i class="icon-cloud-download"></i></span>
 													</td>
-													<td>{% highlight doc_file.name with query %}</td>
-													<td>{{doc_file.size|kilobytefy}}</td>
-													<td>{{doc_file.updated|date:"d/m/Y H:i"}}</td>
+													<td width="1px">
+														<span><i class="icon-external-link-sign"></i></span>
+													</td>
+													<td>{% highlight attach.file.filename with query %}</td>
 												</tr>					
 											{% endfor %}
 										</tbody>

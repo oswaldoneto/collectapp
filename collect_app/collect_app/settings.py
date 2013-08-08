@@ -162,6 +162,7 @@ INSTALLED_APPS = (
 	'document',
     'tag',
     'status',
+    'storage',
 )
 
 MULTI_FILE_DELETE_URL = 'multi_delete'

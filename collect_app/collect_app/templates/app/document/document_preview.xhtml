@@ -42,6 +42,8 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_preview.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			
+			
 			/* Setting*/
 			//Upload and Remove Button Setting Startup Logic
 			{% if "change_document" not in public_permissions and "change_document" not in document_permissions %}
@@ -50,14 +52,59 @@
 			{% endif %}				
 			/* Events */
 			$("a[rel=uic_delete_file_link]").click(function(){
-				$.ajaxSetup({ traditional: true });
-				$.post("/api/document/{{params.document}}/deattach",{
-					'ids': [$(this).attr('href')]
-				},function(data){
-					redirect("/document/{{params.document}}/preview");													
-				});				
+				var key = $(this).attr('href');
+				var document_id = $(document).data("document_id");	
+				$.ajax({
+					url:sprintf("/api/document/%s/detach/key/%s",document_id,key),
+					type:"DELETE",
+					dataType:"json",
+					success: function(data) {
+						redirect(sprintf("/document/%s/preview",document_id));						
+					}					
+				});
 				return false;
 			});
+			
+			$("a[rel=uic_download-file_link]").click(function(){
+				var key = $(this).attr('href');
+				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
+					window.location=data.url_to_download; 
+				}).error(function(){
+					alert("Erro ao obter a url do arquivo");
+				});					
+				return false;				
+			});
+			
+			$("a[rel=uic_visualize-file_link]").click(function(){
+				var key = $(this).attr('href');
+				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
+
+					$.fancybox.open([
+					    {
+					        href : data.url_to_preview,
+					        title : data.filename,
+					    }    
+					], {
+						type : 'iframe',
+						padding    : 0,
+    					autoResize : false,
+						maxWidth   : 800,
+						maxHeight  : 600,
+						fitToView  : false,
+						width	   : '70%',
+						height	   : '70%',
+						minWidth   : 400,
+						minHeight  : 300,
+					});
+
+				}).error(function(){
+					alert("Erro ao obter a url do arquivo");
+				});					
+				return false;				
+			});
+
+			
+			
 			$("#uic_classify_link").click(function(){
 				redirect(sprintf("/document/%s/classify","{{params.document}}"));
 			});
@@ -65,6 +112,10 @@
 				redirect(sprintf("/document/%s/permission","{{params.document}}"));
 			});
 		});	
+		
+		function xxx() {
+			alert("123");
+		}
 	</script>
 {% endblock %}
 
@@ -173,6 +224,7 @@
 	<table id="uic_files" class="simple_table">
 		<thead class="ui-widget-header">
 			<th style="width: 5px"></th>
+			<th style="width: 5px"></th>
 			<th style="text-align: left">Título</th>
 			<th style="text-align: left; width: 100px">Tamanho</th>
 			<th style="text-align: left; width: 200px">Modificado</th>	
@@ -180,18 +232,28 @@
 		</thead>
 		<tbody class="ui-widget-content">
 			{% if not document %}
-				{% for doc_file in attachment_list %}
+				{% for attach in attachment_list %}
 					<tr>
 						<td>
-							<a href="{{url_download}}/{{doc_file.name}}">
+							<a rel="uic_download-file_link" href="{{attach.file.key}}">
 								<i class="icon-cloud-download icon-large"></i>
-							</a>														
+							</a>							
 						</td>
-						<td style="text-align: left">{{doc_file.name}}</td>
-						<td style="text-align: left">{{doc_file.size|kilobytefy}} Bytes</td>
-						<td style="text-align: left">{{doc_file.updated|date:"d/m/Y "}}</td>				
+						<td>	
+							<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
+								<i class="icon-external-link-sign icon-large"></i>
+							</a>																				
+							<!--
+							<a class="various" data-fancybox-type="iframe" href="">
+								<i class="icon-external-link-sign icon-large"></i>
+							</a>
+							--->
+						</td>
+						<td style="text-align: left">{{attach.file.filename}}</td>
+						<td style="text-align: left">{{attach.file.filesize|kilobytefy}}</td>
+						<td style="text-align: left">{{attach.file.updated|date:"d/m/Y H:i"}}</td>				
 						<td>
-							<a rel="uic_delete_file_link" href="{{doc_file.id}}">
+							<a rel="uic_delete_file_link" href="{{attach.file.key}}">
 								<i class="icon-trash icon-large"></i>
 							</a>
 						</td>

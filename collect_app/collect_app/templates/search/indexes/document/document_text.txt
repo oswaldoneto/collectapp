@@ -7,7 +7,7 @@
 {% endfor %}
 {{ object.owner.username }}
 {% for docfile in object.all_files %}
-	{{docfile.name}}
+	{{docfile.file.filename}}
 {% endfor %}
 
 

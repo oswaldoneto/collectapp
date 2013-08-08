@@ -28,6 +28,8 @@ urlpatterns = patterns('',
 	url(r'', include('status.urls')),
 	# Error App
 	url(r'', include('error.urls')),
+	# Storage App
+	url(r'', include('storage.urls')),
 )
 
 if settings.DEBUG:	
