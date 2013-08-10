@@ -131,7 +131,7 @@
 
 {% block context_menu %}
 	{% if query %}
-		{% if categories %}
+		{% if categories.fields.category %}
 			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
 				<dl class="ui-context-menu">
 					<dt>Categorias
@@ -147,7 +147,7 @@
 				</dl>
 			</div>
 		{% endif %}
-		{% if tags %}
+		{% if tags.fields.tags %}
 			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
 				<dl class="ui-context-menu">
 					<dt>Tags
