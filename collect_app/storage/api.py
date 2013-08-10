@@ -20,8 +20,8 @@ class StorageAccessURLView(JSONResponseMixin, View):
         response_headers_visualize = {'response-content-disposition': ("filename=%s" % fs.filename)}
         response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % fs.filename)}
         c = boto.connect_s3()
-        url_visualize = c.generate_url(30, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_visualize)
-        url_download = c.generate_url(30, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_download)
+        url_visualize = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_visualize)
+        url_download = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_download)
         return self.render_to_response({
             'filename':fs.filename,
             'url_to_preview':url_visualize,
