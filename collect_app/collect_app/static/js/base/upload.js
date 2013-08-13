@@ -30,7 +30,7 @@ function upload_file_form_listener(form,callback) {
 		add:function(e,data) {
 			pleaseWait();		
 			//Looking for filename
-			var filename = data.files[0].name;
+			var filename = encodeURI(data.files[0].name);
 			if(filename == undefined) {
 				filename = 'undefined'
 			}			
