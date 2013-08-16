@@ -13,12 +13,14 @@ import django
 from django.http import HttpResponseNotFound
 import boto
 from boto.s3.key import Key
+import urllib
 
 class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
         fs = FileStorage.objects.filter(key=key)[0]
-        response_headers_visualize = {'response-content-disposition': ("filename=%s" % fs.filename)}
-        response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % fs.filename)}
+        file_name_encoded = urllib.quote_plus(fs.filename.encode())
+        response_headers_visualize = {'response-content-disposition': ("filename=%s" % file_name_encoded)}
+        response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % file_name_encoded)}
         c = boto.connect_s3()
         url_visualize = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_visualize)
         url_download = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_download)

@@ -115,7 +115,46 @@
 				$("#id_selected_tag").val('');
 				$("#uic_form").submit(); 
 				return false;
-			});			
+			});		
+			
+			
+			//TODO: Refactor unir com o document_preview.xhtml
+			$("a[rel=uic_download-file_link]").live("click",function(){
+				var key = $(this).attr('href');
+				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
+					window.location=data.url_to_download; 
+				}).error(function(){
+					alert("Erro ao obter a url do arquivo");
+				});					
+				return false;	
+			});
+			
+			//TODO: Refactor unir com o document_preview.xhtml
+			$("a[rel=uic_visualize-file_link]").live("click",function(){
+				var key = $(this).attr('href');
+				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
+					$.fancybox.open([
+					    {
+					        href : data.url_to_preview,
+					        title : data.filename,
+					    }    
+					], {
+						type : 'iframe',
+						padding    : 0,
+    					autoResize : false,
+						maxWidth   : 800,
+						maxHeight  : 600,
+						fitToView  : false,
+						width	   : '70%',
+						height	   : '70%',
+						minWidth   : 400,
+						minHeight  : 300,
+					});
+				}).error(function(){
+					alert("Erro ao obter a url do arquivo");
+				});					
+				return false;				
+			});	
 
 
 		});	
@@ -289,21 +328,24 @@
 									{% endfor %}							
 								</div>
 								<div style="float: right; margin-top: 10px; width: 400px">
-									<table class="attribute_table">
-										<tbody>
-											{% for attach in result.object.all_files %}
-												<tr>
-													<td width="1px">
-														<span><i class="icon-cloud-download"></i></span>
-													</td>
-													<td width="1px">
-														<span><i class="icon-external-link-sign"></i></span>
-													</td>
-													<td>{% highlight attach.file.filename with query %}</td>
-												</tr>					
-											{% endfor %}
-										</tbody>
-									</table>
+									{% for attach in result.object.all_files %}
+										<div class="margin_min_bottom" style="font-size: 1.1em">
+											<span>
+												<a rel="uic_download-file_link" href="{{attach.file.key}}">
+													<i class="icon-cloud-download icon-large"></i>
+												</a>
+											</span>
+											<span>											
+												<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
+													<i class="icon-external-link-sign icon-large"></i>
+												</a>																				
+											</span>												
+											<span>{% highlight attach.file.filename with query %}</span>
+											<small><i class="icon-angle-right ui-state-disabled"></i></small>
+											<span style="font-size: 0.7em" class="ui-state-disabled">{{ attach.file.filesize|kilobytefy }}</span>
+										</div>	
+	
+									{% endfor %}
 								</div>
 								<div class="clear"></div>							
 								<div>

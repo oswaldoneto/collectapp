@@ -65,6 +65,7 @@
 				return false;
 			});
 			
+			//TODO: Refactor unir com o search.xhtml
 			$("a[rel=uic_download-file_link]").click(function(){
 				var key = $(this).attr('href');
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
@@ -75,6 +76,7 @@
 				return false;				
 			});
 			
+			//TODO: Refactor unir com o search.xhtml
 			$("a[rel=uic_visualize-file_link]").click(function(){
 				var key = $(this).attr('href');
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
@@ -243,11 +245,6 @@
 							<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
 								<i class="icon-external-link-sign icon-large"></i>
 							</a>																				
-							<!--
-							<a class="various" data-fancybox-type="iframe" href="">
-								<i class="icon-external-link-sign icon-large"></i>
-							</a>
-							--->
 						</td>
 						<td style="text-align: left">{{attach.file.filename}}</td>
 						<td style="text-align: left">{{attach.file.filesize|kilobytefy}}</td>

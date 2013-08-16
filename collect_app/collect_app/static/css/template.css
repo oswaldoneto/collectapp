@@ -373,6 +373,13 @@ ul.errorlist {
 .hide {
 	display: none;
 }
+.display_inline {
+	display: inline;
+}
+.bold {
+	font-weight: bold;
+}
+
 .floatl {
 	float: left;
 }
@@ -405,7 +412,33 @@ ul.errorlist {
 .margin_top_double {
 	margin-top: 20px;	
 }
+.margin_r_double {
+	margin-right: 20px;
+}
 .margin_auto {
 	margin-right: auto;
 	margin-left: auto;
 }
+.margin_min {
+	margin: 5px 5px 5px 5px;
+}
+.margin_min_top {
+	margin-top: 5px;
+}
+.margin_min_bottom {
+	margin-bottom: 5px;
+}
+.margin_min_right {
+	margin-right: 5px;
+}
+.margin_min_left {
+	margin-left: 5px;
+}
+.font_min {
+	font-size: .8em;
+}
+.padding_default {
+	padding: 10px 10px 10px 10px;
+}
+
+
