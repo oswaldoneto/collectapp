@@ -71,7 +71,8 @@ class StorageMetadataRefreshView(JSONResponseMixin, View):
         if not object:
             return HttpResponseNotFound()        
         fs = FileStorage.objects.get(key=key)
-        fs.filename = object.metadata["filename"]
+        fs.filename = object.metadata["filename"].encode()
+        
         fs.filesize = object.size
         fs.filetype = object.content_type
         fs.storaged = True
