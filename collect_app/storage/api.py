@@ -20,7 +20,7 @@ from django.utils.decorators import method_decorator
 class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
         fs = FileStorage.objects.filter(key=key)[0]
-        file_name_encoded = urllib.quote_plus(fs.filename.encode())
+        file_name_encoded = urllib.quote_plus(fs.filename.encode('utf-8'))
         response_headers_visualize = {'response-content-disposition': ("filename=%s" % file_name_encoded)}
         response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % file_name_encoded)}
         c = boto.connect_s3()
