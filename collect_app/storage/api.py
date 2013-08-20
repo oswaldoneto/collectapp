@@ -14,6 +14,8 @@ from django.http import HttpResponseNotFound
 import boto
 from boto.s3.key import Key
 import urllib
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 
 class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
@@ -28,7 +30,11 @@ class StorageAccessURLView(JSONResponseMixin, View):
             'filename':fs.filename,
             'url_to_preview':url_visualize,
             'url_to_download':url_download,
-        })
+        })    
+    @method_decorator(never_cache)            
+    def dispatch(self, *args, **kwargs):
+        return super(StorageAccessURLView, self).dispatch(*args, **kwargs)
+        
         
 class StorageReserveKeyView(JSONResponseMixin, View):
     def get(self,request):
@@ -60,6 +66,9 @@ class StorageReserveKeyView(JSONResponseMixin, View):
                 {"success_action_status": "200"},
             ]
         })
+    @method_decorator(never_cache)            
+    def dispatch(self, *args, **kwargs):
+        return super(StorageReserveKeyView, self).dispatch(*args, **kwargs)
         
 class StorageMetadataRefreshView(JSONResponseMixin, View):
     def get(self,request,key):
@@ -71,13 +80,15 @@ class StorageMetadataRefreshView(JSONResponseMixin, View):
         if not object:
             return HttpResponseNotFound()        
         fs = FileStorage.objects.get(key=key)
-        fs.filename = object.metadata["filename"].encode()
-        
+        fs.filename = object.metadata["filename"].encode('utf-8')
         fs.filesize = object.size
         fs.filetype = object.content_type
         fs.storaged = True
         fs.save()   
         return self.render_to_response(None)
+    @method_decorator(never_cache)            
+    def dispatch(self, *args, **kwargs):
+        return super(StorageMetadataRefreshView, self).dispatch(*args, **kwargs)
         
 
          
