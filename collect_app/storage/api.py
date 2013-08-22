@@ -21,12 +21,13 @@ class StorageAccessURLView(JSONResponseMixin, View):
     def get(self,request,key):
         fs = FileStorage.objects.filter(key=key)[0]
         file_name_encoded = urllib.quote_plus(fs.filename.encode('utf-8'))
-        response_headers_visualize = {'response-content-disposition': ("filename=%s" % file_name_encoded)}
+        response_headers_visualize = {'response-content-disposition': ("filename=esboço.png")}
         response_headers_download = {'response-content-disposition': ("attachment;filename=%s" % file_name_encoded)}
         c = boto.connect_s3()
         url_visualize = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_visualize)
         url_download = c.generate_url(90, 'GET', key=key, bucket=settings.config.get_s3_bucket(), force_http=True,response_headers=response_headers_download)
         return self.render_to_response({
+            'filename_encoded':file_name_encoded,                            
             'filename':fs.filename,
             'url_to_preview':url_visualize,
             'url_to_download':url_download,
