@@ -120,19 +120,18 @@
 			
 			
 			//TODO: Refactor unir com o document_preview.xhtml
-			$("a[rel=uic_download-file_link]").live("click",function(){
-				var key = $(this).attr('href');
+			$("#uic_download-file_link").live("click",function(){
+				var key = $(document).data("selected-key");
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
 					window.location=data.url_to_download; 
 				}).error(function(){
 					alert("Erro ao obter a url do arquivo");
 				});					
-				return false;	
 			});
 			
 			//TODO: Refactor unir com o document_preview.xhtml
-			$("a[rel=uic_visualize-file_link]").live("click",function(){
-				var key = $(this).attr('href');
+			$("#uic_visualize-file_link").live("click",function(){				
+				var key = $(document).data("selected-key");
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
 					$.fancybox.open([
 					    {
@@ -166,8 +165,6 @@
     					infinite: false,
     					auto    : false,
 						pagination: '#uic_{{forloop.counter}}_pages',
-
-						
 					});
 					
 				{% endif %}	
@@ -176,12 +173,24 @@
 			
 			
 			
-			$('#uic_file_tooltip').toolbar({
+			$('.uic_file_tooltip').toolbar({
 				content: '#user-toolbar-options',
 				position: 'bottom',
 				hideOnClick: true,
 			});
-						
+			$(".uic_file_tooltip").on('toolbarShown',
+				function( event ) {
+					var key = $(this).find("a[rel=uic_file-key_link]").attr('href');
+					$(document).data("selected-key",key);
+				}
+			);
+			$(".uic_file_tooltip").on('toolbarItemClick',
+				function( event ) {
+					$(this).trigger('click');
+				}
+			);
+			
+									
 			
 
 
@@ -286,8 +295,8 @@
 			
 			
 			<div id="user-toolbar-options" class="hide">
-				<a><i class="icon-cloud-download icon-2x"></i></a>
-				<a><i class="icon-external-link-sign icon-2x"></i></a>
+				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
+				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
 			</div>
 			
 			
@@ -298,33 +307,37 @@
 					{% get_obj_perms user for result.object as "document_permissions" %}
 					<tr class="{% cycle 'row1' 'row2' %}">
 						<td>
-							<div class="margin_min_left">
+							<div class="margin_min_left margin_min_right">
 								<!-- Files -->
 								<div class="floatl">
-									<div class="pagination" id="uic_{{forloop.counter}}_pages"></div>
+									<div class="pagination margin_min_bottom" id="uic_{{forloop.counter}}_pages"></div>
 									<div style="float: left; width: 450px;">
 										{% if result.object.all_files %}	
 											<div class="list_carousel">
 												<ul id="uic_file_list_{{forloop.counter}}">		
 													{% for attach in result.object.all_files %}								
 														<li>
-															<div id="uic_file_tooltip" class="floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
-																<a rel="uic_download_options_link" href="{{attach.file.key}}">
-																	<div>
-																		<span style="font-size: 20px"><i class="icon-file"></i></span> {% highlight attach.file.filename with query %}														
-																	</div>
-																	<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
-																	<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
-																</a>												
+															<div class="uic_file_tooltip floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
+																<a rel="uic_file-key_link" href="{{attach.file.key}}"></a>
+																<div>
+																	<span style="font-size: 20px"><i class="icon-file"></i></span> {% highlight attach.file.filename with query %}														
+																</div>
+																<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
+																<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
+																												
 															</div>													
 														</li>
 													{% endfor %}
 												</ul>
 											</div>
+										{% else %}
+											<div class="ui-state-disabled margin_min_bottom">												
+												Nenhum arquivo encontrado																																		
+											</div>													
 										{% endif %}	
 									</div>
 									{% if result.object.all_tags %}	
-										<div style="max-width: 450px" class="margin_min_top">
+										<div style="max-width: 450px;">
 											{% for tag in result.object.all_tags  %}
 												<div class="ui-state-active ui-corner-all floatl margin_min_bottom margin_min_right" style="padding: 2px">
 													<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
@@ -335,14 +348,16 @@
 								</div>
 								<!-- Classification -->
 								<div class="floatr" style="max-width: 280px;">
-									<div class="bold">
+									<div>
 										{% if result.object.category %}
-											{% highlight result.object.category.title with query %}
+											<span>{% highlight result.object.category.title with query %}</span>
+											<small><i class="icon-caret-right"></i></small>		
+											<span class="font_min">{% highlight result.object.owner.username with query %}</span>
 										{% else %}
-											<span class="ui-state-disabled">Sem Categoria</span>
+											<div class="ui-widget ui-corner-all ui-state-disabled">												
+												Não classificado																																		
+											</div>												
 										{% endif %}			
-										<small><i class="icon-caret-right"></i></small>		
-										<span class="font_min">{% highlight result.object.owner.username with query %}</span>
 									</div>
 									{% if result.object.all_attributes %}
 										<div class="margin_r_double">
