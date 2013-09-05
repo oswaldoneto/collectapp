@@ -8,6 +8,7 @@
 {% block title %}Collect Project :: Documento{% endblock %}
 
 {% block import_style %}
+	<link rel="stylesheet" href="{{STATIC_URL}}css/app/search.css" />	
 	<style type="text/css">
 		table.table_result {
 			background-color: #ffffff;
@@ -17,13 +18,26 @@
 		table.table_result td {
 			padding-top: 10px;
 			padding-bottom: 10px;			
-		}
+		}	
 		table.table_result tr > td {
 			border-bottom: solid 1px #d4ccb0;
 		}
+		
+		table.table_result td:first-child {
+			border-right: solid 1px #d4ccb0;
+			width: 99%
+		}
+		
+		table.table_result td:last-child {
+			padding-left: 2px; 
+			padding-right: 2px;
+		}
+		
 		table.table_result tr:last-child > td {
 			border-bottom: none;
 		}		
+
+		
 		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
 		table.attribute_table {
 	        border-collapse:collapse;			
@@ -36,10 +50,10 @@
 		}		
 		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
 		</style>
-	<link rel="stylesheet" href="{{STATIC_URL}}css/app/search.css" />	
 {% endblock %}
 
 {% block startup_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery/plugin/caroufredsel/jquery.carouFredSel-6.2.1-packed.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/** Settings */
@@ -54,6 +68,7 @@
 				return false;
 			});
 			  
+			/*
 			$("a[rel=uic_classify_link]").live("click",function(){
 				redirect(sprintf("/document/%s/classify",$(this).attr('href')));
 				return false;
@@ -88,6 +103,7 @@
 				});
 				return false;
 			});
+			*/
 			
 			
 			
@@ -119,19 +135,18 @@
 			
 			
 			//TODO: Refactor unir com o document_preview.xhtml
-			$("a[rel=uic_download-file_link]").live("click",function(){
-				var key = $(this).attr('href');
+			$("#uic_download-file_link").live("click",function(){
+				var key = $(document).data("selected-key");
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
 					window.location=data.url_to_download; 
 				}).error(function(){
 					alert("Erro ao obter a url do arquivo");
 				});					
-				return false;	
 			});
 			
 			//TODO: Refactor unir com o document_preview.xhtml
-			$("a[rel=uic_visualize-file_link]").live("click",function(){
-				var key = $(this).attr('href');
+			$("#uic_visualize-file_link").live("click",function(){				
+				var key = $(document).data("selected-key");
 				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
 					$.fancybox.open([
 					    {
@@ -154,7 +169,43 @@
 					alert("Erro ao obter a url do arquivo");
 				});					
 				return false;				
-			});	
+			});
+			
+			
+			{% for result in page.object_list %}
+				{% if result.object.all_files %}
+					$(sprintf("#uic_file_list_%s","{{forloop.counter}}")).carouFredSel({
+						align: "left",
+						circular: false,
+    					infinite: false,
+    					auto    : false,
+						pagination: '#uic_{{forloop.counter}}_pages',
+					});
+					
+				{% endif %}	
+			{% endfor  %}	
+			
+			
+			
+			
+			$('.uic_file_tooltip').toolbar({
+				content: '#user-toolbar-options',
+				position: 'bottom',
+				hideOnClick: true,
+			});
+			$(".uic_file_tooltip").on('toolbarShown',
+				function( event ) {
+					var key = $(this).find("a[rel=uic_file-key_link]").attr('href');
+					$(document).data("selected-key",key);
+				}
+			);
+			$(".uic_file_tooltip").on('toolbarItemClick',
+				function( event ) {
+					$(this).trigger('click');
+				}
+			);
+			
+			
 
 
 		});	
@@ -181,7 +232,12 @@
 					{% endif %}
 					</dt>
 					{% for cat in categories.fields.category %}
-						<dd><a rel="uic_category_facelet_link" href="{{cat.0}}">{{cat.0}} ({{cat.1}})</a></dd>
+						<dd>
+							<a rel="uic_category_facelet_link" href="{{cat.0}}">
+								<span style="font-size: 0.9em;">{{cat.0}}</span>
+								<span style="font-size: 0.8em; font-weight: bold">({{cat.1}})</span>								
+							</a>
+						</dd>
 					{% endfor %}
 				</dl>
 			</div>
@@ -197,7 +253,12 @@
 					{% endif %}
 					</dt>			
 					{% for tag in tags.fields.tags %}
-						<dd><a rel="uic_tag_facelet_link" href="{{tag.0}}">{{tag.0}} ({{tag.1}})</a></dd>
+						<dd>
+							<a rel="uic_tag_facelet_link" href="{{tag.0}}">
+								<span style="font-size: 0.9em;">{{tag.0}}</span>
+								<span style="font-size: 0.8em; font-weight: bold">({{tag.1}})</span>
+							</a>
+						</dd>
 					{% endfor %}
 				</dl>
 			</div>
@@ -249,115 +310,97 @@
 		        	</div>		        	
 		        </div>
 			{% endif %}
+			
+			<div id="user-toolbar-options" class="hide">
+				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
+				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
+			</div>
+			
 			<table class="table_result ui-corner-all">
 				{% for result in page.object_list %}
 					{% get_public_perms result.object as public_permissions %}
 					{% get_obj_perms user for result.object as "document_permissions" %}
 					<tr class="{% cycle 'row1' 'row2' %}">
 						<td>
-							<div style="margin: 5px 5px 5px 5px;">
-								<div style="float: left;">
-									<p style="font-weight: bold; display: inline">
-										{% if result.object.category %}
-											{% highlight result.object.category.title with query %}
-										{% else %}
-											<span class="ui-state-disabled">Sem Categoria</span>
-										{% endif %}
-									</p>
-									<p style="font-size: 0.8em; display: inline; ">por</p>
-									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{% highlight result.object.owner.username with query %}</p>
-									<p style="font-size: 0.8em; display: inline; ">em</p>
-									<p style="font-weight: bold; font-size: 0.8em; display: inline; ">{% highlight result.object.updated with query %}</p>
-								</div>
-								
-								<div style="float: right" >
-									<form id="uic_delete_form" method="post">
-										{% csrf_token %}		
-										<span class="icon-stack">
-										<a rel="uic_preview_link" href="{{result.object.id}}">
-											<b><i class="icon-th-list icon-large"></i><span class="hide"> Visualizar</span></b>
-										</a>
-										</span>
-										{% if "change_document" in document_permissions %}
-											<span class="icon-stack">										
-											<a rel="uic_classify_link" href="{{result.object.id}}">
-												<b><i class="icon-archive icon-large"></i><span class="hide"> Classificar</span></b>
-											</a>
-											</span>
-											<span class="icon-stack">												
-											<a rel="uic_permission_link" href="{{result.object.id}}">
-												<b><i class="icon-unlock-alt icon-large"></i><span class="hide"> Permissões</span></b>
-											</a>	
-											</span>								
-										{% else %}	
-											<span class="icon-stack">
-											  <i class="icon-archive"></i>
-											  <i class="icon-ban-circle icon-stack-base icon-color-red"></i>
-											</span>		
-											<span class="icon-stack">
-											  <i class="icon-unlock-alt"></i>
-											  <i class="icon-ban-circle icon-stack-base icon-color-red"></i>
-											</span>																						
-										{% endif %}
-										{% if "delete_document" in document_permissions %}
-											<a rel="uic_delete_link" href="{{result.object.id}}">
-												<b><i class="icon-trash icon-large"></i><span class="hide"> Excluir</span></b>
-											</a>								
-										{% else %}
-											<span class="icon-stack">
-											  <i class="icon-trash"></i>
-											  <i class="icon-ban-circle icon-stack-base icon-color-red"></i>
-											</span>	
-										{% endif %}
-										<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>
-									</form>
-								</div>
-								<div class="clear"></div>
-								<div style="float: left; margin-bottom: 5px;">
-									{% for att in result.object.all_attributes %}
-										{% if att.value %}
-											<div style="margin-bottom: 3px;">							
-												<p style="display: inline; float: left;">{% highlight att.value.value with query %}</p>
-												<div style="display: inline;">
-													<p style="font-size: .7em; font-weight: bold; display: inline;" class="ui-state-disabled">
-														<span class="ui-icon ui-icon-triangle-1-w" style="float: left;"></span>{{att.attribute.name}}
-													</p>
-												</div>
+							<div class="margin_min_left margin_min_right">
+								<!-- Files -->
+								<div class="floatl">
+									<div class="pagination margin_min_bottom" id="uic_{{forloop.counter}}_pages"></div>
+									<div style="float: left; width: 450px;">
+										{% if result.object.all_files %}	
+											<div class="list_carousel">
+												<ul id="uic_file_list_{{forloop.counter}}">		
+													{% for attach in result.object.all_files %}								
+														<li>
+															<div class="uic_file_tooltip floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
+																<a rel="uic_file-key_link" href="{{attach.file.key}}"></a>
+																<div>
+																	<span style="font-size: 20px"><i class="icon-file"></i></span> {% highlight attach.file.filename with query %}														
+																</div>
+																<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
+																<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
+																												
+															</div>													
+														</li>
+													{% endfor %}
+												</ul>
 											</div>
-										{% endif %}					
-									{% endfor %}							
-								</div>
-								<div style="float: right; margin-top: 10px; width: 400px">
-									{% for attach in result.object.all_files %}
-										<div class="margin_min_bottom" style="font-size: 1.1em">
-											<span>
-												<a rel="uic_download-file_link" href="{{attach.file.key}}">
-													<i class="icon-cloud-download icon-large"></i>
-												</a>
-											</span>
-											<span>											
-												<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
-													<i class="icon-external-link-sign icon-large"></i>
-												</a>																				
-											</span>												
-											<span>{% highlight attach.file.filename with query %}</span>
-											<small><i class="icon-angle-right ui-state-disabled"></i></small>
-											<span style="font-size: 0.7em" class="ui-state-disabled">{{ attach.file.filesize|kilobytefy }}</span>
+										{% else %}
+											<div class="ui-state-disabled margin_min_bottom">												
+												Nenhum arquivo encontrado																																		
+											</div>													
+										{% endif %}	
+									</div>
+									{% if result.object.all_tags %}	
+										<div style="max-width: 450px;">
+											{% for tag in result.object.all_tags  %}
+												<div class="ui-state-active ui-corner-all floatl margin_min_bottom margin_min_right" style="padding: 2px">
+													<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
+												</div>
+											{% endfor %}									
 										</div>	
-	
-									{% endfor %}
+									{% endif %}										
 								</div>
-								<div class="clear"></div>							
-								<div>
-									{% for tag in result.object.all_tags  %}
-										<div class="ui-state-active ui-corner-all" style="padding: 2px; margin-right: 3px; float: left">
-											<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
-										</div>
-									{% endfor %}
-									<div class="clear"></div>							
+								<!-- Classification -->								
+								<div class="floatr" style="max-width: 280px;">
+									{% if not result.object.category %}
+										<div class="ui-widget ui-corner-all ui-state-disabled">												
+											Não classificado																																		
+										</div>										
+									{% else %}
+										<div style="border: 1px solid #d4ccb0;border-collapse:collapse;" class="ui-corner-all padding_min">
+											<div class="">
+												<span class="bold">{% highlight result.object.category.title with query %}</span>
+												<!--
+												<small><i class="icon-caret-right"></i></small>		
+												<span class="font_min">{% highlight result.object.owner.username with query %}</span>
+												-->
+											</div>
+											{% if result.object.all_attributes %}
+												<div>
+													{% for att in result.object.all_attributes %}
+														{% if att.value %}
+															<div class="margin_min_top">
+																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
+																<small><i class="icon-angle-right ui-state-disabled"></i></small>
+																<span>{% highlight att.value.value with query %}</span>
+															</div> 
+														{% endif %}					
+													{% endfor %}
+												</div>
+											{% endif %}											
+										</div>									
+									{% endif %}
 								</div>
-	
-							</div>							
+							</div>
+							<div class="clear"></div>																					
+						</td>
+						<td>
+							<div class="uic_document_tooltip floatr">
+								<a rel="uic_preview_link" href="{{result.object.id}}">
+									<i class="icon-circle-arrow-right"></i>
+								</a>
+							</div>
 						</td>
 					</tr>	
 				{% endfor %}
