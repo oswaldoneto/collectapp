@@ -18,13 +18,26 @@
 		table.table_result td {
 			padding-top: 10px;
 			padding-bottom: 10px;			
-		}
+		}	
 		table.table_result tr > td {
 			border-bottom: solid 1px #d4ccb0;
 		}
+		
+		table.table_result td:first-child {
+			border-right: solid 1px #d4ccb0;
+			width: 99%
+		}
+		
+		table.table_result td:last-child {
+			padding-left: 2px; 
+			padding-right: 2px;
+		}
+		
 		table.table_result tr:last-child > td {
 			border-bottom: none;
 		}		
+
+		
 		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
 		table.attribute_table {
 	        border-collapse:collapse;			
@@ -55,6 +68,7 @@
 				return false;
 			});
 			  
+			/*
 			$("a[rel=uic_classify_link]").live("click",function(){
 				redirect(sprintf("/document/%s/classify",$(this).attr('href')));
 				return false;
@@ -89,6 +103,7 @@
 				});
 				return false;
 			});
+			*/
 			
 			
 			
@@ -190,7 +205,6 @@
 				}
 			);
 			
-									
 			
 
 
@@ -218,7 +232,12 @@
 					{% endif %}
 					</dt>
 					{% for cat in categories.fields.category %}
-						<dd><a rel="uic_category_facelet_link" href="{{cat.0}}">{{cat.0}} ({{cat.1}})</a></dd>
+						<dd>
+							<a rel="uic_category_facelet_link" href="{{cat.0}}">
+								<span style="font-size: 0.9em;">{{cat.0}}</span>
+								<span style="font-size: 0.8em; font-weight: bold">({{cat.1}})</span>								
+							</a>
+						</dd>
 					{% endfor %}
 				</dl>
 			</div>
@@ -234,7 +253,12 @@
 					{% endif %}
 					</dt>			
 					{% for tag in tags.fields.tags %}
-						<dd><a rel="uic_tag_facelet_link" href="{{tag.0}}">{{tag.0}} ({{tag.1}})</a></dd>
+						<dd>
+							<a rel="uic_tag_facelet_link" href="{{tag.0}}">
+								<span style="font-size: 0.9em;">{{tag.0}}</span>
+								<span style="font-size: 0.8em; font-weight: bold">({{tag.1}})</span>
+							</a>
+						</dd>
 					{% endfor %}
 				</dl>
 			</div>
@@ -269,9 +293,6 @@
 			<div class="clear"></div>		
 		</div>
 		<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-			
-			
-			
 	        {% if page.has_previous or page.has_next %}		        
 		        <div class="ui-paginator">	
 		        	<div>	        	
@@ -290,16 +311,10 @@
 		        </div>
 			{% endif %}
 			
-			
-			
-			
-			
 			<div id="user-toolbar-options" class="hide">
 				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
 				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
 			</div>
-			
-			
 			
 			<table class="table_result ui-corner-all">
 				{% for result in page.object_list %}
@@ -346,35 +361,46 @@
 										</div>	
 									{% endif %}										
 								</div>
-								<!-- Classification -->
+								<!-- Classification -->								
 								<div class="floatr" style="max-width: 280px;">
-									<div>
-										{% if result.object.category %}
-											<span>{% highlight result.object.category.title with query %}</span>
-											<small><i class="icon-caret-right"></i></small>		
-											<span class="font_min">{% highlight result.object.owner.username with query %}</span>
-										{% else %}
-											<div class="ui-widget ui-corner-all ui-state-disabled">												
-												Não classificado																																		
-											</div>												
-										{% endif %}			
-									</div>
-									{% if result.object.all_attributes %}
-										<div class="margin_r_double">
-											{% for att in result.object.all_attributes %}
-												{% if att.value %}
-													<div class="margin_min_top">
-														<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
-														<small><i class="icon-angle-right ui-state-disabled"></i></small>
-														<span>{% highlight att.value.value with query %}</span>
-													</div> 
-												{% endif %}					
-											{% endfor %}
-										</div>
-									{% endif %}	
-								</div								
+									{% if not result.object.category %}
+										<div class="ui-widget ui-corner-all ui-state-disabled">												
+											Não classificado																																		
+										</div>										
+									{% else %}
+										<div style="border: 1px solid #d4ccb0;border-collapse:collapse;" class="ui-corner-all padding_min">
+											<div class="">
+												<span class="bold">{% highlight result.object.category.title with query %}</span>
+												<!--
+												<small><i class="icon-caret-right"></i></small>		
+												<span class="font_min">{% highlight result.object.owner.username with query %}</span>
+												-->
+											</div>
+											{% if result.object.all_attributes %}
+												<div>
+													{% for att in result.object.all_attributes %}
+														{% if att.value %}
+															<div class="margin_min_top">
+																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
+																<small><i class="icon-angle-right ui-state-disabled"></i></small>
+																<span>{% highlight att.value.value with query %}</span>
+															</div> 
+														{% endif %}					
+													{% endfor %}
+												</div>
+											{% endif %}											
+										</div>									
+									{% endif %}
+								</div>
 							</div>
 							<div class="clear"></div>																					
+						</td>
+						<td>
+							<div class="uic_document_tooltip floatr">
+								<a rel="uic_preview_link" href="{{result.object.id}}">
+									<i class="icon-circle-arrow-right"></i>
+								</a>
+							</div>
 						</td>
 					</tr>	
 				{% endfor %}

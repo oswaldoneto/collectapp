@@ -271,7 +271,7 @@ table.simple_table thead th {
 	margin-bottom: 0;
 	margin-top: 2px;
 	padding-left: 8px;
-	padding-bottom:2px;
+	padding-bottom:1px;
 	line-height: 1.2em;
 	padding-right: 8px;			
 
@@ -398,6 +398,10 @@ ul.errorlist {
 .margin_bottom_default {
 	margin-bottom: 10px;
 }
+.margin_l_default {
+	margin-left: 10px;
+}
+
 .margin_right_default {
 	margin-right: 10px;
 }
@@ -439,6 +443,9 @@ ul.errorlist {
 }
 .padding_default {
 	padding: 10px 10px 10px 10px;
+}
+.padding_min {
+	padding: 5px 5px 5px 5px;
 }
 
 

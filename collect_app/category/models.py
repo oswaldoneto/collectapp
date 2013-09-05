@@ -17,7 +17,7 @@ class Attribute(models.Model):
 		(u'N',u'Numerico'),		
 		(u'D',u'Data'),		
 	)
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=20)
 	type = models.CharField(max_length=2, choices=TYPE_CHOICES)
 	required = models.BooleanField()
 	category = models.ForeignKey(Category)	
