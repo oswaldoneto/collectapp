@@ -42,3 +42,41 @@
 .row2 {
 	background-color: #FAFAFA;
 }
+
+
+
+
+
+
+
+.list_carousel {
+}
+.list_carousel ul {
+}
+.list_carousel li {
+	display: block;
+	float: left;
+}
+
+
+pagination {
+    text-align: center;
+}
+.pagination a {
+    /* background: url(../images/miscellaneous_sprite.png) 0 -300px no-repeat transparent; */
+    background: url(../jquery/theme/south-street/images/ui-icons_808080_256x240.png) -112px -144px no-repeat;
+    width: 15px;
+    height: 15px;
+    margin: 0 0 0 0;
+    display: inline-block;
+}
+.pagination a.selected {
+    background-position: -80px -144px;
+    cursor: default;
+}
+.pagination a span {
+    display: none;
+}
+
+
+
