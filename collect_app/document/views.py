@@ -31,6 +31,7 @@ from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_403, permission_required
 from guardian.shortcuts import get_perms
 from ext.views.decorator.docperm import document_permission_or_403
+from boto.s3.connection import S3Connection
 
 def comes_from_search(request):
     if 'HTTP_REFERER' in request.META:             
@@ -128,7 +129,23 @@ class DocumentDeleteView(DeleteView):
     def get_object(self, queryset=None):
         obj = Document.objects.get(id=self.kwargs["document"])
         return obj
-    
+    def delete(self, request, *args, **kwargs):
+        #remove attach files
+        conn = S3Connection()
+        bucket = conn.get_bucket(settings.config.get_s3_bucket())
+        doc = self.get_object()
+        doc_attachs = DocumentAttach.objects.filter(document=doc)
+        for attach in doc_attachs:
+            #remove from s3
+            bucket.get_key(attach.file.key).delete()
+            #remove from db
+            attach.file.delete()
+        doc_attachs.delete()     
+        #remove classification
+        doc.remove_category()
+        #remove document related models
+        return super(DocumentDeleteView,self).delete(request, *args, **kwargs)
+            
 class PermissionDocView(TemplateView):
     template_name = "app/document/document_permission.xhtml"
     def get_context_data(self, **kwargs):

@@ -8,7 +8,10 @@ def kilobytefy(value):
     Bytes to Kilobyte for template:
     {{ file.size|sizify }}
     """
-    value = value / 1024.0
+    try:
+        value = value / 1024.0
+    except TypeError:
+        value = 0
     ext = 'kb'
     return '%s %s' % (str(round(value, 2)), ext)
 

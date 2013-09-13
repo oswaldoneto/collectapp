@@ -2,12 +2,15 @@ from itertools import chain
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.dispatch.dispatcher import receiver
-from django.db.models.signals import post_save
-from guardian.shortcuts import assign
+from django.db.models.signals import post_save, post_delete
+from guardian.shortcuts import assign, get_perms_for_model
 from tag.models import Tag
 from ext.db.models.query import InheritanceQuerySet
 from category.models import Category, Attribute
 from storage.models import FileStorage
+from guardian.managers import UserObjectPermissionManager
+from guardian.models import UserObjectPermission
+from guardian.utils import clean_orphan_obj_perms
 
 class Document(models.Model):
 	
@@ -37,13 +40,19 @@ class Document(models.Model):
 	def remove_category(self):
 		if self.category:
 			for doc_attr in DocumentAttribute.objects.filter(document=self):
-				abstract_value = doc_attr.value
+				#abstract_value = doc_attr.value
+				#concrete_value = InheritanceQuerySet(model=AbstractValue).select_subclasses().get(id=abstract_value.id)
+				#concrete_value.delete()
+				#abstract_value.delete()
 				doc_attr.delete()
-				InheritanceQuerySet(model=AbstractValue).select_subclasses().get(id=abstract_value.id).delete()
-				abstract_value.delete()
 			self.category = None
 			self.save()
-			
+	def delete(self, using=None):
+		super(Document,self).delete(using=using)
+		#TODO: Refactor
+		clean_orphan_obj_perms()
+		
+					
 @receiver(post_save,sender=Document)
 def assign_owner_permissions(sender,**kwargs):
 	if kwargs['created'] == True:
@@ -68,7 +77,7 @@ class DocumentAttachment(models.Model):
 class DocumentAttach(models.Model):
 	file = models.ForeignKey(FileStorage)
 	document = models.ForeignKey(Document)
-
+				
 class AbstractValue(models.Model):
 	pass
 

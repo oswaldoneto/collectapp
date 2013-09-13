@@ -45,49 +45,6 @@ class DocTagListView(JSONResponseMixin, View):
     def dict_tag(self,tag_objects):  
         return [({"value":tag.id,"label":tag.name}) for tag in tag_objects]
     
-# TODO: Deprecated resources remove all references to this service before milestone v0.8.21
-class DocNewView(JSONResponseMixin, View):
-    def post(self,request):
-        doc = Document(owner=self.request.user,last_update_user=self.request.user)
-        doc.save()
-        return self.render_to_response({"document_id":doc.id})
-        
-# TODO: Deprecated resources remove all references to this service before milestone v0.8.21                                 
-class DocAttachView2(JSONResponseMixin, View):
-    def post(self,request,document):
-        doc = get_object_or_404(Document,pk=document)        
-        attach = DocumentAttachment()
-        attach.name = request.POST['name'] 
-        attach.type = request.POST['type']
-        attach.size = request.POST['size']
-        attach.document = doc     
-        attach.save()        
-        #TODO: Refactor
-        # Refresh updated field and force reindex for search engine. 
-        # Maybe there is a way to handle with Event/listener pattern. Could be?   
-        doc.last_update_user = request.user        
-        doc.save()
-        return self.render_to_response(None)
-
-# TODO: Deprecated resources remove all references to this service before milestone v0.8.21
-class DocDeattachView(JSONResponseMixin, View):
-    def post(self,request,document):
-        doc = get_object_or_404(Document,pk=document)        
-        for id in request.POST.getlist('ids'):
-            doc_attach = get_object_or_404(DocumentAttachment,pk=id)
-            #Deleta do S3
-            conn = S3Connection()
-            bucket = conn.get_bucket(settings.config.get_s3_bucket())
-            k = Key(bucket)
-            k.key = "document/%s/%s" % (doc.id,doc_attach.name)
-            k.delete()
-            #Deleta do banco de dados
-            doc_attach.delete()
-            doc.last_update_user = request.user
-            doc.save()  
-        return self.render_to_response(None)
-    
-    
 class DocNewAttachView(JSONResponseMixin, View):
     def post(self,request,key):
         #create document
@@ -128,7 +85,6 @@ class DocDetachView(JSONResponseMixin, View):
         fs.delete()
         return self.render_to_response(None)
     
-
 class DocUserPermissionsView(JSONResponseMixin, View):
     def get(self,request,document):
         doc = Document.objects.get(id=document)
