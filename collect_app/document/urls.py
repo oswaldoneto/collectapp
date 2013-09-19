@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 from document.forms import DocumentClassifyForm
 from document.s3 import FormFieldsView
 from document.api import DocTagView, DocTagListView, DocAttachView,\
-    DocDeattachView, DocNewView, DocUserPermissionView, DocGroupPermissionView,\
+    DocUserPermissionView, DocGroupPermissionView,\
     DocPublicPermissionView, DocUserPermissionsView, DocGroupPermissionsView,\
     DocPublicPermissionsView, DocNewAttachView, DocDetachView
 from document.views import ClassifyDocView, PreviewDocView,\
@@ -37,30 +37,8 @@ urlpatterns = patterns('',
     (r'^api/document/(?P<document>\d+)/permission/(?P<permission>\w+)/public$', csrf_exempt(DocPublicPermissionView.as_view())),
     (r'^api/document/(?P<document>\d+)/permissions/user$', DocUserPermissionsView.as_view()),
     (r'^api/document/(?P<document>\d+)/permissions/group$', DocGroupPermissionsView.as_view()),
-    (r'^api/document/(?P<document>\d+)/permissions/public$', DocPublicPermissionsView.as_view()),
-
-    # TODO: Deprecated resources remove all references to this service before milestone v0.8.21
-    #(r'^api/document/(?P<document>\d+)/s3$', csrf_exempt(FormFieldsView.as_view())),
-    #(r'^api/document/(?P<document>\d+)/attach$', csrf_exempt(DocAttachView.as_view())),
-    #(r'^api/document/(?P<document>\d+)/deattach', csrf_exempt(DocDeattachView.as_view())),
-    #(r'^api/document/new$',csrf_exempt(DocNewView.as_view())),
-    
+    (r'^api/document/(?P<document>\d+)/permissions/public$', DocPublicPermissionsView.as_view()),    
     (r'^api/document/new/attach/key/(?P<key>\w+)$', csrf_exempt(DocNewAttachView.as_view())),
     (r'^api/document/(?P<document>\d+)/attach/key/(?P<key>\w+)$', csrf_exempt(DocAttachView.as_view())),
-    (r'^api/document/(?P<document>\d+)/detach/key/(?P<key>\w+)$', csrf_exempt(DocDetachView.as_view())),
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            
-    #TODO: REFACTOR migrate to class based generic view
-    #Function Views
-    (r'^document/(?P<document>\d+)/upload$','document.views.file_upload'),
+    (r'^api/document/(?P<document>\d+)/detach/key/(?P<key>\w+)$', csrf_exempt(DocDetachView.as_view())),            
 )
