@@ -36,9 +36,6 @@ a {
 	border-left: none; 
 	border-right: none;	
 }
-#header div h1 {
-	text-shadow: 2px 2px 2px #8B898B;	
-}
 #navigator {
 	float: left;
 	width: 200px;
@@ -203,16 +200,16 @@ table.table_form td.alert {
 /* --------------------*/
 /* Table Form Elements */
 /* --------------------*/
+
 table.simple_table {
-	width: 100%;
-	clear: both;
-	border-collapse: collapse;
+	background-color: #f3f3f3;		
 }
+
 table.simple_table td {
-	padding: 6px 5px;
-}
-table.simple_table thead th {
-	padding: 3px 0px 3px 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+	padding-left: 5px;	
 }
 
 /* -------------*/
@@ -419,6 +416,9 @@ ul.errorlist {
 .margin_r_double {
 	margin-right: 20px;
 }
+.margin_l_double {
+	margin-left: 20px;
+}
 .margin_auto {
 	margin-right: auto;
 	margin-left: auto;
@@ -437,6 +437,10 @@ ul.errorlist {
 }
 .margin_min_left {
 	margin-left: 5px;
+}
+.margin_min_lr {
+	margin-left: 5px;
+	margin-right: 5px;
 }
 .font_min {
 	font-size: .8em;

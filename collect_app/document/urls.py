@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 from document.forms import DocumentClassifyForm
 from document.s3 import FormFieldsView
 from document.api import DocTagView, DocTagListView, DocAttachView,\
-    DocDeattachView, DocNewView, DocUserPermissionView, DocGroupPermissionView,\
+    DocUserPermissionView, DocGroupPermissionView,\
     DocPublicPermissionView, DocUserPermissionsView, DocGroupPermissionsView,\
     DocPublicPermissionsView, DocNewAttachView, DocDetachView
 from document.views import ClassifyDocView, PreviewDocView,\

@@ -87,6 +87,9 @@ class DocumentClassifyForm(BaseForm):
             doc = models.Document(category=cat,owner=request.user,last_update_user=request.user)
         if doc and not doc.category:
             doc.category = cat
+            
+            
+            
         doc.save()                
         for doc_attr in doc_attrs:
             doc_attr.document = doc
