@@ -2,6 +2,14 @@ function submit() {
 
 }
 
+function refresh() {
+	window.location.reload(true);
+}
+
+function refreshParent() {
+	parent.window.location.reload(true);
+}
+
 function redirect(url) {
 	location = url;
 }

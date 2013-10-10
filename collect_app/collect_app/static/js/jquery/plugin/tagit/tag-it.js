@@ -70,8 +70,8 @@
             
     		// Jquery UI Tag-it extension
             // 
-            // When default true it´ll trigger to createTag on blur. This
-            // behavior don´t happen when false. 
+            // When default true it'll trigger to createTag on blur. This
+            // behavior don't happen when false. 
             //
             // @author: Oswaldo Neto
 		    //                    
@@ -120,6 +120,17 @@
             }
 
             this._tagInput = $('<input type="text">').addClass('ui-widget-content');
+            
+    		// Jquery UI Tag-it extension
+            // 
+            // Remove background 
+            //
+            // TODO: create widget options to remove background when needed
+            //
+            // @author: Oswaldo Neto
+		    //    
+		    this._tagInput.removeClass('ui-widget-content') 
+
             if (this.options.tabIndex) {
                 this._tagInput.attr('tabindex', this.options.tabIndex);
             }
@@ -137,6 +148,18 @@
             this.tagList
                 .addClass('tagit')
                 .addClass('ui-widget ui-widget-content ui-corner-all')
+                
+	    		// Jquery UI Tag-it extension
+	            // 
+	            // Remove background 
+	            //
+	            // TODO: create widget options to remove background when needed
+	            //
+	            // @author: Oswaldo Neto
+			    //                    
+                .css('background-image','none')
+                .css('background-color','white')
+                
                 // Create the input field.
                 .append($('<li class="tagit-new"></li>').append(this._tagInput))
                 .click(function(e) {

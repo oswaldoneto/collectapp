@@ -10,23 +10,6 @@
 
 {% block import_style %}
 	<style type="text/css">
-	
-		table.attribute_table {
-			border: 1px solid #d4ccb0;
-	        border-collapse:collapse;			
-	        font-size: .9em;
-			width: 100%;	
-			background-color: white;  
-		}
-		
-		table.attribute_table td  {
-			border: 1px solid #d4ccb0;
-			padding: 5px 5px;
-		}
-		
-		table.attribute_table tr > td:first-child {
-			font-weight: bold;
-		}
 	</style>
 {% endblock %}
 
@@ -40,84 +23,10 @@
 	</script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_preview.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/tag/tag-util.js"></script>	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
-			
-			/* Setting*/
-			//Upload and Remove Button Setting Startup Logic
-			{% if "change_document" not in public_permissions and "change_document" not in document_permissions %}
-				$("#uic_classify_link").hide();				
-				$("#uic_secure_link").hide();				
-			{% endif %}				
-			/* Events */
-			$("a[rel=uic_delete_file_link]").click(function(){
-				var key = $(this).attr('href');
-				var document_id = $(document).data("document_id");	
-				$.ajax({
-					url:sprintf("/api/document/%s/detach/key/%s",document_id,key),
-					type:"DELETE",
-					dataType:"json",
-					success: function(data) {
-						redirect(sprintf("/document/%s/preview",document_id));						
-					}					
-				});
-				return false;
-			});
-			
-			//TODO: Refactor unir com o search.xhtml
-			$("a[rel=uic_download-file_link]").click(function(){
-				var key = $(this).attr('href');
-				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
-					window.location=data.url_to_download; 
-				}).error(function(){
-					alert("Erro ao obter a url do arquivo");
-				});					
-				return false;				
-			});
-			
-			//TODO: Refactor unir com o search.xhtml
-			$("a[rel=uic_visualize-file_link]").click(function(){
-				var key = $(this).attr('href');
-				$.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){					
-
-					$.fancybox.open([
-					    {
-					        href : data.url_to_preview,
-					        title : data.filename,
-					    }    
-					], {
-						type : 'iframe',
-						padding    : 0,
-    					autoResize : false,
-						maxWidth   : 800,
-						maxHeight  : 600,
-						fitToView  : false,
-						width	   : '70%',
-						height	   : '70%',
-						minWidth   : 400,
-						minHeight  : 300,
-					});
-
-				}).error(function(){
-					alert("Erro ao obter a url do arquivo");
-				});					
-				return false;				
-			});
-
-			
-			
-			$("#uic_classify_link").click(function(){
-				redirect(sprintf("/document/%s/classify","{{params.document}}"));
-			});
-			$("#uic_secure_link").click(function(){
-				redirect(sprintf("/document/%s/permission","{{params.document}}"));
-			});
-		});	
-		
-		function xxx() {
-			alert("123");
-		}
+		});
 	</script>
 {% endblock %}
 
@@ -134,217 +43,102 @@
 {% endblock %}
 
 {% block content %}
-
-	<!-- Permissão de Usuários -->
-	<script id="uic_user_template" type="text/x-jquery-tmpl">
-		{% verbatim %}
-		<div class="margin_bottom_default">
-			<div class="floatl">
-				<i class="icon-user margin_right_default"></i>${name}	
-			</div>
-			<div class="floatr">
-				<span class="margin_lr_double">
-					{{if read == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Visualizar
-					</a>
-				</span>
-				<span class="margin_lr_double"> 
-					{{if change == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Alterar
-				</span>				
-				<span class="margin_lr_double"> 
-					<a href=""> 
-					{{if exclude == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Excluir
-					</a> 					
-				</span>				
-			</div>
-			<div class="clear"></div>
-		</div>
-		{% endverbatim %}			
-	</script>
 	
-	<!-- Permissão de Grupos -->
-	<script id="uic_group_template" type="text/x-jquery-tmpl">
-		{% verbatim %}
-		<div class="margin_bottom_default">
-			<div class="floatl">
-				<i class="icon-group margin_right_default"></i>${name}	
-			</div>
-			<div class="floatr">
-				<span class="margin_lr_double">
-					{{if read == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Visualizar
-					</a>
-				</span>
-				<span class="margin_lr_double"> 
-					{{if change == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Alterar
-				</span>				
-				<span class="margin_lr_double"> 
-					<a href=""> 
-					{{if exclude == "True"}}
-						<i class="icon-ok icon-large"></i>
-					{{else}}
-						<i class="icon-remove icon-large"></i>
-					{{/if}}
-					Excluir
-					</a> 					
-				</span>				
-			</div>
-			<div class="clear"></div>
-		</div>
-		{% endverbatim %}			
-	</script>		
-
-	
-	<!-- TODO: Refactor 72 -->	
 	<div class="ui-app-header">
 		<div class="ui-app-title">Visualizar Documento</div>
-	</div>
+	</div>	
 	
-	<table id="uic_files" class="simple_table">
-		<thead class="ui-widget-header">
-			<th style="width: 5px"></th>
-			<th style="width: 5px"></th>
-			<th style="text-align: left">Título</th>
-			<th style="text-align: left; width: 100px">Tamanho</th>
-			<th style="text-align: left; width: 200px">Modificado</th>	
-			<th style="width: 5px"></th>
-		</thead>
-		<tbody class="ui-widget-content">
-			{% if not document %}
-				{% for attach in attachment_list %}
-					<tr>
-						<td>
-							<a rel="uic_download-file_link" href="{{attach.file.key}}">
-								<i class="icon-cloud-download icon-large"></i>
-							</a>							
-						</td>
-						<td>	
-							<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
-								<i class="icon-external-link-sign icon-large"></i>
-							</a>																				
-						</td>
-						<td style="text-align: left">{{attach.file.filename}}</td>
-						<td style="text-align: left">{{attach.file.filesize|kilobytefy}}</td>
-						<td style="text-align: left">{{attach.file.updated|date:"d/m/Y H:i"}}</td>				
-						<td>
-							<a rel="uic_delete_file_link" href="{{attach.file.key}}">
-								<i class="icon-trash icon-large"></i>
-							</a>
-						</td>
-					</tr>
-				{% endfor %}			
-			{% else %}
-				<tr>
-					<td class="ui-state-disabled" colspan="4" align="center">Nenhum arquivo anexado</td>
-				</tr>
-			{% endif %}
-		</tbody>
-	</table>
-
-
-
-
-	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
-		<div style="float: left">Classificação</div>
-		<div style="float: right; cursor: pointer;" class="">
-			<a id="uic_classify_link"><span class="ui-icon ui-icon-folder-open" style="float: left"></span></a>
+	<div>
+		
+		<!-- Files -->
+		<div class="floatl">
+			<table class="simple_table ui-corner-all">
+				<tbody>
+					{% if not document %}
+						{% for attach in attachment_list %}
+							<tr>
+								<td>
+									<a rel="uic_download-file_link" href="{{attach.file.key}}">
+										<i class="icon-cloud-download icon-large"></i>
+									</a>							
+								</td>
+								<td>	
+									<a rel="uic_visualize-file_link" href="{{attach.file.key}}">
+										<i class="icon-external-link-sign icon-large"></i>
+									</a>																				
+								</td>
+								<td style="text-align: left; font-size: 1.2em">{{attach.file.filename}}</td>
+								<td style="text-align: right"><p class="margin_l_double ui-state-disabled">{{attach.file.filesize|kilobytefy}}</p></td>
+								<td style="width: 5px">
+									<a rel="uic_delete_file_link" href="{{attach.file.key}}">
+										<i class="icon-trash icon-large"></i>
+									</a>
+								</td>
+							</tr>
+						{% endfor %}			
+					{% else %}
+						<tr>
+							<td class="ui-state-disabled" colspan="4" align="center">Nenhum arquivo anexado</td>
+						</tr>
+					{% endif %}
+				</tbody>
+			</table>
 		</div>
-		<div class="clear"></div>		
-	</div>
-	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-		{% if category %}
-			<div style="float: left; width: 460px;">
-				<div style="font-weight: bold; margin-bottom: 5px;">{{category.title}}</div>
+		
+		<!-- Classification -->
+		<div class="floatl margin_l_default">
+			{% if category %}
+				<div style="font-weight: bold; margin-bottom: 5px; font-size: 1.4em">{{category.title}}</div>
 				<div>
 					<table class="attribute_table">
 						<tbody>
 							{% for doc_att in attribute_list %}
-								<tr><td>{{doc_att.attribute.name}}</td><td>{{doc_att.value.value}}</td></tr>					
+								<tr>
+									<td style="font-size: 1.2em; font-weight: bold;" >
+										<span class="ui-state-disabled">{{doc_att.attribute.name}}</span>
+										<small><i class="icon-angle-right ui-state-disabled"></i></small>
+									</td>
+									<td style="font-size: 1.2em">{{doc_att.value.value}}</td>
+								</tr>					
 							{% endfor %}
 						</tbody>
 					</table>
 				</div>
+			{% endif %}
+		</div>
+		
+		<div class="clear"></div>
+		
+		<!-- Tags -->
+		<div class="margin_top_double">
+			<div class="floatl" style="margin-top: 8px; margin-right: 5px">
+				<span class="bold">Tags</span>			
 			</div>
-			<div style="float: right; width: 280px;">
-				<div style="font-weight: bold; margin-bottom: 5px;">Tags</div>
-				<div>
-					{% for tag in tag_list %}
-						<p><span class="ui-icon ui-icon-tag" style="float: left;"></span>{{tag.name}}</p>				
-					{% endfor %}
+			<div class="floatr">
+				<div class="floatl" style="width: 690px">
+					<!--
+					<div id="uic_tag_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
+						<span class="ui-icon ui-icon-alert floatl"></span><p id="uic_tag_message"></p>
+					</div>
+					-->
+					<ul id="uic_tags"></ul>	
+				</div>
+				<div class="floatr margin_lr_default" style="margin-top: 8px">
+					<a id="uic_taglist_link">
+						<i class="icon-list-ul icon-large"></i>
+					</a>					
 				</div>
 			</div>
-			<div class="clear"></div>
-		{% else %}
-			<div class="ui-state-disabled">Sem classificação</div>		
-		{% endif %}
+		</div>		
+		<div id="uic_tag_dialog" class="hide">
+			<table id="uic_tag_table" class="display">		
+			</table>			
+		</div>			
+
 	</div>
 	
+	<div class="clear"></div>
 	
+	<!-- --> 		
 	
-	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
-		<div style="float: left">Permissões</div>
-		<div style="float: right; cursor: pointer;">
-			<a id="uic_secure_link">
-				<span class="ui-icon ui-icon-folder-open" style="float: left"></span>
-			</a>
-		</div>
-		<div class="clear"></div>		
-	</div>
-	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-		<div id="uic_users_container"></div>
-		<div id="uic_group_container"></div>
-	</div>
-	
-	
-	<!-- Change History -->
-	<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
-		<div>Histórico de Alteração</div>
-	</div>
-	<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-		<div>
-			<p><strong>Dono</strong> {{ doc.owner }}</p>			
-		</div>
-		<div class="floatl" style="width: 50%;">
-			<p><strong>Criado em</strong> {{ doc.created }}</p>			
-		</div>
-		<div class="floatr" style="width: 50%;">
-			<p><strong>Alterado em</strong> {{ doc.updated }} <strong>por</strong> {{doc.last_update_user}}</p>						
-		</div>
-		<div class="clear"></div>
-	</div>	
-	
-	<!-- TODO: REMOVE -->
-	{% if show_back_to_search %}
-		<!--
-		<a>
-		<span id="uic_back_button" class="floatl margin_top_double">
-			<i class="icon-arrow-left icon-large"></i> <b>Voltar</b>
-		</span>
-		</a>
-		-->
-	{% endif %}
-		
 {% endblock %}

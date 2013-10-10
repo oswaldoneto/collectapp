@@ -1,4 +1,3 @@
-
 /**
  * Extract labels from value label pair.
  * 
