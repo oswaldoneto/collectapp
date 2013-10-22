@@ -62,12 +62,7 @@ def assign_owner_permissions(sender,**kwargs):
 		assign("change_document",owner,doc)
 		assign("delete_document",owner,doc)
 		
-@receiver(post_save,sender=Document)
-def copy_category_tags(sender,**kwargs):
-	print "xxx"
-	
-	
-
+		
 class DocumentPublicPermission(models.Model):
 	document = models.ForeignKey(Document)
 	permission = models.ForeignKey(Permission)
