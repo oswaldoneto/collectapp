@@ -39,7 +39,6 @@ class DocTagListView(JSONResponseMixin, View):
         doc = get_object_or_404(Document,pk=document)
         return self.render_to_response({
             "document_tags":self.dict_tag(doc.all_tags()),
-            "category_tags":self.dict_tag(doc.category.tags.all()),
             "all_tags":self.dict_tag(Tag.objects.all())
         })
     def dict_tag(self,tag_objects):  

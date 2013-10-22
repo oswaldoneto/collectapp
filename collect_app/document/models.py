@@ -23,10 +23,10 @@ class Document(models.Model):
 	last_update_user = models.ForeignKey(User,related_name='document_last_update_user')
 	tags = models.ManyToManyField(Tag, null=True)
 	def all_tags(self):
-		if not self.tags or not self.category:
+		if not self.tags:
 			return []
 		else:
-			return list(chain(self.category.tags.all(), self.tags.all()))
+			return self.tags.all()
 	def all_attributes(self):		
 		doc_attrs = DocumentAttribute.objects.filter(document=self).order_by('attribute__order')
 		for doc_attr in doc_attrs:
@@ -61,6 +61,7 @@ def assign_owner_permissions(sender,**kwargs):
 		assign("read_document",owner,doc)
 		assign("change_document",owner,doc)
 		assign("delete_document",owner,doc)
+		
 		
 class DocumentPublicPermission(models.Model):
 	document = models.ForeignKey(Document)

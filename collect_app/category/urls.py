@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import *
 from tag.views import TagCreateView, TagEditView, TagDeleteView
-from tag.api import TagListView
 from category import views
 from category.api import CategoryTagListView, CategoryTagView,\
     CategoryAttributeReOrderView

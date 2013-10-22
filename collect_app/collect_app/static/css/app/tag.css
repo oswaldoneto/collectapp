@@ -1,0 +1,65 @@
+body {
+	height: 200px;
+}
+.left-side {
+	width: 190px;
+	height: 200px;
+}
+.left-side-center {
+	width: 150px;
+	margin: 60px auto;			
+}
+.left-side-center input {
+	width: 143px;
+	height: 20px;
+	padding: 3px 3px 3px 3px;
+}		
+.left-side-center button {
+	margin-top: 20px;
+	width: 150px;
+}		
+.right-side {
+	width: 190px;
+	height: 200px;
+}
+
+/*
+ * DataTable styling
+ */
+table.ui-table-option td {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border: none;
+}
+
+table.ui-table-option td a {
+	color: #312e25;
+}
+.dataTables_filter {
+	height: 30px;
+	width: 10px;
+	float: left;
+	font-family: segoe ui, Arial, sans-serif; font-size: 0.8em;			
+}
+.dataTables_filter input {
+	-moz-border-radius-topleft: 6px; 
+	-webkit-border-top-left-radius: 6px; 
+	-khtml-border-top-left-radius: 6px; 
+	border-top-left-radius: 6px;
+	-moz-border-radius-topright: 6px; 
+	-webkit-border-top-right-radius: 6px; 
+	-khtml-border-top-right-radius: 6px; 
+	border-top-right-radius: 6px; 
+	-moz-border-radius-bottomleft: 6px; 
+	-webkit-border-bottom-left-radius: 6px; 
+	-khtml-border-bottom-left-radius: 6px; 
+	border-bottom-left-radius: 6px; 
+	-moz-border-radius-bottomright: 6px; 
+	-webkit-border-bottom-right-radius: 6px; 
+	-khtml-border-bottom-right-radius: 6px; 
+	border-bottom-right-radius: 6px; 
+	border: 1px solid #dfd9c3;
+	padding: 2px 2px 2px 2px;
+	margin-top: 2px;
+	width: 170px;
+}

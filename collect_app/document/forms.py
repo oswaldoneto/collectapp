@@ -69,6 +69,7 @@ class DocumentClassifyForm(BaseForm):
         doc = None
         if DocumentClassifyMetaclass.DOCUMENT_FIELD_NAME in self.initial:
             doc = models.Document.objects.get(id=self.initial[DocumentClassifyMetaclass.DOCUMENT_FIELD_NAME])
+        new_category = False
         cat = None
         doc_attrs = []                
         for field_name, field_value in self.cleaned_data.iteritems():
@@ -85,9 +86,13 @@ class DocumentClassifyForm(BaseForm):
                 doc_attrs.append(doc_attr)
         if not doc:
             doc = models.Document(category=cat,owner=request.user,last_update_user=request.user)
+            new_category = True
         if doc and not doc.category:
             doc.category = cat
-        doc.save()                
+            new_category = True
+        doc.save()             
+        if new_category:
+            doc.tags = doc.category.tags.all()
         for doc_attr in doc_attrs:
             doc_attr.document = doc
             doc_attr.save()
