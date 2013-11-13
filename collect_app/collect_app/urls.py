@@ -5,6 +5,8 @@ from django.views.generic.base import TemplateView
 
 admin.autodiscover()
 
+handler500 = 'collect_app.views.server_error'
+
 urlpatterns = patterns('',
 	#Index Page
 	(r'^$', TemplateView.as_view(
@@ -30,13 +32,16 @@ urlpatterns = patterns('',
 	url(r'', include('error.urls')),
 	# Storage App
 	url(r'', include('storage.urls')),
+	
+	(r'^pages/', include('django.contrib.flatpages.urls')),
+	
 )
 
-if settings.DEBUG:	
-	urlpatterns += patterns('',
-		(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_DOC_ROOT}),
-		(r'^media/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.MEDIA_ROOT}),
-	)	
+#if settings.DEBUG:	
+urlpatterns += patterns('',
+	(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_DOC_ROOT}),
+	(r'^media/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.MEDIA_ROOT}),
+)	
 	
 
 	

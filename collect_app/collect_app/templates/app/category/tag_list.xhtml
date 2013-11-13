@@ -3,101 +3,141 @@
 {% block page_index %}2{% endblock %}
 
 {% block category_script %}
-		<script type="text/javascript">
-			$(document).ready(function(){
-				$.get("/api/category/{{category.id}}/tag",{},function(data){
-										
-					//TODO: is it possible become hack behavior part of the tag-it?
-					//hack to disable on tag added event until load current tags,
-					//this don´t allow post request during loading
-					$(document).data("disarm_on_tagadded",false);
+    <script type="text/javascript">
 
-					//tag-it component
-					var $uic_tags = $("#uic_tags").tagit({
-						createTagOnBlur:false,						
-						availableTags:fnListTagLabel($(data.all_tags)),
-		    			onBeforeTagAdded:function(event,tag) {
-				        	if (fnGetTagId(tag.text(),data.all_tags) == null) {
-								$("#uic_tag_message").text("Não é uma tag válida");			        		
-								$("#uic_tag_feedback").show("fast");
-								setTimeout(function() {
-							        $("#uic_tag_feedback").hide("slow");
-							    }, 5000);    				
-				        		return false;
-				        	}
-				        	return true;
-		    			},	   
-		    			onTagAdded: function(event, tag) {
-							if ($(document).data("disarm_on_tagadded")) {
-					        	var tag = tag.text().substring(0, tag.text().length-1);
-					        	var tag_id = fnGetTagId(tag,data.all_tags);
-				    			$.ajax({
-									url:sprintf("/api/category/{{category.id}}/tag/%s",tag_id),
-									type:"POST",
-									dataType:"json"
-								});
-		    				}
-				    	},	
-					    onTagRemoved: function(event, tag) {
-		    				if (tag.text().length != 0 ) {
-						        var tag = tag.text().substring(0, tag.text().length-1);
-						        var tag_id = fnGetTagId(tag,data.all_tags);
-								$.ajax({
-									url:sprintf("/api/category/{{category.id}}/tag/%s",tag_id),
-									type:"DELETE",
-									dataType:"json"
-								});
-							}
-						}	        		
-					});
-		        	$.each(data.category_tags,function(){
-						$uic_tags.tagit("createTag",this.label);
-					});
-					
-					var $uic_tag_table = $("#uic_tag_table").dataTable({
-						"aaData": fnListTagLabelAndValue(data.all_tags),
-						"bAutoWidth": false,
-					    "aoColumns": [
-				            {   "fnRender": function(obj) {
-								   return sprintf(
-								   	 "<a id='uic_addtag_link' rel='addtag_link' href='%s' class='ui-icon ui-icon-squaresmall-plus'></a>",
-								   	 obj.aData[obj.iDataColumn]
-								   );
-							   	},
-							   	"sWidth":"1px"
-				             },
-				             null
-				        ],				
-				        "sScrollY": "200px",
-				        "bPaginate": false,
-						"oLanguage": {
-							"sSearch": "Buscar",
-							"sInfo": "_TOTAL_ tag(s) encontrada(s)",
-							"sInfoFiltered": "(total _MAX_)",
-						}		        
-					});
-					
-					$("a[rel='addtag_link']").click(function(){
-						$(this).addClass("ui-state-disabled");
-						var tag_id = $(this).attr('href');
-						$uic_tags.tagit("createTag", fnGetTagLabel(tag_id,data.all_tags));
-						return false;
-					});		
-					
-					$(document).data("disarm_on_tagadded",true);	       
-				});
-				
-				$("#uic_taglist_link").click(function(){
-					$("#uic_tag_dialog").dialog({
-						title:'Tags',
-						width:450,
-						height: 300,
-					});
-					$("#uic_tag_dialog").dialog('open',{ position:'center' });
-				});
-				
-			});
-		</script>
+        $(document).ready(function(){
+            $.get("/api/category/{{category.id}}/tag",{},function(data){
+
+                //TODO: is it possible become hack behavior part of the tag-it?
+                //hack to disable on tag added event until load current tags,
+                //this don´t allow post request during loading
+                $(document).data("disarm_on_tagadded",false);
+
+                //tag-it component
+                var $uic_tags = $("#uic_tags").tagit({
+                    createTagOnBlur:false,
+                    availableTags:fnListTagLabel($(data.all_tags)),
+
+
+                    onBeforeTagAdded:function(event,tag) {
+                        if (fnGetTagId(tag.text(),data.all_tags) == null) {
+                            $.fancybox.open([{
+                                    href : sprintf('/tag/dialog?name=%s',tag.text())
+                                }], {
+                                    'type'             : 'iframe',
+                                    'autoScale'     : false,
+                                    'autoDimensions': false,
+                                    'width'         : 400,
+                                    'height'         : 250,
+                                    'modal'         : false,
+                                }
+                            );
+                            return false;
+                        }
+                        return true;
+                    },
+
+
+                    onTagAdded: function(event, tag) {
+                        if ($(document).data("disarm_on_tagadded")) {
+                            var tag = tag.text().substring(0, tag.text().length-1);
+                            var tag_id = fnGetTagId(tag,data.all_tags);
+                            $.ajax({
+                                url:sprintf("/api/category/{{category.id}}/tag/%s",tag_id),
+                                type:"POST",
+                                dataType:"json"
+                            });
+                        }
+                    },
+                    onTagRemoved: function(event, tag) {
+                        if (tag.text().length != 0 ) {
+                            var tag = tag.text().substring(0, tag.text().length-1);
+                            var tag_id = fnGetTagId(tag,data.all_tags);
+                            $.ajax({
+                                url:sprintf("/api/category/{{category.id}}/tag/%s",tag_id),
+                                type:"DELETE",
+                                dataType:"json"
+                            });
+                        }
+                    }
+                });
+                $.each(data.category_tags,function(){
+                    $uic_tags.tagit("createTag",this.label);
+                });
+
+                var $uic_tag_table = $("#uic_tag_table").dataTable({
+                    "aaData": fnListTagLabelAndValue(data.all_tags),
+                    "bAutoWidth": false,
+                    "aoColumns": [
+                        {   "fnRender": function(obj) {
+                               return sprintf(
+                                    "<a id='uic_addtag_link' rel='addtag_link' href='%s' class='ui-icon ui-icon-squaresmall-plus'></a>",
+                                    obj.aData[obj.iDataColumn]
+                               );
+                               },
+                               "sWidth":"1px"
+                         },
+                         null
+                    ],
+                    "sScrollY": "200px",
+                    "bPaginate": false,
+                    "oLanguage": {
+                        "sSearch": "Buscar",
+                        "sInfo": "_TOTAL_ tag(s) encontrada(s)",
+                        "sInfoFiltered": "(total _MAX_)",
+                    }
+                });
+
+                $("a[rel='addtag_link']").click(function(){
+                    $(this).addClass("ui-state-disabled");
+                    var tag_id = $(this).attr('href');
+                    $uic_tags.tagit("createTag", fnGetTagLabel(tag_id,data.all_tags));
+                    return false;
+                });
+
+                $("#uic_taglist_link").click(function(){
+                    $.fancybox.open([{
+                            href : '/tag/dialog',
+                        }], {
+                            'type'             : 'iframe',
+                            'autoScale'     : false,
+                            'autoDimensions': false,
+                            'width'         : 400,
+                            'height'         : 250,
+                            'modal'         : false,
+                            }
+                    );
+                    return false;
+                });
+
+                $(document).data("disarm_on_tagadded",true);
+            });
+
+            /*
+            $("#uic_taglist_link").click(function(){
+                $("#uic_tag_dialog").dialog({
+                    title:'Tags',
+                    width:450,
+                    height: 300,
+                });
+                $("#uic_tag_dialog").dialog('open',{ position:'center' });
+            });
+            */
+
+        });
+
+        function fnCreateOrSelectTagCallback(tag_id) {
+            $.ajax({
+                url:sprintf("/api/category/{{category.id}}/tag/%s",tag_id),
+                type:"POST",
+                dataType:"json",
+                success: function(data) {
+                    refresh();
+                }
+            });
+        }
+
+    </script>
 {% endblock %}
 
 {% block trail %}
@@ -111,24 +151,19 @@
 {% endblock %}
 
 {% block category_title %}Tags da categoria{% endblock %}
-{% block category_content %}	
-	<form>
-		{% csrf_token %}
-		<div id="uic_tag_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
-			<span class="ui-icon ui-icon-alert floatl"></span><p id="uic_tag_message"></p>
-		</div>
-		<div class="floatr" style="cursor: pointer;">
-			<a id="uic_taglist_link">
-				<p style="font-weight: normal;"><span class="ui-icon ui-icon-script" style="float: left"></span>Listar</p>
-			</a>
-		</div>
-		<div class="clear"></div>				
-		<ul id="uic_tags"></ul>
-	</form>					
-	
-	<div id="uic_tag_dialog" class="hide">
-		<table id="uic_tag_table" class="display">		
-		</table>			
-	</div>			
-			
+{% block category_content %}
+    <form>
+        {% csrf_token %}
+        <div>
+            <div class="floatl" style="width: 725px">
+                <ul id="uic_tags"></ul>
+            </div>
+            <div class="floatr margin_lr_default" style="margin-top: 8px">
+                <a id="uic_taglist_link">
+                    <i class="icon-list-ul icon-large"></i>
+                </a>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </form>
 {% endblock %}

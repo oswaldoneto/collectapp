@@ -4,7 +4,7 @@ from collect_app.config import Config
 
 config = Config()
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 PROJECT_ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -38,7 +38,7 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': config.get_ix_engine(),
         'URL': config.get_ix_url(),
-        'INDEX_NAME':config.get_ix_name(), 
+        'INDEX_NAME':config.get_ix_name(),
     },
 }
 
@@ -121,7 +121,8 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.static'                               
+    'django.core.context_processors.static',
+    'django.core.context_processors.request',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -130,6 +131,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',	
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
 ROOT_URLCONF = 'collect_app.urls'
@@ -152,7 +154,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',	
+    'django.contrib.staticfiles',
+    'django.contrib.flatpages',	
     #dependency apps
     'guardian',
     'haystack',
@@ -197,14 +200,16 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
         },
+                
+ 
     }
 }
 

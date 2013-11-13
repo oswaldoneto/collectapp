@@ -16,7 +16,6 @@ from django.contrib.auth.models import Group, User
 from document.jsonutil import parseGroupPermission,\
     parseGroupPermissions
 from django.contrib.comments import get_form
-from tag.api import TagListView
 from tag.models import Tag
 import datetime
 import base64

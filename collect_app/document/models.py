@@ -23,10 +23,7 @@ class Document(models.Model):
 	last_update_user = models.ForeignKey(User,related_name='document_last_update_user')
 	tags = models.ManyToManyField(Tag, null=True)
 	def all_tags(self):
-		if not self.tags or not self.category:
-			return []
-		else:
-			return list(chain(self.category.tags.all(), self.tags.all()))
+		return [] if not self.tags else self.tags.all()
 	def all_attributes(self):		
 		doc_attrs = DocumentAttribute.objects.filter(document=self).order_by('attribute__order')
 		for doc_attr in doc_attrs:

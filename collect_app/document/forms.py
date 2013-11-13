@@ -7,6 +7,8 @@ from document.widgets import DateWidget
 from document import models
 from document.models import Document
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.db import transaction
 
 class DocumentForm(forms.Form):
     pass
@@ -65,6 +67,7 @@ class DocumentClassifyMetaclass(type):
 
 class DocumentClassifyForm(BaseForm):
     __metaclass__ = DocumentClassifyMetaclass    
+    @method_decorator(transaction.commit_on_success)
     def save(self,request):
         doc = None
         if DocumentClassifyMetaclass.DOCUMENT_FIELD_NAME in self.initial:

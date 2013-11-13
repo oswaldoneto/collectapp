@@ -1,0 +1,52 @@
+{% extends "layout/template_error.xhtml" %}
+
+{% block title %}Collect Project{% endblock %}
+
+{% block import_style %}
+	<style>
+		.ui-state-normal {
+			color: #327e04;
+			font-weight: bold;
+		}
+		
+	</style>
+{% endblock %}
+
+{% block startup_script %}
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			
+			$uic_try_button = $("#uic_try_button").button();
+			
+			$uic_try_button.click(function() {
+				refresh();	
+			});
+		});
+	</script>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+	<p style="color: white;">500</p>	
+	<i class="icon-exclamation-sign icon-4x ui-state-error-text"></i>
+	
+	<p class="margin_min_top margin_bottom_double ui-state-error-text ui-priority-primary">Desculpe, essa página esta termporariamente indisponível.</p>
+
+		
+	<button id="uic_try_button" class="margin_top_double margin_bottom_double" style="font-size: 1.4em">Tentar Novamente</button>
+	
+		
+	<p class="margin_top_double" style="font-size: 0.7em">suporte@collectapp.com.br</p>
+	
+
+
+
+{% endblock %}
+
+
+

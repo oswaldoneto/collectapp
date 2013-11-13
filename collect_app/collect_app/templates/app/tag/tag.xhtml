@@ -1,0 +1,39 @@
+{% extends "layout/template_dialog.xhtml" %}
+
+{% block import_style %}
+	<link rel="stylesheet" href="{{STATIC_URL}}css/app/tag.css" />	
+{% endblock %}
+
+{% block startup_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/tag/tag.js"></script>	
+{% endblock %}
+
+{% block content %}
+
+	<div class="floatl left-side">
+		<div class="left-side-center">
+			<input id="uic_tag_input" type="text" class="ui-widget ui-widget-content ui-corner-all" value="{{ request.GET.name }}"/>
+			<button id="uic_create_button">Criar</button>
+		</div>	
+	</div>
+	
+	<div class="floatr right-side">
+		<table id="uic_tg_table" class="ui-widget ui-table-option">
+			<thead>
+				<th>
+					<td></td>
+				</th>
+			</thead>
+			<tbody>
+				{% for t in tag_list %}
+					<tr>
+						<td>
+							<a rel="uic_tag_link" href="{{t.id}}">{{t.name}}</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+{% endblock %}

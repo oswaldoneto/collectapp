@@ -1,9 +1,9 @@
 <dl class="ui-main-menu">
 	<dt>Documento</dt>
+		<dd><a id="uic_search_link" href="">Pesquisar</a></dd>
 		<dd><a>{% include "app/document/new_upload_form.xhtml" %}</a>
 		</dd>
 		<dd><a id="uic_newdoc_link" href=""></i>Classificação</a></dd>
-		<dd><a id="uic_search_link" href="">Pesquisar</a></dd>
 	{% if perms.category.add_category %}
 		<dt>Classificação</dt>
 			<dd><a id="uic_category_link" href="/list">Categorias</a></dd>

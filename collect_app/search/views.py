@@ -1,13 +1,11 @@
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from document.models import Document
-from search.forms import TextSearchForm
-from haystack.views import SearchView, FacetedSearchView
+
+from haystack.views import SearchView
 from collect_app import settings
 from guardian.shortcuts import get_perms
 from ext.shortcuts import get_public_perms
 from haystack.query import SearchQuerySet
-import itertools
+
+from pyelasticsearch import ElasticSearch        
 
 class TextSearchView(SearchView):
     def extra_context(self):
@@ -30,8 +28,11 @@ class TextSearchView(SearchView):
         for item in result:
             if get_perms(self.request.user,item.object) or get_public_perms(item.object):
                 filtered.append(item)
+        if len(filtered) == 0:            
+            es = ElasticSearch(settings.HAYSTACK_CONNECTIONS['default']['URL'])
+            es.health()
         return filtered
-    
+
     
 
 
