@@ -17,12 +17,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': config.get_db_engine(), 					                        
+        'ENGINE': config.get_db_engine(),                                             
         'NAME': config.get_db_name(),                                               
-        'USER': config.get_db_user(),                      							
-        'PASSWORD': config.get_db_password(),                  						
-        'HOST': config.get_db_host(),                      							
-        'PORT': config.get_db_port(),                      							
+        'USER': config.get_db_user(),                                                  
+        'PASSWORD': config.get_db_password(),                                          
+        'HOST': config.get_db_host(),                                                  
+        'PORT': config.get_db_port(),                                                  
     }
 }
 
@@ -130,7 +130,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',	
+    'django.contrib.messages.middleware.MessageMiddleware',    
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
@@ -143,7 +143,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-	os.path.join(PROJECT_ROOT_PATH,'templates'),
+    os.path.join(PROJECT_ROOT_PATH,'templates'),
 )
 
 INSTALLED_APPS = (
@@ -155,14 +155,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.flatpages',	
+    'django.contrib.flatpages',    
     #dependency apps
     'guardian',
     'haystack',
     #business apps
-	'login',
-	'category',
-	'document',
+    'login',
+    'category',
+    'document',
     'tag',
     'status',
     'storage',
@@ -212,5 +212,3 @@ LOGGING = {
  
     }
 }
-
-
