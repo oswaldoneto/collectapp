@@ -149,10 +149,4 @@ class PermissionDocView(TemplateView):
         return context
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
-        return super(PermissionDocView, self).dispatch(*args, **kwargs)
-
-    
-class AttachmentDocView(ListView):
-    model = DocumentAttachment
-    template_name = "app/document/document_view.xhtml"
-    
+        return super(PermissionDocView, self).dispatch(*args, **kwargs)    

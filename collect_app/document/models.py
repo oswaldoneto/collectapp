@@ -12,10 +12,9 @@ from guardian.managers import UserObjectPermissionManager
 from guardian.models import UserObjectPermission
 from guardian.utils import clean_orphan_obj_perms
 
-class Document(models.Model):
-    
-    class Meta:permissions = (('read_document', 'Can read document'),)
 
+class Document(models.Model):
+    class Meta:permissions = (('read_document', 'Can read document'),)
     category = models.ForeignKey(Category, null=True)
     created = models.DateField(auto_now=True)
     updated = models.DateField(auto_now=True)
@@ -49,7 +48,7 @@ class Document(models.Model):
         #TODO: Refactor
         clean_orphan_obj_perms()
         
-                    
+            
 @receiver(post_save,sender=Document)
 def assign_owner_permissions(sender,**kwargs):
     if kwargs['created'] == True:
@@ -58,34 +57,42 @@ def assign_owner_permissions(sender,**kwargs):
         assign("read_document",owner,doc)
         assign("change_document",owner,doc)
         assign("delete_document",owner,doc)
-        
+
+
 class DocumentPublicPermission(models.Model):
     document = models.ForeignKey(Document)
     permission = models.ForeignKey(Permission)
-    
-class DocumentAttachment(models.Model):
-    name = models.CharField(max_length=255, editable=False)
-    size = models.IntegerField(editable=False)
-    type = models.CharField(max_length=255, editable=False)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    updated = models.DateTimeField(auto_now=True, auto_now_add=True, editable=False)
-    document = models.ForeignKey(Document)
-    
+
+        
 class DocumentAttach(models.Model):
     file = models.ForeignKey(FileStorage)
     document = models.ForeignKey(Document)
+
+
+@receiver(post_delete,sender=DocumentAttach)
+def delete_empty_document(sender,**kwargs):
+    docAttach = kwargs['instance']
+    noneDocAttach = DocumentAttach.objects.filter(document=docAttach.document).count() == 0
+    noneCategory = docAttach.document.category == None
+    if noneDocAttach and noneCategory:
+        docAttach.document.delete()
+        
                 
 class AbstractValue(models.Model):
     pass
 
+
 class CharValue(AbstractValue):
     value = models.CharField(max_length=100,null=True)
 
+
 class IntegerValue(AbstractValue):
     value = models.BigIntegerField(null=True)
+
     
 class DateValue(AbstractValue):
     value = models.DateField(null=True)
+
     
 class DocumentAttribute(models.Model):
     value = models.ForeignKey(AbstractValue)

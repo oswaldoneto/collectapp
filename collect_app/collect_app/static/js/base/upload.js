@@ -3,22 +3,18 @@ $(document).ready(function(){
 	
 	upload_file_form_listener($("#uic_new_upload_form"),function(key) {
 		$.post(sprintf("/api/document/new/attach/key/%s",key),{},function(attach_data){
-			//Sucess upload transaction
 			redirect(sprintf("/document/%s/preview",attach_data.document_id));						
-		}).error(function(){ 
-			//404 indicates file not found
-			alert('Falha ao associar o arquivo ao documento.'); 			
+		}).error(function(){
+			redirectToErrorPage();
 		});		
 	});
 	
 	upload_file_form_listener($("#uic_upload_form"),function(key) {
 		var document_id = $(document).data("document_id");
 		$.post(sprintf("/api/document/%s/attach/key/%s",document_id,key),{},function(attach_data){
-			//Sucess upload transaction
 			redirect(sprintf("/document/%s/preview",attach_data.document_id));						
 		}).error(function(){ 
-			//404 indicates file not found
-			alert('Falha ao associar o arquivo ao documento.'); 			
+			redirectToErrorPage();
 		});				
 	});
 });

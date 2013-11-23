@@ -15,7 +15,7 @@ function redirect(url) {
 }
 
 function redirectToErrorPage() {
-    location = "/error";
+    location = "/500";
 }
 
 function pleaseWait() {

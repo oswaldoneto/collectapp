@@ -3,8 +3,6 @@ var $uic_tags = null;
 $(document).ready(function() {
     /* OnLoad ----- */
     var document_id = $(document).data("document_id");
-    //fnRefreshUserContainer(document_id);
-    //fnRefreshGroupContainer(document_id);
 
     $.get(sprintf("/api/document/%s/tag",document_id),{},function(data){
 
@@ -16,9 +14,7 @@ $(document).ready(function() {
         //tag-it component
         $uic_tags = $("#uic_tags").tagit({
             createTagOnBlur:false,
-
             availableTags:fnListTagLabel(data.all_tags),
-
             onBeforeTagAdded:function(event,tag) {
                 if (fnGetTagId(tag.text(),data.all_tags) == null) {                	
                     $.fancybox.open([{
@@ -36,12 +32,6 @@ $(document).ready(function() {
                 }
                 return true;
             },
-
-
-
-
-
-
             onTagAdded: function(event, tag) {
                 if ($(document).data("disarm_on_tagadded")) {
                     var tag = tag.text().substring(0, tag.text().length-1);
@@ -53,24 +43,6 @@ $(document).ready(function() {
                     });
                 }
             },
-            /*
-            onBeforeTagRemoved:function(event,tag) {
-                if (tag.text().length != 0 ) {
-                    var tag_name = tag.text().substring(0, tag.text().length-1);
-                    if (fnGetTagId(tag_name,data.category_tags) != null) {
-                        tag.addClass("ui-state-error");
-                        $("#uic_tag_message").text("A tag não pode ser deletada.");
-                        $("#uic_tag_feedback").show("fast");
-                        setTimeout(function() {
-                            $("#uic_tag_feedback").hide("slow");
-                            tag.removeClass("ui-state-error");
-                        }, 5000);
-                        return false;
-                    }
-                }
-                return true;
-            },
-            */
             onTagRemoved: function(event, tag) {
                 if (tag.text().length != 0 ) {
                     var tag_name = tag.text().substring(0, tag.text().length-1);
@@ -83,10 +55,11 @@ $(document).ready(function() {
                 }
             }
         });
+        
         $.each(data.document_tags,function(){
             $uic_tags.tagit("createTag",this.label);
         });
-
+        
         var $uic_tag_table = $("#uic_tag_table").dataTable({
             "aaData": fnListTagLabelAndValue(data.all_tags),
             "bAutoWidth": false,
@@ -121,11 +94,24 @@ $(document).ready(function() {
     });
 
 
-
-
-
-
-
+	$("a[rel=uic_delete_file_link]").click(function(){
+		var key = $(this).attr('href');
+		var document_id = $(document).data("document_id");	
+		$.ajax({
+			url:sprintf("/api/document/%s/detach/key/%s",document_id,key),
+			type:"DELETE",
+			dataType:"json",
+			success: function(data) {
+				if (data.document_deleted == true) {
+					redirect("/search");									
+				}
+				else {
+					redirect(sprintf("/document/%s/preview",document_id));				
+				}
+			}					
+		});
+		return false;
+	});
 
 
     //TODO: Refactor unir com o search.xhtml
@@ -139,11 +125,11 @@ $(document).ready(function() {
         return false;
     });
 
+
     //TODO: Refactor unir com o search.xhtml
     $("a[rel=uic_visualize-file_link]").click(function(){
         var key = $(this).attr('href');
         $.get(sprintf(sprintf("/api/storage/key/%s",key)),{}, function(data){
-
             $.fancybox.open([
                 {
                     href : data.url_to_preview,
@@ -161,7 +147,6 @@ $(document).ready(function() {
                 minWidth   : 400,
                 minHeight  : 300,
             });
-
         }).error(function(){
             alert("Erro ao obter a url do arquivo");
         });
@@ -183,18 +168,7 @@ $(document).ready(function() {
         );
         return false;
     });
-
-
-
-
-
-
-
-
-
 });
-
-
 
 
 function fnRefreshUserContainer(document_id) {
@@ -215,6 +189,8 @@ function fnRefreshUserContainer(document_id) {
         redirectToErrorPage();
     });
 }
+
+
 function fnRefreshGroupContainer(document_id) {
     jQuery('#uic_group_container div').html(''); //clear div element
     $.get(sprintf("/api/document/%s/permissions/group",document_id),{}, function(data){
@@ -235,6 +211,8 @@ function fnRefreshGroupContainer(document_id) {
         redirectToErrorPage();
     });
 }
+
+
 function fnHasPermission(perm, permlist) {
     if (jQuery.inArray(perm,permlist) > -1  ) {
         return "True";
@@ -244,11 +222,9 @@ function fnHasPermission(perm, permlist) {
     }
 }
 
+
 function fnCreateOrSelectTagCallback(tag_id) {
-	
-	
-    var document_id = $(document).data("document_id");
-    
+    var document_id = $(document).data("document_id");    
     $.ajax({
         url:sprintf("/api/document/%s/tag/%s",document_id,tag_id),
         type:"POST",

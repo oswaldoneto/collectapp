@@ -11,6 +11,8 @@ from collect_app import settings
 from django.utils.decorators import method_decorator
 from ext.views.decorator.docperm import document_permission_or_403
 from storage.models import FileStorage
+from django.db import transaction
+
 
 class DocTagView(JSONResponseMixin, View):
     def post(self,request,document,tag):
@@ -28,6 +30,7 @@ class DocTagView(JSONResponseMixin, View):
         doc.save()
         return self.render_to_response(None)
 
+
 class DocTagListView(JSONResponseMixin, View):
     def get(self,request,document):
         doc = get_object_or_404(Document,pk=document)
@@ -38,7 +41,9 @@ class DocTagListView(JSONResponseMixin, View):
     def dict_tag(self,tag_objects):
         return [({"value":tag.id,"label":tag.name}) for tag in tag_objects]
 
+
 class DocNewAttachView(JSONResponseMixin, View):
+    @method_decorator(transaction.commit_on_success)    
     def post(self,request,key):
         #create document
         doc = Document(owner=self.request.user,last_update_user=self.request.user)
@@ -49,9 +54,11 @@ class DocNewAttachView(JSONResponseMixin, View):
         attach.save()
         #save to rebuild index
         doc.save()
-        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
+        return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})            
+
 
 class DocAttachView(JSONResponseMixin, View):
+    @method_decorator(transaction.commit_on_success)    
     def post(self,request,document,key):
         #create document
         doc = get_object_or_404(Document,pk=document)
@@ -64,7 +71,9 @@ class DocAttachView(JSONResponseMixin, View):
         doc.save()
         return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
 
+
 class DocDetachView(JSONResponseMixin, View):
+    @method_decorator(transaction.commit_on_success)    
     def delete(self,request,document,key):
         doc = get_object_or_404(Document,pk=document)
         fs = get_object_or_404(FileStorage,key=key)
@@ -76,7 +85,8 @@ class DocDetachView(JSONResponseMixin, View):
         #remove from database
         doc_attach.delete()
         fs.delete()
-        return self.render_to_response(None)
+        return self.render_to_response({"document_deleted":True if Document.objects.filter(id=document).count() == 0 else False})
+
 
 class DocUserPermissionsView(JSONResponseMixin, View):
     def get(self,request,document):
@@ -88,6 +98,7 @@ class DocUserPermissionsView(JSONResponseMixin, View):
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocUserPermissionsView, self).dispatch(*args, **kwargs)
+
 
 class DocGroupPermissionsView(JSONResponseMixin, View):
     def get(self, request,document):
@@ -106,6 +117,7 @@ class DocGroupPermissionsView(JSONResponseMixin, View):
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocGroupPermissionsView, self).dispatch(*args, **kwargs)
+
 
 class DocUserPermissionView(JSONResponseMixin, View):
     def post(self,request,document,permission,user):
@@ -126,6 +138,7 @@ class DocUserPermissionView(JSONResponseMixin, View):
     def dispatch(self, *args, **kwargs):
         return super(DocUserPermissionView, self).dispatch(*args, **kwargs)
 
+
 class DocGroupPermissionView(JSONResponseMixin, View):
     def post(self,request,document,permission,group):
         grp = Group.objects.get(id=group)
@@ -145,6 +158,7 @@ class DocGroupPermissionView(JSONResponseMixin, View):
     def dispatch(self, *args, **kwargs):
         return super(DocGroupPermissionView, self).dispatch(*args, **kwargs)
 
+
 class DocPublicPermissionsView(JSONResponseMixin, View):
     def get(self,request,document):
         doc = Document.objects.get(id=document)
@@ -154,6 +168,7 @@ class DocPublicPermissionsView(JSONResponseMixin, View):
     @method_decorator(document_permission_or_403(('read_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocPublicPermissionsView, self).dispatch(*args, **kwargs)
+
 
 class DocPublicPermissionView(JSONResponseMixin, View):
     def post(self,request,document,permission):

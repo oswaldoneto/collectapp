@@ -28,12 +28,15 @@ urlpatterns = patterns('',
 	url(r'', include('tag.urls')),
 	# Status App
 	url(r'', include('status.urls')),
-	# Error App
-	url(r'', include('error.urls')),
 	# Storage App
 	url(r'', include('storage.urls')),
-	
 	(r'^pages/', include('django.contrib.flatpages.urls')),
+
+  	
+	(r'^500$', TemplateView.as_view(
+		 template_name="500.html"
+	)),
+
 	
 )
 
