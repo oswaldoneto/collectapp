@@ -4,81 +4,52 @@
 {% load permission_checker %}
 {% load highlight %}
 {% load kilobytefy %}
+{% load imagery %}
 
 {% block title %}Collect Project :: Documento{% endblock %}
 
 {% block import_style %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/app/search.css" />	
 	<style type="text/css">
-		table.table_result {
-			background-color: #ffffff;
-			width: 100%;
-			border: solid 1px #d4ccb0;
-		}
-		table.table_result td {
-			padding-top: 10px;
-			padding-bottom: 10px;			
-		}	
-		table.table_result tr > td {
-			border-bottom: solid 1px #d4ccb0;
-		}
-		
-		table.table_result td:first-child {
-			border-right: solid 1px #d4ccb0;
-			width: 99%
-		}
-		
-		table.table_result td:last-child {
-			padding-left: 2px; 
-			padding-right: 2px;
-		}
-		
-		table.table_result tr:last-child > td {
-			border-bottom: none;
-		}		
-
-		
-		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
-		table.attribute_table {
-	        border-collapse:collapse;			
-			width: 100%;	
-		}
-		
-		table.attribute_table td  {
-			/*border: 1px solid #d4ccb0;*/
-			padding: 0px 3px;
-		}		
-		/* REFACTOR: UNIR CODIGO ABAIXO COM O DA PAGINA DOCUMENT_PREVIEW.XHTML */
-		</style>
+	</style>
 {% endblock %}
 
 {% block startup_script %}
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery/plugin/caroufredsel/jquery.carouFredSel-6.2.1-packed.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			/** Settings */
+			/** Settings */			
+			{% for result in page.object_list %}
+				{% if result.object.all_files %}
+					$(sprintf("#uic_file_list_%s","{{forloop.counter}}")).carouFredSel({
+						align: "left",
+						circular: false,
+    					infinite: false,
+    					auto    : false,
+						pagination: '#uic_{{forloop.counter}}_pages',
+					});
+					
+				{% endif %}	
+			{% endfor  %}	
+
 			/** Events */
 			$("#uic_lookup_link").click(function(){
 				$("#uic_form").submit(); 
 				return false;			
 			});
-						
 			$("a[rel=uic_preview_link]").live("click",function(){
 				redirect(sprintf("/document/%s/preview",$(this).attr('href')));
 				return false;
 			});
-			  
 			/*
 			$("a[rel=uic_classify_link]").live("click",function(){
 				redirect(sprintf("/document/%s/classify",$(this).attr('href')));
 				return false;
 			});
-
 			$("a[rel=uic_permission_link]").live("click",function(){
 				redirect(sprintf("/document/%s/permission",$(this).attr('href')));								
 				return false;
 			});
-			
 			$("a[rel=uic_delete_link]").live("click",function(){
 				var document_id = $(this).attr('href');								
 				$("#uic_delete_dialog").dialog({
@@ -104,36 +75,26 @@
 				return false;
 			});
 			*/
-			
-			
-			
 			$("a[rel=uic_category_facelet_link]").live("click",function(){
 				$("#id_selected_category").val($(this).attr('href'));
 				$("#uic_form").submit(); 
 				return false;
 			});
-			
-			
 			$("#uic_clear_category_facelet_link").click(function(){
 				$("#id_selected_category").val('');
 				$("#uic_form").submit(); 
 				return false;
-			});
-			
+			});			
 			$("a[rel=uic_tag_facelet_link]").live("click",function(){
 				$("#id_selected_tag").val($(this).attr('href'));
 				$("#uic_form").submit(); 
 				return false;
 			});
-			
-			
 			$("#uic_clear_tag_facelet_link").click(function(){
 				$("#id_selected_tag").val('');
 				$("#uic_form").submit(); 
 				return false;
 			});		
-			
-			
 			//TODO: Refactor unir com o document_preview.xhtml
 			$("#uic_download-file_link").live("click",function(){
 				var key = $(document).data("selected-key");
@@ -143,7 +104,6 @@
 					alert("Erro ao obter a url do arquivo");
 				});					
 			});
-			
 			//TODO: Refactor unir com o document_preview.xhtml
 			$("#uic_visualize-file_link").live("click",function(){				
 				var key = $(document).data("selected-key");
@@ -170,24 +130,6 @@
 				});					
 				return false;				
 			});
-			
-			
-			{% for result in page.object_list %}
-				{% if result.object.all_files %}
-					$(sprintf("#uic_file_list_%s","{{forloop.counter}}")).carouFredSel({
-						align: "left",
-						circular: false,
-    					infinite: false,
-    					auto    : false,
-						pagination: '#uic_{{forloop.counter}}_pages',
-					});
-					
-				{% endif %}	
-			{% endfor  %}	
-			
-			
-			
-			
 			$('.uic_file_tooltip').toolbar({
 				content: '#user-toolbar-options',
 				position: 'bottom',
@@ -199,15 +141,18 @@
 					$(document).data("selected-key",key);
 				}
 			);
+			/*
 			$(".uic_file_tooltip").on('toolbarItemClick',
 				function( event ) {
-					$(this).trigger('click');
 				}
 			);
-			
-			
-
-
+			*/
+			$(".table_result").mouseover(function(){
+				 $(this).children("tbody").children("tr").children("td:last-child").show();
+			});			
+			$(".table_result").mouseout(function(){
+				 $(this).children("tbody").children("tr").children("td:last-child").hide();
+			});
 		});	
 	</script>
 {% endblock %}
@@ -267,62 +212,69 @@
 {% endblock %}
 
 {% block content %}
+
 	<!-- Header -->
 	<div class="ui-app-header">
 		<div class="ui-app-title">Pesquisar Documentos</div>
 	</div>
+
 	<!-- Search -->	
-	<form id="uic_form" method="get" class="ui-form ui-widget ui-widget-content ui-corner-all">
+	<form id="uic_form" method="get">
 		{% csrf_token %}
 		{{form.selected_category}}		
 		{{form.selected_tag}}			
-		<div id="search_wrapper">
+		<div id="search_wrapper" class="ui-corner-all">
 			{{form.q}}
 			<a id="uic_lookup_link" href="">
 				<i class="icon-search icon-large floatr"></i>
 			</a>
 		</div>
 	</form>		
+
 	<!-- Result -->
 	{% if query %}
-		<div class="ui-widget-header ui-corner-top" style="padding: 3px 10px 3px 10px; margin-top: 20px; border-bottom: none;">
-			<div style="float: left"><p></span>Resultado da Busca</p></div>
-			<div style="float: right;">
+	
+		<!-- Amount and Top Pagination -->
+		<div class="margin_top_default">
+			<div style="float: left;">
 				<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} encontrado{{page.paginator.count|pluralize}}</p>
 			</div>
+			<div class="floatr">
+		        {% if page.has_previous or page.has_next %}		        
+			        <div class="ui-paginator">	
+			        	<div>	        	
+			        		{% if page.has_previous %}
+			        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
+						        	<i class="icon-circle-arrow-left"></i>
+						        </a>
+					        {% endif %}		        		
+				        	<b>1 de 2</b>
+			        		{% if page.has_next %}
+			        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
+				        			<i class="icon-circle-arrow-right"></i>
+				        		</a>
+				        	{% endif %}
+			        	</div>		        	
+			        </div>
+				{% endif %}
+			</div>			
 			<div class="clear"></div>		
 		</div>
-		<div class="ui-widget-content ui-corner-bottom" style="padding: 10px 10px;">
-	        {% if page.has_previous or page.has_next %}		        
-		        <div class="ui-paginator">	
-		        	<div>	        	
-		        		{% if page.has_previous %}
-		        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-					        	<i class="icon-circle-arrow-left"></i>
-					        </a>
-				        {% endif %}		        		
-			        	<b>1 de 2</b>
-		        		{% if page.has_next %}
-		        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
-			        			<i class="icon-circle-arrow-right"></i>
-			        		</a>
-			        	{% endif %}
-		        	</div>		        	
-		        </div>
-			{% endif %}
-			
+		
+		<!-- Result Itens -->
+		<div>
 			<div id="user-toolbar-options" class="hide">
 				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
 				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
 			</div>
-			
-			<table class="table_result ui-corner-all">
-				{% for result in page.object_list %}
+			{% for result in page.object_list %}
+				<table class="table_result ui-corner-all">
 					{% get_public_perms result.object as public_permissions %}
 					{% get_obj_perms user for result.object as "document_permissions" %}
-					<tr class="{% cycle 'row1' 'row2' %}">
+					<tr>
 						<td>
 							<div class="margin_min_left margin_min_right">
+																
 								<!-- Files -->
 								<div class="floatl">
 									<div class="pagination margin_min_bottom" id="uic_{{forloop.counter}}_pages"></div>
@@ -335,7 +287,7 @@
 															<div class="uic_file_tooltip floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
 																<a rel="uic_file-key_link" href="{{attach.file.key}}"></a>
 																<div>
-																	<span style="font-size: 20px"><i class="icon-file"></i></span> {% highlight attach.file.filename with query %}														
+																	<span style="font-size: 20px"><i class="{{attach.file.filetype|imagery}}"></i></span> {% highlight attach.file.filename with query %}														
 																</div>
 																<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
 																<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
@@ -361,20 +313,14 @@
 										</div>	
 									{% endif %}										
 								</div>
+								
 								<!-- Classification -->								
-								<div class="floatr" style="max-width: 280px;">
+								<div class="floatl" style="max-width: 280px;">
 									{% if not result.object.category %}
-										<div class="ui-widget ui-corner-all ui-state-disabled">												
-											Não classificado																																		
-										</div>										
 									{% else %}
-										<div style="border: 1px solid #d4ccb0;border-collapse:collapse;" class="ui-corner-all padding_min">
+										<div style="" class="ui-corner-all padding_min">
 											<div class="">
 												<span class="bold">{% highlight result.object.category.title with query %}</span>
-												<!--
-												<small><i class="icon-caret-right"></i></small>		
-												<span class="font_min">{% highlight result.object.owner.username with query %}</span>
-												-->
 											</div>
 											{% if result.object.all_attributes %}
 												<div>
@@ -383,7 +329,7 @@
 															<div class="margin_min_top">
 																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
 																<small><i class="icon-angle-right ui-state-disabled"></i></small>
-																<span>{% highlight att.value.value with query %}</span>
+																<span>{% highlight att.value with query %}</span>
 															</div> 
 														{% endif %}					
 													{% endfor %}
@@ -393,18 +339,37 @@
 									{% endif %}
 								</div>
 							</div>
-							<div class="clear"></div>																					
 						</td>
-						<td>
-							<div class="uic_document_tooltip floatr">
-								<a rel="uic_preview_link" href="{{result.object.id}}">
-									<i class="icon-circle-arrow-right"></i>
-								</a>
-							</div>
+						<td class="hide">
+							<a rel="uic_preview_link" href="{{result.object.id}}">
+								<i class="icon-angle-right icon-4x"></i>
+							</a>							
 						</td>
 					</tr>	
-				{% endfor %}
-			</table>
+				</table>
+			{% endfor %}
 		</div>
+	
+		<!-- Bottom Pagination -->
+		<div class="floatr">
+        {% if page.has_previous or page.has_next %}		        
+	        <div class="ui-paginator">	
+	        	<div>	        	
+	        		{% if page.has_previous %}
+	        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
+				        	<i class="icon-circle-arrow-left"></i>
+				        </a>
+			        {% endif %}		        		
+		        	<b>1 de 2</b>
+	        		{% if page.has_next %}
+	        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
+		        			<i class="icon-circle-arrow-right"></i>
+		        		</a>
+		        	{% endif %}
+	        	</div>		        	
+	        </div>
+		{% endif %}
+	</div>			
+
 	{% endif %}
 {% endblock %}

@@ -36,10 +36,6 @@ class Document(models.Model):
     def remove_category(self):
         if self.category:
             for doc_attr in DocumentAttribute.objects.filter(document=self):
-                #abstract_value = doc_attr.value
-                #concrete_value = InheritanceQuerySet(model=AbstractValue).select_subclasses().get(id=abstract_value.id)
-                #concrete_value.delete()
-                #abstract_value.delete()
                 doc_attr.delete()
             self.category = None
             self.save()
@@ -84,14 +80,20 @@ class AbstractValue(models.Model):
 
 class CharValue(AbstractValue):
     value = models.CharField(max_length=100,null=True)
+    def __unicode__(self):
+        return self.value
 
 
 class IntegerValue(AbstractValue):
     value = models.BigIntegerField(null=True)
+    def __unicode__(self):
+        return self.value
 
     
 class DateValue(AbstractValue):
     value = models.DateField(null=True)
+    def __unicode__(self):
+        return self.value.strftime("%d/%m/%Y")
 
     
 class DocumentAttribute(models.Model):

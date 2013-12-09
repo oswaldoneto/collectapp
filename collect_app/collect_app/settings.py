@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'tag',
     'status',
     'storage',
+    'search',
 )
 
 MULTI_FILE_DELETE_URL = 'multi_delete'
