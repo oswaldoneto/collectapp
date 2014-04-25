@@ -92,8 +92,8 @@ class IntegerValue(AbstractValue):
     
 class DateValue(AbstractValue):
     value = models.DateField(null=True)
-    def __unicode__(self):
-        return self.value.strftime("%d/%m/%Y")
+    def __unicode__(self):    
+        return self.value.strftime("%d/%m/%Y") if self.value else ''
 
     
 class DocumentAttribute(models.Model):
