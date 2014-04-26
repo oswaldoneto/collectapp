@@ -15,6 +15,6 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
         return Document
     
     def prepare_tags(self,obj):
-        return [(tag.name) for tag in obj.all_tags() ]
+        return [str(tag.name) for tag in obj.all_tags() ]
     #def index_queryset(self):
     #    return self.get_model().objects.filter(updated__lte=datetime.datetime.now())
