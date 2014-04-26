@@ -4,7 +4,7 @@ from collect_app.config import Config
 
 config = Config()
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 PROJECT_ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -25,14 +25,6 @@ DATABASES = {
         'PORT': config.get_db_port(),                                                  
     }
 }
-
-#HAYSTACK_CONNECTIONS = {
-#    'default': {
-#        'ENGINE': config.get_ix_engine(),
-#        'PATH': config.get_ix_path(),
-#        'INCLUDE_SPELLING':True, 
-#    },
-#}
 
 HAYSTACK_CONNECTIONS = {
     'default': {

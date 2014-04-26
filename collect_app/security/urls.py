@@ -28,6 +28,7 @@ urlpatterns = patterns('',
         queryset=User.objects.exclude(username="AnonymousUser"),
         template_name="app/security/user_dialog.xhtml"
     )),
+                                              
     (r'^security/user/list$', ListView.as_view(
         model=User,
         queryset=User.objects.exclude(username="AnonymousUser"),

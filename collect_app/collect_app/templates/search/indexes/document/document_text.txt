@@ -3,7 +3,7 @@
 	{{tag.name}}
 {% endfor%}
 {% for docatt in object.all_attributes %}
-	{{docatt.value}}
+	{{docatt.value.value}}
 {% endfor %}
 {{ object.owner.username }}
 {% for docfile in object.all_files %}

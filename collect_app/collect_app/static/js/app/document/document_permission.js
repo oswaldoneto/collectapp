@@ -1,6 +1,8 @@
+
+var document_id = $(document).data("document_id");	
+
 $(document).ready(function() {
 	/* OnLoad ----- */
-	var document_id = $(document).data("document_id");	
 	fnRefreshPublicContainer(document_id);
 	fnRefreshUserContainer(document_id);
 	fnRefreshGroupContainer(document_id);
@@ -153,7 +155,61 @@ $(document).ready(function() {
 		}	
 		return false;
 	});
+	
+	
+	
+	
+	
+	
+	$("#uic_search-user_link").live("click",function(){	
+        $.fancybox.open([{
+                href : '/security/user/dialog'
+            }], {
+                'type'             : 'iframe',
+                'autoScale'     : false,
+                'autoDimensions': false,
+                'width'         : 400,
+                'height'         : 250,
+                'modal'         : false,
+            }
+        );
+        return false;
+	});	
+	$("#uic_search-group_link").live("click",function(){	
+        $.fancybox.open([{
+                href : '/security/group/dialog'
+            }], {
+                'type'             : 'iframe',
+                'autoScale'     : false,
+                'autoDimensions': false,
+                'width'         : 400,
+                'height'         : 250,
+                'modal'         : false,
+            }
+        );
+        return false;
+	});	
 });
+function fnSelectUserCallback(user_id) {
+	fnAddUserPermission(user_id,document_id,"read_document");	
+	fnRefreshUserContainer(document_id);
+	$.fancybox.close();
+}
+function fnSelectGroupCallback(group_id) {
+	fnAddGroupPermission(group_id,document_id,"read_document");	
+	fnRefreshGroupContainer(document_id);
+	$.fancybox.close();
+}
+
+
+
+
+
+
+
+
+
+
 function get_users() {
 	var users = [];
 	$.each(jQuery.parseJSON($(document).data("users")),function(){

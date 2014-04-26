@@ -1,62 +1,36 @@
 {% extends "layout/template_dialog.xhtml" %}
 
+
 {% block import_style %}
+	<link rel="stylesheet" href="{{STATIC_URL}}css/app/dialog.css" />
 	<style type="text/css">
+		body {
+			height: 300px;
+		}
 	</style>
 {% endblock %}
 
-{% block startup_script %}
-	<script type="text/javascript">
 
-		$(document).ready(function() {
-			$("#uic_user_table").dataTable({
-		        "sScrollY": "180px",
-		        "bPaginate": false				
-			});			
-			$("a[rel='adduser_link']").click(function(){
-				$(this).addClass("ui-state-disabled");
-				fnUserDialogSelectListener($(this).attr('href'));
-				return false;
-			});
-		});
-	</script>
+{% block startup_script %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/dialog.js"></script>	
 {% endblock %}
 
+
 {% block content %}
-	<div style="font-size: 1.3em">
-		<table id="uic_user_table" class="display ">
+	<div>
+		<table id="uic_user_table" class="ui-widget ui-table-option" >
 			<thead>
 				<tr>
 					<th></th>
-					<th>Name</th>
-					<th>Username</th>
-					<th>E-mail</th>
-					<th>Active</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for u in object_list %}
 					<tr>
-						<!-- TODO: desable button with style ui-state-disabled -->
-						<td width="1%">
-							{% if u.is_active %}
-								<a  id="uic_adduser_link"
-								    rel="adduser_link"
-								    href="{{u.id}}"
-									class="ui-icon ui-icon-squaresmall-plus"></a>							
-							{% else %}
-								<span class="ui-icon ui-icon-squaresmall-plus ui-state-disabled"></a>							
-							{% endif %}
-						</td>
-						<td>{{u.username}}</td>
-						<td>{{u.get_full_name}}</td>
-						<td>{{u.email}}</td>
-						<td width="1%">
-							{% if u.is_active %}
-								<span class="ui-icon ui-icon-check"></span>
-							{% else %}
-								<span class="ui-icon ui-icon-notice"></span>
-							{% endif %}
+						<td>
+							<a  id="uic_adduser_link"
+							    rel="adduser_link"
+							    href="{{u.id}}">{{u.username}}</a>							
 						</td>
 					</tr>
 				{% endfor %}
