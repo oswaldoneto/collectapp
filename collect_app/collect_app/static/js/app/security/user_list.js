@@ -5,13 +5,14 @@ $(document).ready(function() {
 	$uic_delete_button.button("option","disabled",true);
 	$("#uic_user_table").dataTable({
 		"bJQueryUI": true,		
-		"bPaginate": true,
+		"bPaginate": false,
 		"sPaginationType": "full_numbers",
 		"bFilter":false,
 		"bSort":true,
-		"bInfo":true,
+		"bInfo":false,
 		"bAutoWidth":false,
 		"aoColumns": [{ "bSortable": false },null,null,null,{ "bSortable": false }],
+		"aaSorting": [[ 1, "asc" ]],	
 		"oLanguage": default_oLanguage				
 	});
 				
@@ -26,7 +27,7 @@ $(document).ready(function() {
 	});
 	$uic_delete_button.click(function() {					 				
 		$("#uic_delete_dialog").dialog({ 
-			title: "Excluir Usuário",
+			title: "Excluir Usuï¿½rio",
 			buttons: [
 			{
 				text: "Sim",
@@ -37,7 +38,7 @@ $(document).ready(function() {
 				}
 			},
 			{
-				text: "Não",
+				text: "Nï¿½o",
 				click: function() { 
 					$(this).dialog("close"); 
 				}
