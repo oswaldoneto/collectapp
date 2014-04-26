@@ -4,13 +4,14 @@ $(document).ready(function() {
 	$uic_delete_button.button("option","disabled",true);					
 	$("#uic_group_table").dataTable({
 		"bJQueryUI": true,		
-		"bPaginate": true,
+		"bPaginate": false,
 		"sPaginationType": "full_numbers",
 		"bFilter":false,
 		"bSort":true,
-		"bInfo":true,
+		"bInfo":false,
 		"bAutoWidth":false,
 		"aoColumns": [{ "bSortable": false },null],
+		"aaSorting": [[ 1, "asc" ]],		
 		"oLanguage": default_oLanguage								
 	});
 	/* Events */
