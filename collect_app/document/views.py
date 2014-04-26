@@ -128,7 +128,10 @@ class DocumentDeleteView(DeleteView):
         doc_attachs = DocumentAttach.objects.filter(document=doc)
         for attach in doc_attachs:
             #remove from s3
-            bucket.get_key(attach.file.key).delete()
+            try:
+                bucket.get_key(attach.file.key).delete()
+            except AttributeError:
+                pass
             #remove from db
             attach.file.delete()
         doc_attachs.delete()     
