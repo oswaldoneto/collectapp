@@ -154,7 +154,7 @@ def add_attribute(request, category):
 @csrf_protect
 def list_attribute(request, category):
 	cat = Category.objects.get(id=category)
-	attributeByCategory = Attribute.objects.filter(category=cat).exclude(active=False)
+	attributeByCategory = Attribute.objects.filter(category=cat).exclude(active=False).order_by('order')
 	return render_to_response('app/category/attribute_list.xhtml',
 							  {'attributes':attributeByCategory,'category':cat},
 							  context_instance=RequestContext(request))
