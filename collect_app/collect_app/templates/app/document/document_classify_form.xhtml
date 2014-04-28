@@ -100,20 +100,12 @@
     </script>
 {% endblock %}
 
-
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Documento</li>
-        <li>Classificação</li>
-    </ul>
-{% endblock %}
-
-{% block context_menu %}
-    {% include "app/document/document_context_menu.xhtml" %}
-{% endblock %}
-
 {% block content %}
+
+<div id="leftside">
+	{% include "app/document/document_context_menu.xhtml" %}
+</div>
+<div id="rightside">
 
     <!--------------------------------------------->
     <!-- TODO: Refactor export style to css file -->
@@ -180,5 +172,7 @@
         <!-- TODO: Ticket #1                         -->
         <!--------------------------------------------->
     </form>
+    
+</div>
 
 {% endblock %}

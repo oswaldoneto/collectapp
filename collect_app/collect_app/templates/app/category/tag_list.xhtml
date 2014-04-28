@@ -112,18 +112,6 @@
 
                 $(document).data("disarm_on_tagadded",true);
             });
-
-            /*
-            $("#uic_taglist_link").click(function(){
-                $("#uic_tag_dialog").dialog({
-                    title:'Tags',
-                    width:450,
-                    height: 300,
-                });
-                $("#uic_tag_dialog").dialog('open',{ position:'center' });
-            });
-            */
-
         });
 
         function fnCreateOrSelectTagCallback(tag_id) {
@@ -140,22 +128,12 @@
     </script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Classificação</a></li>
-        <li><a href="#">Categories</a></li>
-        <li><a href="#">{{category.title}}</a></li>
-        <li><a href="">Tags</a></li>
-    </ul>
-{% endblock %}
-
 {% block category_title %}Tags da categoria{% endblock %}
 {% block category_content %}
     <form>
         {% csrf_token %}
         <div>
-            <div class="floatl" style="width: 725px">
+            <div class="floatl" style="width: 905px">
                 <ul id="uic_tags"></ul>
             </div>
             <div class="floatr margin_lr_default" style="margin-top: 8px">

@@ -14,19 +14,16 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_permission.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Documento</li>
-        <li>Permissões</li>
-    </ul>
-{% endblock %}
-
 {% block context_menu %}
 	{% include "app/document/document_context_menu.xhtml" %}
 {% endblock %}
 
 {% block content %}
+
+<div id="leftside">
+	{% include "app/document/document_context_menu.xhtml" %}
+</div>
+<div id="rightside">
 	
 	<!-- Permissão de Usuários -->
 	<script id="uic_user_template" type="text/x-jquery-tmpl">
@@ -196,5 +193,7 @@
 			</div>
 		</div>
 	</div>	
+	
+</div>
 			
 {% endblock %}

@@ -38,11 +38,12 @@
     </ul>
 {% endblock %}
 
-{% block context_menu %}
-    {% include "app/document/document_context_menu.xhtml" %}
-{% endblock %}
-
 {% block content %}
+
+<div id="leftside">
+	{% include "app/document/document_context_menu.xhtml" %}
+</div>
+<div id="rightside">
 
     <div class="ui-app-header">
         <div class="ui-app-title">Visualizar Documento</div>
@@ -107,7 +108,6 @@
                 </div>
             {% endif %}
         </div>
-
         <div class="clear"></div>
 
         <!-- Tags -->
@@ -137,9 +137,7 @@
         </div>
 
     </div>
-
     <div class="clear"></div>
-
-    <!-- -->
+</div>
 
 {% endblock %}

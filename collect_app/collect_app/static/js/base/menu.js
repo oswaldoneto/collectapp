@@ -23,4 +23,17 @@ $(document).ready(function(){
 		redirect("/security/group/list");
 		return false;
 	});
+	
+	$("#uic_changepassword_link").click(function(){
+		redirect("/security/user/password/change");
+		return false;
+	});
+	$("#uic_logout_link").click(function(){
+		redirect("/logout");
+		return false;
+	});
+	$("#uic_lookup_link").click(function(){
+		$("#uic_form").submit(); 
+		return false;			
+	});
 });

@@ -33,48 +33,10 @@
 			{% endfor  %}	
 
 			/** Events */
-			$("#uic_lookup_link").click(function(){
-				$("#uic_form").submit(); 
-				return false;			
-			});
 			$("a[rel=uic_preview_link]").live("click",function(){
 				redirect(sprintf("/document/%s/preview",$(this).attr('href')));
 				return false;
 			});
-			/*
-			$("a[rel=uic_classify_link]").live("click",function(){
-				redirect(sprintf("/document/%s/classify",$(this).attr('href')));
-				return false;
-			});
-			$("a[rel=uic_permission_link]").live("click",function(){
-				redirect(sprintf("/document/%s/permission",$(this).attr('href')));								
-				return false;
-			});
-			$("a[rel=uic_delete_link]").live("click",function(){
-				var document_id = $(this).attr('href');								
-				$("#uic_delete_dialog").dialog({
-					title:"Deletar Documento",
-					modal:true,
-					buttons:[
-						{
-							text: "Yes",
-							click: function() { 
-								$("#uic_delete_form").attr("action", sprintf("/document/%s/delete",document_id));  
-								$("#uic_delete_form").submit();
-								return false;								
-							}
-						},
-						{
-							text: "No",
-							click: function() { 
-								$(this).dialog("close"); 
-							}
-						}					
-					] 
-				});
-				return false;
-			});
-			*/
 			$("a[rel=uic_category_facelet_link]").live("click",function(){
 				$("#id_selected_category").val($(this).attr('href'));
 				$("#uic_form").submit(); 
@@ -157,14 +119,10 @@
 	</script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Pesquisa</li>
-    </ul>
-{% endblock %}
+{% block content %}
 
-{% block context_menu %}
+
+<div id="leftside">
 	{% if query %}
 		{% if categories.fields.category %}
 			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
@@ -209,36 +167,23 @@
 			</div>
 		{% endif %}
 	{% endif %}
-{% endblock %}
+</div>
+<div id="rightside">
 
-{% block content %}
 
 	<!-- Header -->
 	<div class="ui-app-header">
-		<div class="ui-app-title">Pesquisar Documentos</div>
+		<div class="ui-app-title">Resultado da Busca</div>
+        <div class="ui-app-command">
+			<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} para "{{form.q.value}}"</p>
+        </div>
 	</div>
-
-	<!-- Search -->	
-	<form id="uic_form" method="get">
-		{% csrf_token %}
-		{{form.selected_category}}		
-		{{form.selected_tag}}			
-		<div id="search_wrapper" class="ui-corner-all">
-			{{form.q}}
-			<a id="uic_lookup_link" href="">
-				<i class="icon-search icon-large floatr"></i>
-			</a>
-		</div>
-	</form>		
 
 	<!-- Result -->
 	{% if query %}
 	
 		<!-- Amount and Top Pagination -->
-		<div class="margin_top_default">
-			<div style="float: left;">
-				<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} encontrado{{page.paginator.count|pluralize}}</p>
-			</div>
+		<div class="margin_top_default margin_bottom_default">
 			<div class="floatr">
 		        {% if page.has_previous or page.has_next %}		        
 			        <div class="ui-paginator">	
@@ -373,4 +318,8 @@
 	</div>			
 
 	{% endif %}
+	
+</div>
+	
+	
 {% endblock %}

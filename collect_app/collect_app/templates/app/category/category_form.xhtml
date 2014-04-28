@@ -37,20 +37,6 @@
 	</script>
 {% endblock %}
 
-
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Classificacao</li>
-        <li>Categorias</li>
-		{% if edit_mode %}
-        	<li>{{category.title}}</a></li>
-		{% else %}
-        	<li>Adicionar Categoria</a></li>
-		{% endif %}        	
-    </ul>
-{% endblock %}
-
 {% block category_title %}
 	{% if edit_mode %}Editar Categoria{% else %}Adicionar Categoria{% endif %}
 {% endblock %}
@@ -74,13 +60,6 @@
 				<td class="component">{{form.title}}</td>
 				<td class="error">{{form.title.errors}}</td>
 			</tr>
-			<!--
-			<tr>
-				<td class="label"></td>
-				<td class="component">{{form.active}}<label for="id_active">&nbsp;Ativo</label></td>
-				<td class="error">{{form.active.errors}}</td>
-			</tr>
-			-->						
 			<tr>
 				<td class="label"><label for="id_description">Descrição</label></td>
 				<td class="component">{{form.description}}</td>

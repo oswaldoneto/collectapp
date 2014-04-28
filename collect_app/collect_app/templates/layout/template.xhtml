@@ -1,84 +1,29 @@
 {% extends "layout/base.xhtml" %}
 {% block body %}
 
-	<!-- TODO: Remove from here -->
-	<script type="text/javascript">
-		$(document).ready(function(){	
-			$("#menu").jBreadCrumb({minimumCompressionElements:7});
-			
-			$("#uic_username_button").click(function(){
-				
-				
-				$('#uic_username_button').toolbar({
-					content: '#username-toolbar-options',
-					position: 'bottom',
-					hideOnClick: true,
-				});
-				
-				/*
-			  	var menu = $(this).children("ul").show().position({
-	                my: "right top",
-	                at: "right bottom",
-	                of: this
-	    		});
-    		    $(document).one("click", function() {
-                    menu.hide();
-                });
-                */
-                
-                
-                return false;
-			}).children("ul").hide().menu();
-			
-			$("#uic_changepassword_link").click(function(){
-				redirect("/security/user/password/change");
-				return false;
-			});
-			
-			$("#uic_logout_link").click(function(){
-				redirect("/logout");
-				return false;
-			});
-		});
-	</script>
+<!-- TODO: Remove from here -->
+<script type="text/javascript">
+	$(document).ready(function(){	
+		$(".ui.dropdown").dropdown();		
+	});
+</script>
 
-	<div id="page" 
-		 class="ui-widget ui-widget-content ui-corner-all">		
-		<div id="principal">
-			<div id="header" class="ui-widget-header ui-corner-top">
-				
-				<div id="username-toolbar-options" class="hide">
-					<a id="uic_changepassword_link"><i class="icon-asterisk icon-2x"></i></a>
-					<a id="uic_logout_link"><i class="icon-power-off icon-2x"></i></a>
-				</div>
-
-				<div style="float: left;">
-					<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>				
-				</div>
-				<div id="uic_username_button" style="float: right; margin-top: 15px; font-size: .8em; cursor: pointer;">
-					<span class="floatl">{% if user.is_authenticated %}{{user.username}}{% endif %}</span>
-					<span class="ui-icon ui-icon-triangle-1-s floatr"></span>
-				</div>				
-			</div>
-			<div id="menu" class="breadCrumb module">
-				{% block trail %}{% endblock %}		
-			</div>
-			<div id="content">
-				<div id="rightpane">
-					{% include "layout/menu.xhtml" %}
-					{% block context_menu %}{% endblock %}
-				</div>
-				<div id="leftpane">
-					{% block content %}{% endblock %}	
-				</div>
-			</div>
-			<div class="clear">
-			</div>				
+<div>
+	<!-- Menu -->
+	{% include "layout/menu.xhtml" %}
+	
+	<!-- Content -->
+	<div id="page" class="ui-widget holder">
+		<div id="content">
+			{% block content %}{% endblock %}	
 		</div>
-		<div id="footer" class="ui-widget-header ui-corner-bottom">
+		<div class="clear"></div>
+		<div id="footer" class="ui-widget">
 			<p id="copyright" class="ui-state-disabled">collectapp - Todos os direitos reservados</p>	
-		</div>
+		</div>				
 	</div>
+</div>		
+							
 {% endblock %}
 
 
