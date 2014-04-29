@@ -1,74 +1,74 @@
 
-	<div id="main-menu" class="ui small menu inverted" style="">
-		<div class="holder ui-widget">
-			
-			<!-- Logo -->
-			<div class="item">
-				<h2 style="display: inline">collect</h2><h2 style="color: #85B900; display: inline">app</h2>		  	
-			</div>
-			
-			<!-- Admnistration Menu -->
-			{% if perms.category.add_category or perms.auth.add_user %}
-				<div class="ui dropdown item">
-			    	<i class="settings icon"></i>
-			        <div class="menu">
-			        	{% if perms.category.add_category %}
-							<div id="uic_category_link" class="item"><i class="folder icon"></i>Categoria</div>
-						    <div id="uic_tag_link" class="item"><i class="tags icon"></i>Tags</div>
-						{% endif %}
-			        	{% if perms.auth.add_user %}
-						    <div id="uic_user_link" class="item"><i class="user icon"></i>Usuário</div>
-						    <div id="uic_group_link" class="item"><i class="users icon"></i>Grupos</div>
-						{% endif %}
-			        </div>
-			    </div>
-			{% endif %}		    
-			    
-			<!-- Profile Menu -->
+<div id="main-menu" class="ui small menu inverted" style="">
+	<div class="holder ui-widget">
+		
+		<!-- Logo -->
+		<div class="item">
+			<h2 style="display: inline">collect</h2><h2 style="color: #85B900; display: inline">app</h2>		  	
+		</div>
+		
+		<!-- Admnistration Menu -->
+		{% if perms.category.add_category or perms.auth.add_user %}
 			<div class="ui dropdown item">
-		    	<i class="user icon"></i>{% if user.is_authenticated %}{{user.username}}{% endif %}
-		        <div class="menu">				
-					<div id="uic_changepassword_link" class="item"><i class="asterisk icon"></i>Mudar Senha</div>
-				    <div id="uic_logout_link" class="item"><i class="off icon"></i>Sair</div>
+		    	<i class="settings icon"></i>
+		        <div class="menu">
+		        	{% if perms.category.add_category %}
+						<div id="uic_category_link" class="item"><i class="folder icon"></i>Categoria</div>
+					    <div id="uic_tag_link" class="item"><i class="tags icon"></i>Tags</div>
+					{% endif %}
+		        	{% if perms.auth.add_user %}
+					    <div id="uic_user_link" class="item"><i class="user icon"></i>Usuário</div>
+					    <div id="uic_group_link" class="item"><i class="users icon"></i>Grupos</div>
+					{% endif %}
 		        </div>
-		    </div>			 
+		    </div>
+		{% endif %}		    
 		    
-		    <!-- Right Menu -->	         
-			<div class="right menu">
-				
-				<!-- Search Text  -->
-				<div class="item">
-					<div class="ui icon input">
-						<form id="uic_form_search" method="get" action="/search">
-							{% csrf_token %}
-							{{form.selected_category}}		
-							{{form.selected_tag}}			
-							<input id="id_q" name="q" type="text" placeholder="Search..." {% if form.q.value %} value=" {{form.q.value}}" {% endif %}>
-						</form>						
-						<i id="uic_lookup_link" class="search link icon"></i>
+		<!-- Profile Menu -->
+		<div class="ui dropdown item">
+	    	<i class="user icon"></i>{% if user.is_authenticated %}{{user.username}}{% endif %}
+	        <div class="menu">				
+				<div id="uic_changepassword_link" class="item"><i class="asterisk icon"></i>Mudar Senha</div>
+			    <div id="uic_logout_link" class="item"><i class="off icon"></i>Sair</div>
+	        </div>
+	    </div>			 
+	    
+	    <!-- Right Menu -->	         
+		<div class="right menu">
+			
+			<!-- Search Text  -->
+			<div class="item">
+				<div class="ui icon input">
+					<form id="uic_form_search" method="get" action="/search">
+						{% csrf_token %}
+						{{form.selected_category}}		
+						{{form.selected_tag}}			
+						<input id="id_q" name="q" type="text" placeholder="Search..." {% if form.q.value %} value=" {{form.q.value}}" {% endif %}>
+					</form>						
+					<i id="uic_lookup_link" class="search link icon"></i>
+				</div>
+			</div>	
+			
+			<!-- Upload Button -->
+			<a class="item">
+				<form id="uic_new_upload_form" action="" enctype="multipart/form-data">
+					<input type="hidden" name="AWSAccessKeyId" value="" />
+					<input type="hidden" name="policy" value="" />
+					<input type="hidden" name="signature" />
+					<input type="hidden" name="acl" />
+					<input type="hidden" name="key" />
+					<input type="hidden" name="x-amz-meta-filename" />
+					<input type="hidden" name="Content-Type" />
+					<input type="hidden" name="success_action_status" />
+					<div class="file-input-wrapper">
+						<div id="btn-file-input">
+							<i class="large cloud upload icon"></i>
+						</div>		
+					  	<input type="file" name="file" id="file"/>
 					</div>
-				</div>	
-				
-				<!-- Upload Button -->
-				<a class="item">
-					<form id="uic_new_upload_form" action="" enctype="multipart/form-data">
-						<input type="hidden" name="AWSAccessKeyId" value="" />
-						<input type="hidden" name="policy" value="" />
-						<input type="hidden" name="signature" />
-						<input type="hidden" name="acl" />
-						<input type="hidden" name="key" />
-						<input type="hidden" name="x-amz-meta-filename" />
-						<input type="hidden" name="Content-Type" />
-						<input type="hidden" name="success_action_status" />
-						<div class="file-input-wrapper">
-							<div id="btn-file-input">
-								<i class="large cloud upload icon"></i>
-							</div>		
-						  	<input type="file" name="file" id="file"/>
-						</div>
-					</form>
-				</a>
-			 </div>				  
-		</div>	
-	</div>		
+				</form>
+			</a>
+		 </div>				  
+	</div>	
+</div>		
 
