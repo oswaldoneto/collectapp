@@ -39,22 +39,22 @@
 			});
 			$("a[rel=uic_category_facelet_link]").live("click",function(){
 				$("#id_selected_category").val($(this).attr('href'));
-				$("#uic_form").submit(); 
+				$("#uic_facets_form").submit(); 
 				return false;
 			});
 			$("#uic_clear_category_facelet_link").click(function(){
 				$("#id_selected_category").val('');
-				$("#uic_form").submit(); 
+				$("#uic_facets_form").submit(); 
 				return false;
 			});			
 			$("a[rel=uic_tag_facelet_link]").live("click",function(){
 				$("#id_selected_tag").val($(this).attr('href'));
-				$("#uic_form").submit(); 
+				$("#uic_facets_form").submit(); 
 				return false;
 			});
 			$("#uic_clear_tag_facelet_link").click(function(){
 				$("#id_selected_tag").val('');
-				$("#uic_form").submit(); 
+				$("#uic_facets_form").submit(); 
 				return false;
 			});		
 			//TODO: Refactor unir com o document_preview.xhtml
@@ -122,65 +122,88 @@
 {% block content %}
 
 
-<div id="leftside">
+<div id="leftside">	
+	
+	
 	{% if query %}
-		{% if categories.fields.category %}
-			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
-				<dl class="ui-context-menu">
-					<dt>Categorias
-					{% if form.selected_category.value %}
+	
+		<form id="uic_facets_form" method="get" action="/search">
+			
+			{% csrf_token %}		
+		    {{form.selected_category}}
+		    {{form.selected_tag}}
+		    <input type="hidden" name="q" value="{% if form.q.value %}{{form.q.value}}{% endif %}">		
+			
+			<div class="ui small vertical menu">
+				
+				<!-- Category Facets -->
+				{% if categories.fields.category %}
+					{% if form.selected_category.value %} 
 						<a id="uic_clear_category_facelet_link">
-						<span class="floatr"><i class="icon-reply"></i></span>
-						</a>
+						<div class="header item">
+							<i class="green folder icon"></i>
+							Categorias
+						</div>		
+						</a>																
+					{% else %}
+						<div class="header small item">
+							<i class="folder icon"></i>					
+							Categorias
+						</div>		
 					{% endif %}
-					</dt>
 					{% for cat in categories.fields.category %}
 						<dd>
-							<a rel="uic_category_facelet_link" href="{{cat.0}}">
-								<span style="font-size: 0.9em;">{{cat.0}}</span>
-								<span style="font-size: 0.8em; font-weight: bold">({{cat.1}})</span>								
+							<a rel="uic_category_facelet_link" href="{{cat.0}}" class="item">
+								<div class="ui small green label">{{cat.1}}</div>
+			    				{{cat.0}}
 							</a>
 						</dd>
 					{% endfor %}
-				</dl>
-			</div>
-		{% endif %}
-		{% if tags.fields.tags %}
-			<div style="margin-top: 10px" class="ui-widget ui-widget-content ui-corner-all">
-				<dl class="ui-context-menu">
-					<dt>Tags
-					{% if form.selected_tag.value %}
+				{% endif %}
+
+				<!-- Tags Facets -->
+				{% if tags.fields.tags %}
+					{% if form.selected_tag.value %} 
 						<a id="uic_clear_tag_facelet_link">
-						<span class="floatr"><i class="icon-reply"></i></span>
-						</a>
+						<div class="header item">
+							<i class="green tags icon"></i>
+							Tags
+						</div>		
+						</a>																
+					{% else %}
+						<div class="header item">
+							<i class="tags icon"></i>					
+							Tags
+						</div>		
 					{% endif %}
-					</dt>			
 					{% for tag in tags.fields.tags %}
 						<dd>
-							<a rel="uic_tag_facelet_link" href="{{tag.0}}">
-								<span style="font-size: 0.9em;">{{tag.0}}</span>
-								<span style="font-size: 0.8em; font-weight: bold">({{tag.1}})</span>
+							<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+								<div class="ui small green label">{{tag.1}}</div>
+			    				{{tag.0}}
 							</a>
 						</dd>
 					{% endfor %}
-				</dl>
-			</div>
-		{% endif %}
-	{% endif %}
+				{% endif %}
+
+			</div>	
+		</form>		
+	{% endif %}				
 </div>
+
+
 <div id="rightside">
-
-
-	<!-- Header -->
-	<div class="ui-app-header">
-		<div class="ui-app-title">Resultado da Busca</div>
-        <div class="ui-app-command">
-			<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} para "{{form.q.value}}"</p>
-        </div>
-	</div>
 
 	<!-- Result -->
 	{% if query %}
+
+		<!-- Header -->
+		<div class="ui-app-header">
+			<div class="ui-app-title">Resultado da Busca</div>
+	        <div class="ui-app-command">
+				<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} para "{{form.q.value}}"</p>
+	        </div>
+		</div>
 	
 		<!-- Amount and Top Pagination -->
 		<div class="margin_top_default margin_bottom_default">

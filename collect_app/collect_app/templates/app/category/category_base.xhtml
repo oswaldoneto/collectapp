@@ -18,33 +18,42 @@
 
 {% block startup_script %}
         <script type="text/javascript">
+        
+        
+
             $(document).ready(function(){
 
+	         	//var cat_id = {{category.id}};
+
+
                 /* Setting  */
-                $uic_new_button = $("#uic_new_button").button({
-                    text: true,
-                    icons: {
-                        primary: "ui-icon-document"
-                    }
-                });
-                $uic_open_button = $("#uic_open_button").button({
-                    text: true,
-                    icons: {
-                        primary: "ui-icon-folder-open"
-                    },
-                });
-                $uic_delete_button = $("#uic_delete_button").button({
-                    text: true,
-                    icons: {
-                        primary: "ui-icon-trash"
-                    },
-                });
+                $uic_new_button = $("#uic_new_button");
+                $uic_open_button = $("#uic_open_button");
+                $uic_delete_button = $("#uic_delete_button");
 
                 /* Events */
-                $uic_new_button.click(function() {
+               $("#uic_tab_category_link").click(function(){
+					redirect(sprintf("/category/%s/edit",cat_id));
+					return false;
+               });
+               $("#uic_tab_attribute_link").click(function(){
+					redirect(sprintf("/category/%s/attribute/list",cat_id));
+					return false;
+               });
+               $("#uic_tab_tag_link").click(function(){
+					redirect(sprintf("/category/%s/tag/list",cat_id));
+					return false;
+               });
+               
+               
+                $uic_new_button.click(function() { 
                     redirect("/category/add");
                     return false;
                 });
+                
+                
+                
+    			/*
                 $uic_open_button.click(function() {
                     redirect("/category/list");
                     return false;
@@ -69,6 +78,8 @@
                         }
                     ] });
                 });
+                */
+                
 
                 {% if category %}
                     $("#uic_tab").tabs();
@@ -103,11 +114,12 @@
 {% block content %}
 
     <div class="ui-app-header">
-        <div class="ui-app-title">{% block category_title %}{% endblock %}</div>
+        <div class="ui-app-title"><h3 class="ui header">{% block category_title %}{% endblock %}</h2></div>
         <div class="ui-app-command">
-            <button id="uic_new_button">Novo</button>
-            <button id="uic_open_button">Abrir</button>
-            <button id="uic_delete_button">Deletar</button>
+			  <div id="uic_new_button" class="ui small button">
+			  	  <i class="add icon"></i>
+			  	  Criar
+			</div>
         </div>
     </div>
 
@@ -118,21 +130,26 @@
         </div>
     {% endif %}
 
-    {% if category %}
-        <div id="uic_tab">
-            <ul>
-                <li><a href="#category">Categoria</a></li>
-                <li><a href="#attributes">Atributos</a></li>
-                <li><a href="#tag">Tag</a></li>
-            </ul>
-            <div id="category"></div>
-            <div id="attributes"></div>
-            <div id="tag"></div>
+    {% if category %}    
+		<div class="ui tabular menu">
+		  <a id="uic_tab_category_link" class="{% block category_menu_0 %}{% endblock %} item">
+		    Categoria
+		  </a>
+		  <a id="uic_tab_attribute_link" class="{% block category_menu_1 %}{% endblock %} item">
+		    Atributos
+		  </a>
+		  <a id="uic_tab_tag_link" class="{% block category_menu_2 %}{% endblock %} item">
+		    Tags
+		  </a>
+		</div>    
     {% endif %}
     {% block category_content %}{% endblock %}
-    {% if category %}
-        </div>
-    {% endif %}
 
+	<!--
     <div id="uic_delete_dialog" class="hide">Deseja excluir a categoria selecionada?</div>
+   -->
+    
+ 
+    
+    
 {% endblock %}

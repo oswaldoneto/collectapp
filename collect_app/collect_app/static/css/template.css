@@ -85,13 +85,13 @@ a {
 }
 #leftside {
 	float: left;
-	width: 170px;
+	width: 210px;
 }
 
 #rightside {
 	margin-bottom: 30px;
 	float: right;
-	width: 770px;
+	width: 730px;
 }
 #footer {
 	position: absolute;
@@ -117,11 +117,7 @@ a {
 }
 .ui-app-title {
 	float: left; 
-	font-size: 1.2em; 
-	color: #459e00; 
-	font-weight: bold; 
 	margin-top: 6px;		
-	height: 30px;
 }    
 
 .ui-app-command {
@@ -137,9 +133,6 @@ a {
 
 .ui-form-button {
 	float: right; 
-	padding-top: 10px;
-	padding-bottom: 10px; 
-	padding-right: 10px;
 }
 
 /* ------------------*/
@@ -411,10 +404,12 @@ ul.errorlist {
 	font-size: .8em;
 	color: #b81900;
 }
+/*
 .error {
 	display: block;
 	padding-left: 80px;
 }
+*/
 
 /* ----------*/
 /* Utilities */

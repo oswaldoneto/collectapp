@@ -8,22 +8,9 @@
 
 			/* Setting */			
 			$dialog = $("<div></div>").dialog({ autoOpen: false, modal:true});
-			$uic_new_att_button = $("#uic_new_att_button").button();
-			$uic_edit_att_button = $("#uic_edit_att_button").button({ disabled: true });
-			$uic_del_att_button = $("#uic_del_att_button").button({ disabled: true });
-			$uic_order_att_button = $("#uic_order_att_button").button();
+			$uic_new_att_button = $("#uic_new_att_button");
+			$uic_order_att_button = $("#uic_order_att_button");
 			
-			$("#uic_attribute_table").dataTable({
-				"bJQueryUI": true,
-				"bPaginate": false,
-				"bFilter":false,
-				"bSort":false,
-				"bInfo":false,
-				"bAutoWidth":false,
-				"aoColumns": [{ "bSortable": false },null,null,{ "bSortable": false }],
-				"aaSorting": [[ 1, "asc" ]],
-				"oLanguage": default_oLanguage								
-			});
 
 			/* Events */
 			$uic_new_att_button.click(function() {					 
@@ -100,45 +87,58 @@
 	Atributos da Categoria
 {% endblock %}
 
+{% block category_menu_1 %}active{% endblock %} 
 {% block category_content %}	
 	<form id="ui_form" method="post">
 		{% csrf_token %}
+		<div class="margin_bottom_default">	
+			<div id="uic_new_att_button" class="ui small button">
+				<i class="add icon"></i>
+				Criar
+			</div>
+			<div id="uic_order_att_button" class="ui small button">
+			  	  <i class="sort alphabet descending icon"></i>
+			</div>
+		</div>	
 		<div>
-			<table id="uic_attribute_table" class="display">
+			<table id="uic_attribute_table" class="ui large table segment">
 				<thead>
 					<tr>
 						<th style="width:1%"></th>
-						<th style="width:50%">Atributo</th>
-						<th style="width:25%">Tipo</th>
-						<th style="width:24%">Obrigatório</th>
+						<th >Atributo</th>
+						<th >Tipo</th>
+						<th >Obrigatório</th>
+						<th style="width:1%"></th>
 					</tr>
 				</thead>						
 				<tbody>
 					{% if attributes %}
 					{% for attribute in attributes %}
 						<tr>
-							<td><input type="radio" name="attribute_selected" value="{{attribute.id}}"/></td>
+							<td>
+								<a rel="uic_open_link" href="{{attribute.id}}">
+									<i class="open folder outline home icon"></i>
+								</a>																
 							<td>{{attribute.name}}</td>
 							<td>{{attribute.get_type_display}}</td>
 							<td>							
 								{% if attribute.required %}
-									<div class="ui-icon ui-icon-check margin_auto">																				
+									Sim																		
 								{% else %}
-									<div class="ui-icon ui-icon-close margin_auto">																				
+									Não																			
 								{% endif %}
+							</td>
+							<td>
+								<a rel="uic_delete_link" href="{{attribute.id}}">
+									<i class="remove cicle home icon"></i>
+								</a>																													
 							</td>
 						</tr>
 					{% endfor %}					
 					{% endif %}		
 				</tbody>					
 			</table>
-		</div>
-		<div class="ui-form-button">
-			<input type="button" value="Ordenar" id="uic_order_att_button"/>
-			<input type="button" value="Novo" id="uic_new_att_button"/>
-			<input type="button" value="Abrir" id="uic_edit_att_button"/>
-			<input type="button" value="Deletar" id="uic_del_att_button"/>
-		</div>
+		</div>	
 		<div class="clear"></div>
 	</form>
 	

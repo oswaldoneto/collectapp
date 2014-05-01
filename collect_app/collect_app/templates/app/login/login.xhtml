@@ -2,11 +2,7 @@
 {% block import_style %}
 	<style type="text/css">
 		@import url("{{STATIC_URL}}css/app/login.css");
-		
-		h1 {
-			text-shadow: 1px 1px 1px #8B898B;
-		}
-		
+				
 		body {
 			background-color: #5C6166;
 		}
@@ -23,31 +19,31 @@
 				<form id="uic_login_form" method="post" action="/login/" >
 					{% csrf_token %}
 					<input type="hidden" name="next" value="{{next}}">
-					<div class="ui form segment ui-widget" >
-						
-										  	
-
+					<div class="ui error form segment ui-widget" >
+					  <!-- TODO: Externalizar os estilos -->
 					  <div class="field" style="text-align: center">
-					  		<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>	
-					  </div>
-
-						
-					  <div class="field">
+					  		<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>
+					  </div>				
+					  {% if form.errors %}
+						<div class="field">
+						  <div class="ui error message" style="text-align: center">
+	    					<p>Acesso Negado</p>
+						  </div>												
+						</div>
+					  {% endif %}					  
+					  <div class="field {% if form.username.errors %}error{% endif  %}">
 							<div class="ui left icon input">
-							  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário"/>
+							  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" value="{{form.username.value}}"/>
 							  	<i class="user icon"></i>
 							</div>
 					  </div>
-					  <div class="field">
+					  <div class="field {% if form.password.errors %}error{% endif  %}">
 							<div class="ui left icon input">
 								<input type="password" name="password" id="id_password" class="textfield" placeholder="Senha" />		
 							  	<i class="key icon"></i>
 							</div>
 					  </div>
-					  <div class="ui error message">
-					    <div class="header">We noticed some issues</div>
-					  </div>
-					  <div id="uic_login" class="ui green button floatr">Log in</div>
+					  <div id="uic_login" class="ui small green button floatr">Log in</div>
 					</div>			
 				</form>
 			</div>

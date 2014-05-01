@@ -7,43 +7,12 @@
 			<h2 style="display: inline">collect</h2><h2 style="color: #85B900; display: inline">app</h2>		  	
 		</div>
 		
-		<!-- Admnistration Menu -->
-		{% if perms.category.add_category or perms.auth.add_user %}
-			<div class="ui dropdown item">
-		    	<i class="settings icon"></i>
-		        <div class="menu">
-		        	{% if perms.category.add_category %}
-						<div id="uic_category_link" class="item"><i class="folder icon"></i>Categoria</div>
-					    <div id="uic_tag_link" class="item"><i class="tags icon"></i>Tags</div>
-					{% endif %}
-		        	{% if perms.auth.add_user %}
-					    <div id="uic_user_link" class="item"><i class="user icon"></i>Usuário</div>
-					    <div id="uic_group_link" class="item"><i class="users icon"></i>Grupos</div>
-					{% endif %}
-		        </div>
-		    </div>
-		{% endif %}		    
-		    
-		<!-- Profile Menu -->
-		<div class="ui dropdown item">
-	    	<i class="user icon"></i>{% if user.is_authenticated %}{{user.username}}{% endif %}
-	        <div class="menu">				
-				<div id="uic_changepassword_link" class="item"><i class="asterisk icon"></i>Mudar Senha</div>
-			    <div id="uic_logout_link" class="item"><i class="off icon"></i>Sair</div>
-	        </div>
-	    </div>			 
-	    
-	    <!-- Right Menu -->	         
-		<div class="right menu">
-			
-			<!-- Search Text  -->
+		<!-- Search Text  -->
 			<div class="item">
 				<div class="ui icon input">
 					<form id="uic_form_search" method="get" action="/search">
 						{% csrf_token %}
-						{{form.selected_category}}		
-						{{form.selected_tag}}			
-						<input id="id_q" name="q" type="text" placeholder="Search..." {% if form.q.value %} value=" {{form.q.value}}" {% endif %}>
+						<input id="id_q" name="q" type="text" placeholder="Search..." style="width: 350px">
 					</form>						
 					<i id="uic_lookup_link" class="search link icon"></i>
 				</div>
@@ -67,7 +36,40 @@
 					  	<input type="file" name="file" id="file"/>
 					</div>
 				</form>
-			</a>
+			</a>		
+		
+	 
+	    
+	    <!-- Right Menu -->	         
+		<div class="right menu">
+			
+			<!-- Admnistration Menu -->
+			{% if perms.category.add_category or perms.auth.add_user %}
+				<div class="ui dropdown item">
+			    	<i class="settings icon"></i>
+			        <div class="menu">
+			        	{% if perms.category.add_category %}
+							<div id="uic_category_link" class="item"><i class="folder icon"></i>Categoria</div>
+						    <div id="uic_tag_link" class="item"><i class="tags icon"></i>Tags</div>
+						{% endif %}
+			        	{% if perms.auth.add_user %}
+						    <div id="uic_user_link" class="item"><i class="user icon"></i>Usuário</div>
+						    <div id="uic_group_link" class="item"><i class="users icon"></i>Grupos</div>
+						{% endif %}
+			        </div>
+			    </div>
+			{% endif %}		    
+			    
+			<!-- Profile Menu -->
+			<div class="ui dropdown item">
+		    	<i class="user icon"></i>{% if user.is_authenticated %}{{user.username}}{% endif %}
+		        <div class="menu">				
+					<div id="uic_changepassword_link" class="item"><i class="asterisk icon"></i>Mudar Senha</div>
+				    <div id="uic_logout_link" class="item"><i class="off icon"></i>Sair</div>
+		        </div>
+		    </div>					
+			
+	
 		 </div>				  
 	</div>	
 </div>		
