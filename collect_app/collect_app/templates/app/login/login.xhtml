@@ -33,7 +33,7 @@
 					  {% endif %}					  
 					  <div class="field {% if form.username.errors %}error{% endif  %}">
 							<div class="ui left icon input">
-							  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" value="{{form.username.value}}"/>
+							  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" {% if not form.username %}value="{{form.username.value}}"{% endif %}  />
 							  	<i class="user icon"></i>
 							</div>
 					  </div>

@@ -18,94 +18,29 @@
 
 {% block startup_script %}
         <script type="text/javascript">
-        
-        
-
-            $(document).ready(function(){
-
-	         	//var cat_id = {{category.id}};
-
-
-                /* Setting  */
-                $uic_new_button = $("#uic_new_button");
-                $uic_open_button = $("#uic_open_button");
-                $uic_delete_button = $("#uic_delete_button");
-
-                /* Events */
-               $("#uic_tab_category_link").click(function(){
+            $(document).ready(function(){            	
+	           	$("#uic_tab_category_link").click(function(){
+	           		cat_id = '{{category.id}}';
 					redirect(sprintf("/category/%s/edit",cat_id));
 					return false;
-               });
-               $("#uic_tab_attribute_link").click(function(){
+	           	});
+	
+	           	$("#uic_tab_attribute_link").click(function(){
+	           		cat_id = '{{category.id}}';
 					redirect(sprintf("/category/%s/attribute/list",cat_id));
 					return false;
-               });
-               $("#uic_tab_tag_link").click(function(){
+	           	});
+	
+	           	$("#uic_tab_tag_link").click(function(){
+	           		cat_id = '{{category.id}}';
 					redirect(sprintf("/category/%s/tag/list",cat_id));
 					return false;
-               });
-               
-               
-                $uic_new_button.click(function() { 
+	           	});
+	           	
+                $("#uic_new_button").click(function() { 
                     redirect("/category/add");
                     return false;
                 });
-                
-                
-                
-    			/*
-                $uic_open_button.click(function() {
-                    redirect("/category/list");
-                    return false;
-                });
-                $uic_delete_button.click(function() {
-                    $("#uic_delete_dialog").dialog({ buttons: [
-                        {
-                            text: "Yes",
-                            click: function() {
-                                {% if category %}
-                                    $("#uic_form").attr("action", sprintf('/category/%s/delete', {{category.id}}));
-                                    $("#uic_form").submit();
-                                    return false;
-                                {% endif %}
-                            }
-                        },
-                        {
-                            text: "No",
-                            click: function() {
-                                $(this).dialog("close");
-                            }
-                        }
-                    ] });
-                });
-                */
-                
-
-                {% if category %}
-                    $("#uic_tab").tabs();
-                    $("#uic_tab").tabs('select',{% block page_index %}{% endblock %});
-                    $("#uic_tab").bind('tabsselect',function(event,ui) {
-                        var cat_id = {{category.id}}
-                        var url = null;
-                        switch(ui.index) {
-                            case 0:
-                                url = sprintf("/category/%s/edit",cat_id);
-                                break;
-                            case 1:
-                                url = sprintf("/category/%s/attribute/list",cat_id);
-                                break;
-                            case 2:
-                                url = sprintf("/category/%s/tag/list",cat_id);
-                                break;
-                        }
-                        redirect(url);
-                    });
-                {% endif %}
-
-                setTimeout(function() {
-                   $("#uic_tag_feedback").hide("slow");
-                }, 10000);
-
             });
         </script>
         {% block category_script %}{% endblock %}
@@ -113,23 +48,17 @@
 
 {% block content %}
 
-    <div class="ui-app-header">
-        <div class="ui-app-title"><h3 class="ui header">{% block category_title %}{% endblock %}</h2></div>
-        <div class="ui-app-command">
-			  <div id="uic_new_button" class="ui small button">
-			  	  <i class="add icon"></i>
-			  	  Criar
-			</div>
-        </div>
-    </div>
-
-    {% if messages %}
-        <div id="uic_tag_feedback" class="ui-widget ui-state-error ui-corner-all ui-feedback clear">
-            <span class="ui-icon ui-icon-alert floatl"></span>
-            <p id="uic_tag_message">{% for message in messages %}{{ message }}{% endfor %}</p>
-        </div>
-    {% endif %}
-
+    {% if not category %}    
+	    <div class="ui-app-header">
+	        <div class="ui-app-title">
+		   		<h4 class="ui header">{% block category_title %}{% endblock %}</h4>
+	        </div>
+	        <div class="ui-app-command">
+				{% block category_commands %}{% endblock %}  
+	        </div>
+	    </div>
+	{% endif %}
+	
     {% if category %}    
 		<div class="ui tabular menu">
 		  <a id="uic_tab_category_link" class="{% block category_menu_0 %}{% endblock %} item">
@@ -143,13 +72,6 @@
 		  </a>
 		</div>    
     {% endif %}
+        
     {% block category_content %}{% endblock %}
-
-	<!--
-    <div id="uic_delete_dialog" class="hide">Deseja excluir a categoria selecionada?</div>
-   -->
-    
- 
-    
-    
 {% endblock %}

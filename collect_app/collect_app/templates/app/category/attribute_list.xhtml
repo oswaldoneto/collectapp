@@ -5,58 +5,35 @@
 {% block category_script %}
 	<script type="text/javascript">
 		$(document).ready(function(){
-
-			/* Setting */			
-			$dialog = $("<div></div>").dialog({ autoOpen: false, modal:true});
-			$uic_new_att_button = $("#uic_new_att_button");
-			$uic_order_att_button = $("#uic_order_att_button");
 			
-
-			/* Events */
-			$uic_new_att_button.click(function() {					 
-				 redirect(sprintf('/category/%s/attribute/add',{{category.id}}));
-			});
-			$uic_edit_att_button.click(function() {					 
-				 redirect(sprintf('/category/%s/attribute/%s/edit',{{category.id}},$("input:radio[name=attribute_selected]:checked").val()));
-			});
-			$uic_del_att_button.click(function() {					 				
-				$("#uic_delete_dialog").dialog({
-					title:"Excluir Atributo",
-					width:400,				
-					buttons: [
-					{
-						text: "Confirmar",
-						click: function() { 
-							var catId = {{category.id}};
-							var attId = $("input:radio[name=attribute_selected]:checked").val();
-							var delete_mode = $("input:radio[name=uic_delete_value_attr_radio]:checked").val();
-							var url = null;
-							if (delete_mode == 1) {
-								url = sprintf('/category/%s/attribute/%s/delete', catId, attId);
-							}
-							else {
-								url = sprintf('/category/%s/attribute/%s/inactive', catId, attId);								
-							}
-							$("#ui_form").attr("action", url);  
-							$("#ui_form").submit(); 
-						}
-					},
-					{
-						text: "Cancelar",
-						click: function() { 
-							$(this).dialog("close"); 
-						}
-					}					
-				] });
-			});
-			$uic_order_att_button.click(function(){
-				var catId = {{category.id}};
-    			$dialog.load(sprintf('/category/%s/attribute/order',catId)).dialog({title:'Ordem de Visualização de Atributos',width:500,height: 300});
-    			$dialog.dialog('open',{ position: 'center' });
-    			return false;								
-			});			
+			$(".ui.radio.checkbox").checkbox('setting', 'onChange', function(){ 
+				delete_mode = $(this)[0].value; 
+			    if (delete_mode == 1) {
+						$("#uic_delete_mode_alert").show();
+					}
+				else {
+					$("#uic_delete_mode_alert").hide();
+				}
+			});	
 			
-			$("input:radio[name=uic_delete_value_attr_radio]").click(function() {
+			$("#uic_new_att_button").click(function(){
+				redirect(sprintf('/category/%s/attribute/add','{{category.id}}'));				
+			});
+			
+						
+			$("a[rel=uic_open_link]").click(function(){
+				redirect(sprintf('/category/%s/attribute/%s/edit','{{category.id}}',$(this).attr('href')));
+				return false;
+			});
+			
+			$("a[rel=uic_delete_link]").click(function(){
+				$uic_delete_dialog = $('#uic_delete_dialog');
+				$uic_delete_dialog.data("attribute_id",$(this).attr('href'));
+				$uic_delete_dialog.modal('show');
+				return false;
+			});
+			
+			$("input:radio[name=uic_delete_value_attr_radio]").click(function() {				
 				var delete_mode = $("input:radio[name=uic_delete_value_attr_radio]:checked").val();
 				if (delete_mode == 1) {
 					$("#uic_delete_mode_alert").show();
@@ -64,10 +41,33 @@
 				else {
 					$("#uic_delete_mode_alert").hide();
 				}
-			});			
-			$("input:radio[name=attribute_selected]").click(function() {					 
-				$( "#uic_edit_att_button" ).button({ disabled: false });
-				$( "#uic_del_att_button" ).button({ disabled: false });
+			});
+			
+			$("#uic_cancel_delete_button").click(function(){
+				$('#uic_delete_dialog').modal('hide');				
+			});
+		
+			$("#uic_confirm_delete_button").click(function(){
+				catId = '{{category.id}}';
+				attId = $('#uic_delete_dialog').data("attribute_id");
+				var delete_mode = $("input:radio[name=uic_delete_value_attr_radio]:checked").val();
+				var url = null;
+				if (delete_mode == 1) {
+					url = sprintf('/category/%s/attribute/%s/delete', catId, attId);
+				}
+				else {
+					url = sprintf('/category/%s/attribute/%s/inactive', catId, attId);								
+				}
+				$("#ui_form").attr("action", url);  
+				$("#ui_form").submit(); 
+			});
+			
+			$("#uic_order_att_button").click(function(){
+				var catId = '{{category.id}}';
+				$dialog = $("<div></div>").dialog({ autoOpen: false, modal:true});
+    			$dialog.load(sprintf('/category/%s/attribute/order',catId)).dialog({title:'Ordem de Visualização de Atributos',width:500,height: 300});
+    			$dialog.dialog('open',{ position: 'center' });
+    			return false;												
 			});
 		});
 	</script>
@@ -89,15 +89,17 @@
 
 {% block category_menu_1 %}active{% endblock %} 
 {% block category_content %}	
+
 	<form id="ui_form" method="post">
 		{% csrf_token %}
 		<div class="margin_bottom_default">	
-			<div id="uic_new_att_button" class="ui small button">
+			<div id="uic_new_att_button" class="ui green small button">
 				<i class="add icon"></i>
-				Criar
+				incluir
 			</div>
 			<div id="uic_order_att_button" class="ui small button">
 			  	  <i class="sort alphabet descending icon"></i>
+			  	  ordenar
 			</div>
 		</div>	
 		<div>
@@ -141,23 +143,38 @@
 		</div>	
 		<div class="clear"></div>
 	</form>
+		
+	<!-- Dialog to delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="header">
+	    	Selecione o modo de exclusão desejado:
+	  	</div>	  		
+	  	<div class="content">
+			<div id="uic_delete_mode_alert" class="yellow ui message hide">
+				Atenção haverá perda permanente de informação
+			</div>	  		
+			<div class="ui radio checkbox margin_bottom_default">
+				<input type="radio" name="uic_delete_value_attr_radio" value="0" checked="checked"/>
+		        <label><b>Manter</b> os valores dos atributo de documentos já classificados</label>
+		    </div>
+			<div class="ui radio checkbox">
+				<input type="radio" name="uic_delete_value_attr_radio" value="1"/>
+		        <label><b>Deletar</b> os valores dos atributo de documentos já classificados</label>
+		    </div>	    	
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>   		
 	
 	
-	<div id="uic_delete_dialog" class="margin_top_default hide">
-		<div id="uic_delete_mode_alert" class="ui-widget ui-state-error ui-corner-all ui-feedback clear hide"> 
-			<span class="ui-icon ui-icon-alert floatl"></span>
-			<p id="uic_tag_message">Atenção haverá perda permanente de informação</p>
-		</div>
-		<p class="margin_bottom_default">Selecione o modo de exclusão desejada:</p>
-		<div>
-			<input type="radio" name="uic_delete_value_attr_radio" value="0" checked="checked"/>
-			<label for="deleta_nao"><strong>Manter</strong> valores de atributo de documentos já classificados</label>
-		</div>
-		<div class="margin_top_default">
-			<input type="radio" name="uic_delete_value_attr_radio" value="1"/>
-			<label for="deleta"><strong>Deletar</strong> valores de atributo de documentos já classificados</label>
-		</div>
-	</div>
+	
 	
 		
 {% endblock %}

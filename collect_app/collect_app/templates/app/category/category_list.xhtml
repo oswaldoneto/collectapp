@@ -1,77 +1,89 @@
 {% extends "app/category/category_base.xhtml" %}
 
 {% block category_script %}
-<script type="text/javascript">
-$(document).ready(function(){
-	$("a[rel=uic_open_link]").live("click",function(){
-		redirect(sprintf("/category/%s/edit",$(this).attr('href')));
-		return false;
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("a[rel=uic_open_link]").click(function(){
+			redirect(sprintf("/category/%s/edit",$(this).attr('href')));
+			return false;
+		});
+	
+		$("a[rel=uic_delete_link]").click(function(){
+			$uic_delete_dialog = $('#uic_delete_dialog');
+			$uic_delete_dialog.data("category_id",$(this).attr('href'));
+			$uic_delete_dialog.modal('show');
+			return false;
+		});
+	
+		$("#uic_cancel_delete_button").click(function(){
+			$('#uic_delete_dialog').modal('hide');				
+		});
+	
+		$("#uic_confirm_delete_button").click(function(){
+			$("#uic_form").attr("action", sprintf('/category/%s/delete',$('#uic_delete_dialog').data("category_id")));  
+			$("#uic_form").submit();
+		});
 	});
-
-	$("a[rel=uic_delete_link]").click(function(){
-		$uic_delete_dialog = $('#uic_delete_dialog');
-		$uic_delete_dialog.data("category_id",$(this).attr('href'));
-		$uic_delete_dialog.modal('show');
-		return false;
-	});
-
-	$("#uic_cancel_delete_button").click(function(){
-		$('#uic_delete_dialog').modal('hide');				
-	});
-
-	$("#uic_confirm_delete_button").click(function(){
-		$("#uic_form").attr("action", sprintf('/category/%s/delete',$('#uic_delete_dialog').data("category_id")));  
-		$("#uic_form").submit();
-	});
-});
-</script>
+	</script>
 {% endblock %}
 
+{% block category_title %}Lista de Categorias{% endblock %}
+
+{% block category_commands %}
+<div id="uic_new_button" class="ui green small button">
+	<i class="add icon"></i>
+  	incluir
+</div>
+{% endblock %}  
+
+
 {% block category_content %}	
-<form id="uic_form">
-	{% csrf_token %}
-	<table id="uic_category_table" class="ui large table segment">
-		<thead>
-			<tr>
-				<th style="width:1%"></th>
-				<th>Categoria</th>
-				<th>Descrição</th>								
-				<th style="width:1%"></th>
-			</tr>
-		</thead>						
-		<tbody>
-			{% for category in categories %}
-				<tr>							
-					<td>
-						<a rel="uic_open_link" href="{{category.id}}">
-							<i class="open folder outline home icon"></i>
-						</a>
-					</td>
-					<td>{{category.title}}</td>
-					<td>{{category.description}}</td>
-					<td>
-						<a rel="uic_delete_link" href="{{category.id}}">									
-							<i class="remove circle home icon"></i>
-						</a>							
-					</td>
+	<!-- Table -->
+	<form id="uic_form">
+		{% csrf_token %}
+		<table id="uic_category_table" class="ui table segment">
+			<thead>
+				<tr>
+					<th style="width:1%"></th>
+					<th>Categoria</th>
+					<th>Descrição</th>								
+					<th style="width:1%"></th>
 				</tr>
-			{% endfor %}					
-		</tbody>					
-	</table>
-</form>	
-<div id="uic_delete_dialog" class="ui small modal ui-widget">
-	<i class="close icon"></i>
-  	<div class="content">
-    	<h3>Deseja excluir a categoria selecionada?</h3>
-  	</div>
-  	<div class="actions">	  		
-		<div id="uic_cancel_delete_button" class="ui button">
-		  Não
-		</div>	  		
-  		<div id="uic_confirm_delete_button" class="ui red right button">
-		  Sim
-		</div>
-  	</div>
-</div>   		
-			
+			</thead>						
+			<tbody>
+				{% for category in categories %}
+					<tr>							
+						<td>
+							<a rel="uic_open_link" href="{{category.id}}">
+								<i class="open folder outline home icon"></i>
+							</a>
+						</td>
+						<td>{{category.title}}</td>
+						<td>{{category.description}}</td>
+						<td>
+							<a rel="uic_delete_link" href="{{category.id}}">									
+								<i class="remove home icon"></i>
+							</a>							
+						</td>
+					</tr>
+				{% endfor %}					
+			</tbody>					
+		</table>
+	</form>	
+	
+	<!-- Dialog to delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Deseja excluir a categoria selecionada?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>   		
 {% endblock %}
