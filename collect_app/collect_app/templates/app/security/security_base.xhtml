@@ -1,7 +1,5 @@
 {% extends "layout/template.xhtml" %}
 
-{% block title %}Collect Project :: Segurança{% endblock %}
-
 {% block startup_script %}
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/security_base.js"></script>
 	{% block security_script %}{% endblock %}
@@ -20,10 +18,7 @@
 	   		<h4 class="ui header">{% block security_title %}{% endblock %}</h4>
 		</div>
 		<div class="ui-app-command">
-			<div id="uic_new_button" class="ui green small button">
-				<i class="add icon"></i>
-			  	incluir
-			</div>			
+			{% block security_command %}{% endblock %}
 		</div>
 	</div>
 	{% block security_content %}{% endblock %}

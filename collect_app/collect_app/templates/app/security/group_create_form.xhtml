@@ -5,35 +5,31 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/group_create_form.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Segurança</a></li>
-        <li>Grupos</a></li>
-        <li>Adicionar Grupo</li>
-    </ul>
-{% endblock %}
-
-{% block security_title %}Adicionar Grupo{% endblock %}
+{% block security_title %}Criar Grupo{% endblock %}
 {% block security_content %}
-	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
-		{% csrf_token %}
-		{% if form.errors %}
-			<div class="ui-state-error ui-corner-all clear">
-				<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>O formulário contêm errros, favor corrigir antes de continuar.</p>
-			</div>
-		{% endif %}				
-		<table class="table_form">
-			<tr>
-				<td class="label"><label>Grupo</label></td>
-				<td class="component">{{form.name}}</td>
-				<td class="error">{{form.name.errors}}</td>						
-			</tr>
-		</table>
-		<div class="ui-form-button">
-			<input type="button" value="Salvar" id="uic_save_button"/>
-			<input type="button" value="Cancelar" id="uic_cancel_button"/>
-		</div>		
-		<div class="clear"></div>
-	</form>
+
+	<div class="ui segment">	
+		<form id="uic_form" method="post" class="ui-form ui-widget">
+			{% csrf_token %}
+		  	{% if form.errors %}
+	  		<div class="ui error message">	  			
+				{{form.name.errors}}
+	  		</div>
+		  	{% endif %}	  						
+			<table class="table_form">
+				<tr>
+					<td class="label"><label>Grupo</label></td>
+					<td class="component">
+						<div class="ui input" style="width: 300px;">{{form.name}}</div>
+					</td>
+					<td class="error"></td>						
+				</tr>
+			</table>
+			<div class="ui-form-button">
+			  	<div id="uic_cancel_button" class="ui small button">Cancelar</div>
+			  	<div id="uic_save_button" class="ui small positive button">Salvar</div>
+			</div>		
+			<div class="clear"></div>
+		</form>
+	</div>
 {% endblock %}

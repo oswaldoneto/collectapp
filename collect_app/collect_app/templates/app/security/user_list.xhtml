@@ -7,19 +7,17 @@
 {% endblock %}
 
 {% block security_title %}Usuários{% endblock %}
-{% block security_content %}
-	<div id="uic_delete_dialog" class="hide">Deseja excluir o usuário selecionado?</div>
-	
-	
-	{% if messages %}
-		<div id="uic_tag_feedback" class="ui-widget ui-state-error ui-corner-all ui-feedback clear"> 
-			<span class="ui-icon ui-icon-alert floatl"></span>
-			<p id="uic_tag_message">{% for message in messages %}{{ message }}{% endfor %}</p>
-		</div>
-	{% endif %}		
-	
 
+{% block security_command %}
+	<div id="uic_new_button" class="ui green small button">
+		<i class="add icon"></i>
+	  	incluir
+	</div>	
+{% endblock %}
+
+{% block security_content %}
 	
+	<!-- List User -->
 	<form id="uic_form" method="post">
 		{% csrf_token %}						
 		<table id="uic_user_table" class="ui table segment">
@@ -61,4 +59,24 @@
 			</tbody>
 		</table>
 	</form>
+	
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+			<form id="uic_delete_form" method="post">
+				{% csrf_token %}			
+	    		<h3>Deseja excluir o usuário selecionado?</h3>
+			</form>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_user_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_user_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div> 		
+	
 {% endblock %}

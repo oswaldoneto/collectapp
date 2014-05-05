@@ -1,29 +1,29 @@
 
-$(document).ready(function() {				
-	/*
-	$uic_open_button.click(function() {
-		 var user_id = $("input:radio[name=user_selected]:checked").val();
-		 redirect(sprintf('/security/user/%s/edit',user_id));
+$(document).ready(function() {
+	
+	$("#uic_new_button").click(function(){
+		redirect(sprintf("/security/%s/add",security_url));
 	});
-	$uic_delete_button.click(function() {					 				
-		$("#uic_delete_dialog").dialog({ 
-			title: "Excluir Usu�rio",
-			buttons: [
-			{
-				text: "Sim",
-				click: function() { 
-					var user_id = $("input:radio[name=user_selected]:checked").val();
-					$("#uic_form").attr("action", sprintf('/security/user/%s/delete', user_id));  
-					$("#uic_form").submit(); 
-				}
-			},
-			{
-				text: "N�o",
-				click: function() { 
-					$(this).dialog("close"); 
-				}
-			}					
-		] });
+	
+	$("a[rel=uic_open_link]").click(function(){				
+		redirect(sprintf('/security/user/%s/edit',$(this).attr('href')));
+		return false;
 	});
-	*/			
+
+	$("a[rel=uic_delete_link]").click(function(){				
+		$uic_delete_dialog = $('#uic_delete_dialog');
+		$uic_delete_dialog.data("user_id",$(this).attr('href'));
+		$uic_delete_dialog.modal('show');
+		return false;
+	});
+	
+	$("#uic_cancel_delete_user_button").click(function(){
+		$('#uic_delete_dialog').modal('hide');				
+	});
+	
+	$("#uic_confirm_delete_user_button").click(function(){
+		$("#uic_form").attr("action", sprintf('/security/user/%s/delete', $('#uic_delete_dialog').data("user_id")));  
+		$("#uic_form").submit(); 
+	});	
+		
 });	

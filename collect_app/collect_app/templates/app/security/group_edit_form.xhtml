@@ -1,60 +1,63 @@
 {% extends "app/security/security_base.xhtml" %}
+
 {% block security_url %}group{% endblock %}
 
 {% block security_script %}
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/group_edit_form.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Security</a></li>
-        <li>Groups</a></li>
-        <li>{{form.name.value}}</li>        
-    </ul>
-{% endblock %}
-
-{% block security_title %}Editar Grupo{% endblock %}
+{% block security_title %}Alterar Grupo{% endblock %}
 {% block security_content %}
-	<div id="uic_delete_dialog" class="hide">Deseja excluir o grupo?</div>
-	<div id="accordion">
-		<h3><a href="#usuario">Dados do Grupo</a></h3>
-		<div>
+
+<div class="ui basic segment">	
+	<div class="ui fluid accordion">
+		<div class="active title">
+	    	<i class="dropdown icon"></i>
+	    	Dados do Grupo
+	  	</div>
+	  	<div class="active content">
 			<form id="uic_form" method="post">
 				{% csrf_token %}				
-				{% if form.errors %}
-					<div class="ui-state-error ui-corner-all clear">
-						<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>O formulário contêm errros, favor corrigir antes de continuar.</p>
-					</div>
-				{% endif %}				
+			  	{% if form.errors %}
+		  		<div class="ui error message">	  			
+					{{form.name.errors}}
+		  		</div>
+			  	{% endif %}	 			
 				<table class="table_form">
 					<tr>
 						<td class="label"><label>Grupo</label></td>
-						<td class="component">{{form.name}}</td>
-						<td class="error">{{form.name.errors}}</td>						
+						<td class="component">						
+							<div class="ui input" style="width: 300px;">{{form.name}}</div>
+						</td>
+						<td class="error"></td>						
 					</tr>
 				</table>
 				<div class="ui-form-button">
-					<input type="button" value="Save" id="uic_save_button"/>
-					<input type="button" value="Cancel" id="uic_cancel_button"/>
+					<div id="uic_cancel_button" class="ui button">
+					  Cancelar
+					</div>	  		
+			  		<div id="uic_save_button" class="ui green right button">
+					  Salvar
+					</div>
 				</div>		
 				<div class="clear"></div>
 			</form>
-		</div>   
-		<h3><a href="#permissao">Permissão</a></h3>
-		<div>
+	  	</div>
+	  	<div class="title">
+	    	<i class="dropdown icon"></i>
+	    	Permissão
+	  	</div>
+	  	<div class="content">
 			<!-- Success Feedback -->
-			<div id="uic_success_feedback" class="ui-widget ui-state-highlight ui-corner-all ui-feedback hide"> 
-				<p><span class="ui-icon ui-icon-info floatl"></span>
-				<strong>A permissão do grupo foi alterada.</strong></p>
-			</div>
+	  		<div id="uic_success_feedback" class="ui success message hide">	  			
+				A permissão do grupo foi alterada com sucesso
+	  		</div>
 
-			<!-- Failure Feedback -->
-			<div id="uic_error_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
-				<p><span class="ui-icon ui-icon-alert floatl"></span> 
-				<strong>Ocorreu um erro em nossos servidores, estamos trabalhando para corrigir.</strong></p>
-			</div>
-			
+			<!-- Failure Feedback -->	  		
+	  		<div id="uic_error_feedback" class="ui error message hide">	  			
+				Erro ao atualizar a permissão
+	  		</div>
+						
 			<!-- TODO: Refactor style -->
 			<div style="height: 100px;">
 				<input type="checkbox" id="uic_classify_bundle_check"/>&nbsp;<b>Classificar Documentos</b>
@@ -72,6 +75,9 @@
 					Definir permissões de acesso de Usuários e Grupos.
 				</div>
 			</div>
-		</div>
-	</div>				
+	  	</div>
+	</div>
+</div>
+	
+	
 {% endblock %}
