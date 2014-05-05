@@ -1,24 +1,5 @@
 $(document).ready(function() {
-	/* Setting  */
-	$uic_new_button = $("#uic_new_button").button({
-		text: true,
-		icons: {
-			primary: "ui-icon-document"
-		}
-	});
-	$uic_open_button = $("#uic_open_button").button({
-		text: true,
-		icons: {
-			primary: "ui-icon-folder-open"
-		},
-	});				
-	$uic_delete_button = $("#uic_delete_button").button({
-		text: true,
-		icons: {
-			primary: "ui-icon-trash"
-		},
-	});
-	/* Events */
+	/*
 	$uic_new_button.click(function() {
 		redirect(sprintf("/security/%s/add",security_url));
 	});
@@ -46,4 +27,5 @@ $(document).ready(function() {
 			]});
 		});
 	}
+	*/
 });

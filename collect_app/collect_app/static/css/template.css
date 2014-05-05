@@ -41,10 +41,6 @@ a {
 
 
 
-#principal {
-	
-}
-
 #page {
 	background: #fff;
 	/*
@@ -399,11 +395,12 @@ table.ui-table-option td a {
 .ui-button-text {
    font-size: .8em !important;
 } 
+
 ul.errorlist {
 	list-style-type: none;
-	font-size: .8em;
-	color: #b81900;
 }
+
+
 /*
 .error {
 	display: block;

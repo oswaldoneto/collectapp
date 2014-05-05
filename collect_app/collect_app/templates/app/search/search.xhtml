@@ -6,8 +6,6 @@
 {% load kilobytefy %}
 {% load imagery %}
 
-{% block title %}Collect Project :: Documento{% endblock %}
-
 {% block import_style %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/app/search.css" />	
 	<style type="text/css">
@@ -297,7 +295,6 @@
 															<div class="margin_min_top">
 																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
 																<small><i class="icon-angle-right ui-state-disabled"></i></small>
-																
 																<span>{% highlight att.value.value with query %}</span>
 															</div> 
 														{% endif %}					
