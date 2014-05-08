@@ -6,8 +6,6 @@
 
 {% load verbatim %}
 
-{% block title %}Collect Project :: Documento{% endblock %}
-
 {% block import_style %}
     <style type="text/css">
     </style>
@@ -30,30 +28,14 @@
     </script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Documento</li>
-        <li>Visualizar</li>
-    </ul>
-{% endblock %}
-
 {% block content %}
 
-<div id="leftside">
-	{% include "app/document/document_context_menu.xhtml" %}
-</div>
-<div id="rightside">
-
-    <div class="ui-app-header">
-        <div class="ui-app-title">Visualizar Documento</div>
-    </div>
-    <div class="clear"></div>
+	{% include "app/document/document_context_menu.xhtml" with selected_index="0" %}
 
     <div>
 
         <!-- Files -->
-        <div class="floatl">
+        <div class="floatl margin_r_double">
             <table class="simple_table ui-corner-all">
                 <tbody>
                     {% if not document %}
@@ -112,11 +94,8 @@
 
         <!-- Tags -->
         <div class="margin_top_double">
-            <div class="floatl" style="margin-top: 8px; margin-right: 5px">
-                <span class="bold">Tags</span>
-            </div>
             <div class="floatr">
-                <div class="floatl" style="width: 690px">
+                <div class="floatl" style="width: 913px">
                     <!--
                     <div id="uic_tag_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide">
                         <span class="ui-icon ui-icon-alert floatl"></span><p id="uic_tag_message"></p>
@@ -137,7 +116,6 @@
         </div>
 
     </div>
-    <div class="clear"></div>
-</div>
+
 
 {% endblock %}

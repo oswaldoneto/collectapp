@@ -7,7 +7,7 @@
 {% block import_style %}
     <style type="text/css">
         #id_category {
-            width: 744px
+            width: 900px
         }
         #uic_tag_table tr:first-child td:first-child {
             width: 1%;
@@ -32,14 +32,7 @@
                header: "Selecione uma categoria",
                selectedList: 1
             });
-            $uic_save_button = $("#uic_save_button").button();
-            $uic_cancel_button = $("#uic_cancel_button").button();
-            $uic_unclassify_button = $("#uic_unclassify_button").button({
-                text: true,
-                icons: {
-                    primary: "ui-icon-trash"
-                }
-            });
+            $uic_save_button = $("#uic_save_button");
             $uic_addattr_button = $(".uic_addattr_button").button({
                 text: true,
                 icons: {
@@ -65,14 +58,6 @@
             });
             $uic_save_button.click(function() {
                 $("#uic_form").submit();
-                return false;
-            });
-            $uic_cancel_button.click(function(){
-                {% if params.document %}
-                    redirect(sprintf("/document/%s/preview","{{params.document}}"));
-                {% else %}
-                    redirect("/document/new/classify");
-                {% endif %}
                 return false;
             });
             $uic_unclassify_button.click(function() {
@@ -102,27 +87,12 @@
 
 {% block content %}
 
-<div id="leftside">
-	{% include "app/document/document_context_menu.xhtml" %}
-</div>
-<div id="rightside">
+	{% include "app/document/document_context_menu.xhtml" with selected_index="2"  %}
+	
+	<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
 
-    <!--------------------------------------------->
-    <!-- TODO: Refactor export style to css file -->
-    <!--------------------------------------------->
-
-    <div class="ui-app-header">
-        <div class="ui-app-title">Classificação do Documento</div>
-        <div class="ui-app-command">
-            {% if show_tags %}
-                <div class="floatr">
-                    <button id="uic_unclassify_button">Deletar Classificação</button>
-                </div>
-                <div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
-            {% endif %}
-        </div>
-    </div>
-    <form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+	<div class="ui segment">	    
+    <form id="uic_form" method="post" class="ui-form ui-widget">
         {% csrf_token %}
 
         <!--------------------------------------------->
@@ -141,12 +111,15 @@
                     {% if field.html_name != "category" %}
                         <tr>
                             <td class="label">{{field.label}}</td>
-                            <td class="component">{{field}}</td>
+                            <td class="component">
+                            	<div class="ui input" style="width: 500px">
+                            	{{field}}
+                            	</div>
+                            </td>
                             <td class="error">{{field.errors}}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
-
                 {% if new_attributes %}
                     {% for new_attr in new_attributes  %}
                         <tr>
@@ -158,12 +131,12 @@
                         </tr>
                     {% endfor %}
                 {% endif %}
-
-
             </table>
-            <div class="ui-form-button">
-                <input type="button" value="Save" id="uic_save_button">
-                <input type="button" value="Cancel" id="uic_cancel_button">
+            <div class="ui-form-button">                
+	          {% if show_tags %}
+			  <div id="uic_unclassify_button" class="ui small negative button">Deletar</div>
+	          {% endif %}
+			  <div id="uic_save_button" class="ui small positive button">Salvar</div>
             </div>
         {% endif %}
         <div class="clear"></div>
@@ -172,6 +145,8 @@
         <!-- TODO: Ticket #1                         -->
         <!--------------------------------------------->
     </form>
+   	</div>
+    
     
 </div>
 

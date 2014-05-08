@@ -14,17 +14,8 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_permission.js"></script>
 {% endblock %}
 
-{% block context_menu %}
-	{% include "app/document/document_context_menu.xhtml" %}
-{% endblock %}
-
 {% block content %}
 
-<div id="leftside">
-	{% include "app/document/document_context_menu.xhtml" %}
-</div>
-<div id="rightside">
-	
 	<!-- Permissão de Usuários -->
 	<script id="uic_user_template" type="text/x-jquery-tmpl">
 		{% verbatim %}
@@ -131,62 +122,66 @@
 		{% endverbatim %}			
 	</script>	
 
-	<div class="ui-app-header">
-		<div class="ui-app-title">Permissões do Documento</div>
-	</div>
+	{% include "app/document/document_context_menu.xhtml" with selected_index="3" %}
 
 	<!-- Todos Usuários -->
-	<form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
-		<div class="floatl">
-			<i class="icon-globe margin_right_default"></i><b>Todos Usuários</b>
-		</div>
-		<div class="floatr">
-			<span class="margin_lr_double">
-				<a id="uic_read_public_permission_link" href="${id}">
-					<i class="icon-large"></i> Visualizar
-				</a>
-			</span>
-			<span class="margin_lr_double">
-				<a id="uic_change_public_permission_link" href="${id}">
-					<i class="icon-large"></i> Alterar
-				</a>
-			</span>
-			<span class="margin_lr_double">
-				<a id="uic_delete_public_permission_link" href="${id}">
-					<i class="icon-large"></i> Excluir
-				</a>
-			</span>
-		</div>
-		<div class="clear"></div>
-	</form>	
+	<div class="ui segment">	 
+		<form id="uic_form" method="post" class="ui-form ui-widget">
+			<div class="floatl">
+				<i class="icon-globe margin_right_default"></i><b>Todos Usuários</b>
+			</div>
+			<div class="floatr">
+				<span class="margin_lr_double">
+					<a id="uic_read_public_permission_link" href="${id}">
+						<i class="icon-large"></i> Visualizar
+					</a>
+				</span>
+				<span class="margin_lr_double">
+					<a id="uic_change_public_permission_link" href="${id}">
+						<i class="icon-large"></i> Alterar
+					</a>
+				</span>
+				<span class="margin_lr_double">
+					<a id="uic_delete_public_permission_link" href="${id}">
+						<i class="icon-large"></i> Excluir
+					</a>
+				</span>
+			</div>
+			<div class="clear"></div>
+		</form>
+	</div>	
 	
 	<!-- Usuários -->
-	<div class="ui-wireframe">
-		<div class="ui-widget-header ui-corner-top margin_top_default">
-			<div class="floatl">Usuários</div>
-			<div class="floatr">
-				<a id="uic_search-user_link"><span class="ui-icon ui-icon-search floatr"></span></a>
+	<div class="ui-wireframe margin_bottom_double">
+		<h5 class="ui top attached header">
+	  		Usuários
+	  		<div class="floatr">
+		  		<a id="uic_search-user_link">	
+		  			<i class="search right icon"></i>
+		  		</a>		  			
+	  		</div>
+		</h5>
+		<div class="ui segment attached">
+			<div class="" style="">
+				<div id="uic_users_container"></div>
+				<div>
+					<i class="icon-user  margin_right_default"></i><input id="uic_users_autocomplete" />
+				</div>			
 			</div>
-			<div class="clear"></div>		
-		</div>
-		<div class="ui-widget-content ui-corner-bottom" style="">
-			<div id="uic_users_container"></div>
-			<div>
-				<i class="icon-user  margin_right_default"></i><input id="uic_users_autocomplete" />
-			</div>			
 		</div>
 	</div>
 
 	<!-- Grupos -->
 	<div class="ui-wireframe">
-		<div class="ui-widget-header ui-corner-top margin_top_default">
-			<div class="floatl">Grupos</div>
-			<div class="floatr">
-				<a id="uic_search-group_link"><span class="ui-icon ui-icon-search floatr"></span></a>
-			</div>
-			<div class="clear"></div>		
-		</div>
-		<div class="ui-widget-content ui-corner-bottom" style="">
+		<h5 class="ui top attached header">
+	  		Grupos
+	  		<div class="floatr">
+		  		<a id="uic_search-group_link">	
+		  			<i class="search right icon"></i>
+		  		</a>		  			
+	  		</div>
+		</h5>
+		<div class="ui segment attached">
 			<div id="uic_group_container"></div>
 			<div>
 				<i class=" icon-group margin_right_default"></i><input id="uic_groups_autocomplete" />

@@ -175,12 +175,24 @@
 						</div>		
 					{% endif %}
 					{% for tag in tags.fields.tags %}
-						<dd>
-							<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
-								<div class="ui small green label">{{tag.1}}</div>
-			    				{{tag.0}}
-							</a>
-						</dd>
+					
+						{% if form.selected_tag.value %}
+							{% if tag.0 == form.selected_tag.value  %}
+								<dd>
+									<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+										<div class="ui small green label">{{tag.1}}</div>
+					    				{{tag.0}}
+									</a>
+								</dd>													
+							{% endif %}				
+						{% else %}
+							<dd>
+								<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+									<div class="ui small green label">{{tag.1}}</div>
+				    				{{tag.0}}
+								</a>
+							</dd>						
+						{% endif %} 
 					{% endfor %}
 				{% endif %}
 
@@ -195,14 +207,6 @@
 	<!-- Result -->
 	{% if query %}
 
-		<!-- Header -->
-		<div class="ui-app-header">
-			<div class="ui-app-title">Resultado da Busca</div>
-	        <div class="ui-app-command">
-				<p style="font-weight: bold;"> {{page.paginator.count}} documento{{page.paginator.count|pluralize}} para "{{form.q.value}}"</p>
-	        </div>
-		</div>
-	
 		<!-- Amount and Top Pagination -->
 		<div class="margin_top_default margin_bottom_default">
 			<div class="floatr">
