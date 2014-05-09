@@ -119,9 +119,7 @@
 
 {% block content %}
 
-
 <div id="leftside">	
-	
 	
 	{% if query %}
 	
@@ -132,14 +130,15 @@
 		    {{form.selected_tag}}
 		    <input type="hidden" name="q" value="{% if form.q.value %}{{form.q.value}}{% endif %}">		
 			
+
 			<div class="ui small vertical menu">
-				
+								
 				<!-- Category Facets -->
 				{% if categories.fields.category %}
 					{% if form.selected_category.value %} 
 						<a id="uic_clear_category_facelet_link">
 						<div class="header item">
-							<i class="green folder icon"></i>
+							<i class="red folder icon"></i>
 							Categorias
 						</div>		
 						</a>																
@@ -152,7 +151,7 @@
 					{% for cat in categories.fields.category %}
 						<dd>
 							<a rel="uic_category_facelet_link" href="{{cat.0}}" class="item">
-								<div class="ui small green label">{{cat.1}}</div>
+								<div class="ui small {% if form.selected_category.value %}red{% else %}green{% endif %} label">{{cat.1}}</div>
 			    				{{cat.0}}
 							</a>
 						</dd>
@@ -164,7 +163,7 @@
 					{% if form.selected_tag.value %} 
 						<a id="uic_clear_tag_facelet_link">
 						<div class="header item">
-							<i class="green tags icon"></i>
+							<i class="red tags icon"></i>
 							Tags
 						</div>		
 						</a>																
@@ -178,27 +177,25 @@
 					
 						{% if form.selected_tag.value %}
 							{% if tag.0 == form.selected_tag.value  %}
-								<dd>
-									<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
-										<div class="ui small green label">{{tag.1}}</div>
-					    				{{tag.0}}
-									</a>
-								</dd>													
-							{% endif %}				
-						{% else %}
-							<dd>
 								<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
-									<div class="ui small green label">{{tag.1}}</div>
+									<div class="ui small red label">{{tag.1}}</div>
 				    				{{tag.0}}
 								</a>
-							</dd>						
+							{% endif %}				
+						{% else %}
+							<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+								<div class="ui small green label">{{tag.1}}</div>
+			    				{{tag.0}}
+							</a>
 						{% endif %} 
 					{% endfor %}
 				{% endif %}
 
 			</div>	
-		</form>		
-	{% endif %}				
+		</form>	
+			
+	{% endif %}	
+
 </div>
 
 
@@ -207,32 +204,8 @@
 	<!-- Result -->
 	{% if query %}
 
-		<!-- Amount and Top Pagination -->
-		<div class="margin_top_default margin_bottom_default">
-			<div class="floatr">
-		        {% if page.has_previous or page.has_next %}		        
-			        <div class="ui-paginator">	
-			        	<div>	        	
-			        		{% if page.has_previous %}
-			        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-						        	<i class="icon-circle-arrow-left"></i>
-						        </a>
-					        {% endif %}		        		
-				        	<b>1 de 2</b>
-			        		{% if page.has_next %}
-			        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
-				        			<i class="icon-circle-arrow-right"></i>
-				        		</a>
-				        	{% endif %}
-			        	</div>		        	
-			        </div>
-				{% endif %}
-			</div>			
-			<div class="clear"></div>		
-		</div>
-		
 		<!-- Result Itens -->
-		<div>
+		<div class="margin_top_default">
 			<div id="user-toolbar-options" class="hide">
 				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
 				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
@@ -299,7 +272,7 @@
 															<div class="margin_min_top">
 																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
 																<small><i class="icon-angle-right ui-state-disabled"></i></small>
-																<span>{% highlight att.value.value with query %}</span>
+																<span>{% highlight att.value with query %}</span>
 															</div> 
 														{% endif %}					
 													{% endfor %}
@@ -321,29 +294,35 @@
 		</div>
 	
 		<!-- Bottom Pagination -->
-		<div class="floatr">
-        {% if page.has_previous or page.has_next %}		        
-	        <div class="ui-paginator">	
-	        	<div>	        	
-	        		{% if page.has_previous %}
+		<div class="margin_top_double">
+        {% if page.has_previous or page.has_next %}
+	        <div class="ui primary segment">
+	        	{% if page.has_previous %}
+		        	<div class="ui left floated header">
 	        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-				        	<i class="icon-circle-arrow-left"></i>
+							<div class="ui left labeled icon positive button">
+							  <i class="left arrow icon"></i>
+							  Anterior
+							</div>	        				
 				        </a>
-			        {% endif %}		        		
-		        	<b>1 de 2</b>
-	        		{% if page.has_next %}
+			        </div>	
+			    {% endif %}		        	
+	        	{% if page.has_next %}			       
+	        		<div class="ui right floated header">
 	        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
-		        			<i class="icon-circle-arrow-right"></i>
+							<div class="ui right labeled icon positive button">
+							  <i class="right arrow icon"></i>
+							  Próximo
+							</div>	        				
 		        		</a>
-		        	{% endif %}
-	        	</div>		        	
-	        </div>
+		        	</div>
+		        {% endif %}
+			</div>
 		{% endif %}
 	</div>			
 
 	{% endif %}
 	
 </div>
-	
 	
 {% endblock %}
