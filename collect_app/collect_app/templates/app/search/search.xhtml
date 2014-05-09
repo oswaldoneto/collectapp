@@ -268,13 +268,15 @@
 											{% if result.object.all_attributes %}
 												<div>
 													{% for att in result.object.all_attributes %}
-														{% if att.value %}
-															<div class="margin_min_top">
-																<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
-																<small><i class="icon-angle-right ui-state-disabled"></i></small>
-																<span>{% highlight att.value with query %}</span>
-															</div> 
-														{% endif %}					
+														{% if att.value and att.value.value %}
+															{% if att.value %}
+																<div class="margin_min_top">
+																	<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
+																	<small><i class="icon-angle-right ui-state-disabled"></i></small>
+																	<span>{% highlight att.value.value with query %}</span>
+																</div> 
+															{% endif %}
+														{% endif %}
 													{% endfor %}
 												</div>
 											{% endif %}											
