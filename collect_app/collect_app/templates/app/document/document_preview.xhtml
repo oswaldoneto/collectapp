@@ -76,14 +76,16 @@
                 <div>
                     <table class="attribute_table">
                         <tbody>
-                            {% for doc_att in attribute_list %}
-                                <tr>
-                                    <td style="font-size: 1.2em; font-weight: bold;" >
-                                        <span class="ui-state-disabled">{{doc_att.attribute.name}}</span>
-                                        <small><i class="icon-angle-right ui-state-disabled"></i></small>
-                                    </td>
-                                    <td style="font-size: 1.2em">{{doc_att.value.value}}</td>
-                                </tr>
+                            {% for doc_att in attribute_list %}                            	
+                            	{% if doc_att.value and doc_att.value.value %}
+	                                <tr>
+	                                    <td style="font-size: 1.2em; font-weight: bold;" >
+	                                        <span class="ui-state-disabled">{{doc_att.attribute.name}}</span>
+	                                        <small><i class="icon-angle-right ui-state-disabled"></i></small>
+	                                    </td>
+	                                    <td style="font-size: 1.2em">{{doc_att.value.value}}</td>
+	                                </tr>                            	
+                            	{% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

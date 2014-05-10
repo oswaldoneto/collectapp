@@ -204,8 +204,14 @@
 	<!-- Result -->
 	{% if query %}
 
+		<div class="margin_top_default margin_bottom_default">
+		<div class="ui primary segment">
+			<p>Encontrado <b>{{page.paginator.count}}</b> resultado{{page.paginator.count|pluralize}} para <b>"{{query}}"</b></p>
+		</div>
+		</div>
+
 		<!-- Result Itens -->
-		<div class="margin_top_default">
+		<div>
 			<div id="user-toolbar-options" class="hide">
 				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
 				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
@@ -298,7 +304,7 @@
 		<!-- Bottom Pagination -->
 		<div class="margin_top_double">
         {% if page.has_previous or page.has_next %}
-	        <div class="ui primary segment">
+	        <div class="ui basic segment">
 	        	{% if page.has_previous %}
 		        	<div class="ui left floated header">
 	        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">

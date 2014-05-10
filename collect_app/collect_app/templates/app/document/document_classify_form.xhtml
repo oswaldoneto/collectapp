@@ -60,27 +60,22 @@
                 $("#uic_form").submit();
                 return false;
             });
-            $uic_unclassify_button.click(function() {
-                $("#uic_delete_dialog").dialog({
-                    title:"Deletar Classificação",
-                    buttons:[
-                        {
-                            text: "Yes",
-                            click: function() {
-                                $("#uic_form").attr("action", sprintf("/document/%s/classify/delete","{{params.document}}"));
-                                $("#uic_form").submit();
-                                return false;
-                            }
-                        },
-                        {
-                            text: "No",
-                            click: function() {
-                                $(this).dialog("close");
-                            }
-                        }
-                    ]
-                });
+            $("#uic_unclassify_button").click(function() {
+                doc_id = "{{params.document}}";            	
+				$uic_delete_dialog = $('#uic_delete_dialog');
+				$uic_delete_dialog.data("document_id",doc_id);
+				$uic_delete_dialog.modal('show');
+				return false;				
             });
+            
+			$("#uic_cancel_delete_class_button").click(function(){
+				$('#uic_delete_dialog').modal('hide');				
+			});
+	
+			$("#uic_confirm_delete_class_button").click(function(){
+				$("#uic_form").attr("action", sprintf("/document/%s/classify/delete",$('#uic_delete_dialog').data("document_id")));  
+				$("#uic_form").submit();
+			});            
         });
     </script>
 {% endblock %}
@@ -89,7 +84,22 @@
 
 	{% include "app/document/document_context_menu.xhtml" with selected_index="2"  %}
 	
-	<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Voce tem certeza que deseja deletar a classificação do documento?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_class_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_class_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>	
+	
 
 	<div class="ui segment">	    
     <form id="uic_form" method="post" class="ui-form ui-widget">
@@ -132,7 +142,7 @@
                     {% endfor %}
                 {% endif %}
             </table>
-            <div class="ui-form-button">                
+            <div class="ui-form-button margin_top_default">                
 	          {% if show_tags %}
 			  <div id="uic_unclassify_button" class="ui small negative button">Deletar</div>
 	          {% endif %}

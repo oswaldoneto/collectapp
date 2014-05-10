@@ -56,7 +56,7 @@ class PreviewDocView(TemplateView):
 class ClassifyDocView(FormView):
     template_name="app/document/document_classify_form.xhtml"
     form_class = DocumentClassifyForm
-    success_url = "/document/%s/classify"
+    success_url = "/document/%s/preview"
     def get_initial(self):
         initial = super(ClassifyDocView,self).get_initial()
         if 'category'in self.kwargs:
