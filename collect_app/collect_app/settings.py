@@ -35,7 +35,7 @@ HAYSTACK_CONNECTIONS = {
 }
 
 HAYSTACK_DEFAULT_OPERATOR = 'OR'
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 7
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # Local time zone for this installation. Choices can be found here:
