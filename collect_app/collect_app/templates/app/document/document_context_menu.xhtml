@@ -20,9 +20,12 @@
 	    		<i class="folder icon"></i> Classificar
 	  		</a>		
 	  		<a id="uic_dcm-permission_link" class="{% if selected_index == "3" %}active{% endif %} item">
-	    		<i class="lock icon"></i> Compartilhar
+	    		<i class="share sign icon"></i> Compartilhar
 	  		</a>
 		{% endif %}		
+  		<a id="uic_dcm-audit_link" class="{% if selected_index == "4" %}active{% endif %} item">
+    		<i class="time icon"></i> Auditar
+  		</a>
 		{% if "delete_document" in public_permissions or "delete_document" in document_permissions %}
 	  		<a id="uic_dcm-delete_link" class="item">
 	    		<i class="trash icon"></i> Deletar

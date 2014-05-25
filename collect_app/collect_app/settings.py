@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'status',
     'storage',
     'search',
+    'audit',
 )
 
 MULTI_FILE_DELETE_URL = 'multi_delete'

@@ -93,10 +93,20 @@ $(document).ready(function() {
         $(document).data("disarm_on_tagadded",true);
     });
 
-
 	$("a[rel=uic_delete_file_link]").click(function(){
-		var key = $(this).attr('href');
-		var document_id = $(document).data("document_id");	
+		$uic_delete_dialog = $('#uic_delete_attachment_dialog');
+		$uic_delete_dialog.data("key",$(this).attr('href'));
+		$uic_delete_dialog.modal('show');
+		return false;				
+	});
+	
+	$("#uic_cancel_delete_attach_button").click(function(){
+		$('#uic_delete_attachment_dialog').modal('hide');				
+	});
+	
+	$("#uic_confirm_delete_attach_button").click(function(){
+		var key = $uic_delete_dialog.data("key");
+		var document_id = $(document).data("document_id");
 		$.ajax({
 			url:sprintf("/api/document/%s/detach/key/%s",document_id,key),
 			type:"DELETE",
@@ -110,9 +120,8 @@ $(document).ready(function() {
 				}
 			}					
 		});
-		return false;
-	});
-
+		return false;		
+	});	
 
     //TODO: Refactor unir com o search.xhtml
     $("a[rel=uic_download-file_link]").click(function(){
@@ -158,11 +167,11 @@ $(document).ready(function() {
         $.fancybox.open([{
                 href : '/tag/dialog',
             }], {
-                'type'             : 'iframe',
+                'type'          : 'iframe',
                 'autoScale'     : false,
                 'autoDimensions': false,
                 'width'         : 400,
-                'height'         : 250,
+                'height'        : 250,
                 'modal'         : false,
                 }
         );

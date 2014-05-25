@@ -8,14 +8,15 @@
 
 {% block import_style %}
 	<link rel="stylesheet" href="{{STATIC_URL}}css/app/search.css" />	
-	<style type="text/css">
-	</style>
 {% endblock %}
 
 {% block startup_script %}
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery/plugin/caroufredsel/jquery.carouFredSel-6.2.1-packed.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			
+			$("#id_q").focus();			
+			
 			/** Settings */			
 			{% for result in page.object_list %}
 				{% if result.object.all_files %}

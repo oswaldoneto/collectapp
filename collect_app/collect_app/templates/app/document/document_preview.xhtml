@@ -3,13 +3,7 @@
 {% load guardian_tags %}
 {% load permission_checker %}
 {% load kilobytefy %}
-
 {% load verbatim %}
-
-{% block import_style %}
-    <style type="text/css">
-    </style>
-{% endblock %}
 
 {% block startup_script %}
 
@@ -55,7 +49,7 @@
                                 <td style="text-align: right"><p class="margin_l_double ui-state-disabled">{{attach.file.filesize|kilobytefy}}</p></td>
                                 <td style="width: 5px">
                                     <a rel="uic_delete_file_link" href="{{attach.file.key}}">
-                                        <i class="icon-trash icon-large"></i>
+                                        <i class="remove home icon"></i>                                                                                
                                     </a>
                                 </td>
                             </tr>
@@ -118,6 +112,24 @@
         </div>
 
     </div>
+    
+    
+	<!-- Dialog Delete Attach -->
+	<div id="uic_delete_attachment_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Voce tem certeza que deseja deletar o anexo?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_attach_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_attach_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>
+    
 
 
 {% endblock %}

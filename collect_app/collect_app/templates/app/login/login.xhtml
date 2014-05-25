@@ -8,46 +8,52 @@
 		}
 	</style>
 {% endblock %}
+
 {% block startup_script %}
+	<script>
+		//TODO: SECURITY ISSUE USER DATA		
+		{% if form.errors.username %}
+			$(document).data("invalid_username",'true');		
+		{% endif %}
+		{% if form.errors.password %}
+			$(document).data("invalid_password",'true');	
+		{% endif %}
+		{% if form.errors and not form.errors.username and not form.errors.password %}
+			$(document).data("invalid_credentials",'true');			
+		{% endif %}
+	</script> 
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/login/login.js"></script>
 {% endblock %}
+
 {% block body %}
-<div id="">		
-	<div id="principal">
-		<div id="content">
-			<div id="centerpane">
-				<form id="uic_login_form" method="post" action="/login/" >
-					{% csrf_token %}
-					<input type="hidden" name="next" value="{{next}}">
-					<div class="ui error form segment ui-widget" >
-					  <!-- TODO: Externalizar os estilos -->
-					  <div class="field" style="text-align: center">
-					  		<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>
-					  </div>				
-					  {% if form.errors %}
-						<div class="field">
-						  <div class="ui error message" style="text-align: center">
-	    					<p>Acesso Negado</p>
-						  </div>												
-						</div>
-					  {% endif %}					  
-					  <div class="field {% if form.username.errors %}error{% endif  %}">
-							<div class="ui left icon input">
-							  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" {% if not form.username %}value="{{form.username.value}}"{% endif %}  />
-							  	<i class="user icon"></i>
-							</div>
-					  </div>
-					  <div class="field {% if form.password.errors %}error{% endif  %}">
-							<div class="ui left icon input">
-								<input type="password" name="password" id="id_password" class="textfield" placeholder="Senha" />		
-							  	<i class="key icon"></i>
-							</div>
-					  </div>
-					  <div id="uic_login" class="ui small green button floatr">Log in</div>
-					</div>			
-				</form>
-			</div>
-		</div>
-	</div>
+<div>
+	<form id="uic_login_form" method="post" action="/login/" class="">
+		{% csrf_token %}
+		<input type="hidden" name="next" value="{{next}}">
+		<div class="ui error form segment ui-widget" >
+		  <!-- TODO: Externalizar os estilos -->
+		  <div class="field" style="text-align: center">
+		  		<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>
+		  </div>				
+		  <div class="field 
+		  				{% if form.username.errors %}error{% endif  %}
+		  				{% if form.errors and not form.errors.username and not form.errors.password %}error{% endif  %}">
+				<div class="ui left icon input">
+				  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" {% if form.username.value %}value="{{form.username.value}}"{% endif %}  />
+				  	<i class="user icon"></i>
+				</div>
+		  </div>
+		  <div class="field 
+		  				{% if form.password.errors %}error{% endif  %}
+						{% if form.errors and not form.errors.username and not form.errors.password %}error{% endif  %}">
+				<div class="ui left icon input">
+					<input type="password" name="password" id="id_password" class="textfield" placeholder="Senha" />		
+				  	<i class="key icon"></i>
+				</div>
+		  </div>
+		  <div id="uic_login" class="ui small green button floatr">Log in</div>
+		</div>			
+	</form>	
 </div>
+
 {% endblock %}

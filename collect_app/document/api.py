@@ -2,8 +2,7 @@ from security.views import JSONResponseMixin
 from django.views.generic.base import View
 from django.contrib.auth.models import User, Group, Permission
 from document.models import Document, DocumentPublicPermission, DocumentAttach
-from guardian.shortcuts import get_perms, get_groups_with_perms, assign,\
-    remove_perm, get_users_with_perms
+from guardian.shortcuts import get_perms, get_groups_with_perms, assign, remove_perm, get_users_with_perms
 from tag.models import Tag
 from django.shortcuts import get_object_or_404
 from boto.s3.connection import S3Connection
@@ -12,22 +11,33 @@ from django.utils.decorators import method_decorator
 from ext.views.decorator.docperm import document_permission_or_403
 from storage.models import FileStorage
 from django.db import transaction
+from audit import signals
 
 
 class DocTagView(JSONResponseMixin, View):
+    
     def post(self,request,document,tag):
         doc = Document.objects.get(id=document)
         tag = Tag.objects.get(id=tag)
+        
         doc.tags.add(tag)
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_add_tag_document.send(sender=self.__class__, tag=tag, document=doc, user=request.user)
+        
         return self.render_to_response(None)
+    
     def delete(self,request,document,tag):
         doc = Document.objects.get(id=document)
         tag = Tag.objects.get(id=tag)
+        
         doc.tags.remove(tag)
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_remove_tag_document.send(sender=self.__class__, tag=tag, document=doc, user=request.user)
+        
         return self.render_to_response(None)
 
 
@@ -48,12 +58,18 @@ class DocNewAttachView(JSONResponseMixin, View):
         #create document
         doc = Document(owner=self.request.user,last_update_user=self.request.user)
         doc.save()
+        
         #create document attachment
         fs = get_object_or_404(FileStorage,key=key)
         attach = DocumentAttach(document=doc,file=fs)
         attach.save()
+        
         #save to rebuild index
         doc.save()
+        
+        #send signal
+        signals.post_attach_file.send(sender=self.__class__, file=fs, document=doc, user=self.request.user)
+                
         return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})            
 
 
@@ -62,13 +78,19 @@ class DocAttachView(JSONResponseMixin, View):
     def post(self,request,document,key):
         #create document
         doc = get_object_or_404(Document,pk=document)
+        
         #create document attachment
         fs = get_object_or_404(FileStorage,key=key)
         attach = DocumentAttach(document=doc,file=fs)
         attach.save()
+        
         #uplad last user and rebuild index
         doc.last_update_user = request.user
         doc.save()
+        
+        #send signal
+        signals.post_attach_file.send(sender=self.__class__,file=attach.file,document=doc, user=self.request.user)
+                
         return self.render_to_response({"document_id":doc.id,"filestorage_id":attach.id})
 
 
@@ -78,33 +100,44 @@ class DocDetachView(JSONResponseMixin, View):
         doc = get_object_or_404(Document,pk=document)
         fs = get_object_or_404(FileStorage,key=key)
         doc_attach = get_object_or_404(DocumentAttach,document=doc,file=fs)
+        
         #remove from s3
         conn = S3Connection()
         bucket = conn.get_bucket(settings.config.get_s3_bucket())
         bucket.get_key(fs.key).delete()
+        
         #remove from database
         doc_attach.delete()
         fs.delete()
+        
+        #send signal
+        signals.post_detach_file.send(sender=self.__class__, file=fs, document=doc, user=self.request.user )
+        
         return self.render_to_response({"document_deleted":True if Document.objects.filter(id=document).count() == 0 else False})
 
 
 class DocUserPermissionsView(JSONResponseMixin, View):
+    
     def get(self,request,document):
         doc = Document.objects.get(id=document)
         user_perms = get_users_with_perms(doc,attach_perms=True,with_group_users=False)
         return self.render_to_response(self.__parseUserPermissions(user_perms))
+    
     def __parseUserPermissions(self,user_permissions):
         return  [ dict([('user_id',perms.id),('username',perms.username),('permission',user_permissions[perms])]) for perms in user_permissions ]
+    
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocUserPermissionsView, self).dispatch(*args, **kwargs)
 
 
 class DocGroupPermissionsView(JSONResponseMixin, View):
+    
     def get(self, request,document):
         doc = Document.objects.get(id=document)
         group_perm = get_groups_with_perms(doc,attach_perms=True)
         return self.render_to_response(self.__parseGroupPermissions(group_perm))
+    
     def __parseGroupPermissions(self,group_permissions):
         permissions = []
         for perms in group_permissions:
@@ -114,52 +147,80 @@ class DocGroupPermissionsView(JSONResponseMixin, View):
             permission.append(('permission',group_permissions[perms]))
             permissions.append(dict(permission))
         return permissions
+    
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocGroupPermissionsView, self).dispatch(*args, **kwargs)
 
 
 class DocUserPermissionView(JSONResponseMixin, View):
+    
     def post(self,request,document,permission,user):
         user = User.objects.get(id=user)
         doc = Document.objects.get(id=document)
+        
         assign(permission,user,doc)
+        
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_document_shared_to_user.send(sender=self.__class__, shared_from=self.request.user, shared_to=user, document=doc, permission=permission)
+        
         return self.render_to_response(get_perms(user,doc))
+    
     def delete(self,request,document,permission,user):
         usr = User.objects.get(id=user)
         doc = Document.objects.get(id=document)
+        
         remove_perm(permission,usr,doc)
+        
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_document_unshared_to_user.send(sender=self.__class__, shared_from=self.request.user, shared_to=usr, document=doc, permission=permission)
+                
         return self.render_to_response(get_perms(usr,doc))
+    
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocUserPermissionView, self).dispatch(*args, **kwargs)
 
 
 class DocGroupPermissionView(JSONResponseMixin, View):
+    
     def post(self,request,document,permission,group):
         grp = Group.objects.get(id=group)
         doc = Document.objects.get(id=document)
+        
         assign(permission,grp,doc)
+        
         doc.last_update_user = request.user
         doc.save()
+
+        signals.post_document_shared_to_group.send(sender=self.__class__, shared_from=self.request.user, shared_to=grp, document=doc, permission=permission)
+        
         return self.render_to_response(get_perms(grp,doc))
+    
     def delete(self,request,document,permission,group):
         grp = Group.objects.get(id=group)
         doc = Document.objects.get(id=document)
+        
         remove_perm(permission,grp,doc)
+        
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_document_unshared_to_group.send(sender=self.__class__, shared_from=self.request.user, shared_to=grp, document=doc, permission=permission)
+                
         return self.render_to_response(get_perms(grp,doc))
+    
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocGroupPermissionView, self).dispatch(*args, **kwargs)
 
 
 class DocPublicPermissionsView(JSONResponseMixin, View):
+    
     def get(self,request,document):
         doc = Document.objects.get(id=document)
         pp_list = DocumentPublicPermission.objects.filter(document=doc)
@@ -171,22 +232,35 @@ class DocPublicPermissionsView(JSONResponseMixin, View):
 
 
 class DocPublicPermissionView(JSONResponseMixin, View):
+    
     def post(self,request,document,permission):
         doc = Document.objects.get(id=document)
         p = Permission.objects.filter(codename=permission)
+        
         pp = DocumentPublicPermission(document=doc,permission=p[0])
         pp.save()
+        
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_document_shared_to_all.send(sender=self.__class__, shared_from=self.request.user, document=doc, permission=permission)
+                
         return self.render_to_response(None)
+    
     def delete(self,request,document,permission):
         doc = Document.objects.get(id=document)
         p = Permission.objects.filter(codename=permission)
+        
         pp = DocumentPublicPermission.objects.filter(document=doc,permission=p[0])
         pp.delete()
+        
         doc.last_update_user = request.user
         doc.save()
+        
+        signals.post_document_unshared_to_all.send(sender=self.__class__, shared_from=self.request.user, document=doc, permission=permission)
+                
         return self.render_to_response(None)
+    
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(DocPublicPermissionView, self).dispatch(*args, **kwargs)

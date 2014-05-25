@@ -26,4 +26,10 @@ $(document).ready(function() {
 		$("#uic_delete_document_form").attr("action", sprintf("/document/%s/delete",document_id));  
 		$("#uic_delete_document_form").submit();
 	});
+	
+	$("#uic_dcm-audit_link").click(function(){
+		redirect(sprintf("/document/%s/audit",document_id));		
+		return false;		
+	});
+	
 });

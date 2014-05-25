@@ -31,8 +31,11 @@ from guardian.decorators import permission_required_or_403, permission_required
 from guardian.shortcuts import get_perms
 from ext.views.decorator.docperm import document_permission_or_403
 from boto.s3.connection import S3Connection
-    
-    
+from audit.models import AuditLog
+from django.contrib.contenttypes.models import ContentType
+from audit import signals
+
+        
 class PreviewDocView(TemplateView):
     template_name = "app/document/document_preview.xhtml"
     def get_context_data(self, **kwargs):
@@ -54,9 +57,11 @@ class PreviewDocView(TemplateView):
         
     
 class ClassifyDocView(FormView):
+    
     template_name="app/document/document_classify_form.xhtml"
     form_class = DocumentClassifyForm
     success_url = "/document/%s/preview"
+    
     def get_initial(self):
         initial = super(ClassifyDocView,self).get_initial()
         if 'category'in self.kwargs:
@@ -72,6 +77,7 @@ class ClassifyDocView(FormView):
                     field_value = InheritanceQuerySet(model=AbstractValue).select_subclasses().get(id=doc_attr.value.id)
                     initial.update({field_name:field_value.value})
         return initial
+    
     def get_context_data(self,**kwargs):
         context = super(ClassifyDocView,self).get_context_data(**kwargs)
         context.update({'params': self.kwargs})
@@ -81,31 +87,41 @@ class ClassifyDocView(FormView):
             context.update({'new_attributes':doc.all_new_attributes()})
             context.update({'doc':doc})            
         return context
+    
     def form_valid(self, form):
         document = form.save(self.request)
         self.success_url = self.get_success_url() % document.id
+        signals.post_classify_document.send(sender=self.__class__,document=document, user=self.request.user)
         return super(ClassifyDocView,self).form_valid(form)    
+    
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(ClassifyDocView, self).dispatch(*args, **kwargs)
 
 
 class ClassifyDocDeleteView(BaseDeleteView):
+    
     success_url = "/document/%s/preview"
+    
     def get_object(self, queryset=None):
         obj = Document.objects.get(id=self.kwargs["document"])
-        return obj    
+        return obj
+        
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object() 
         self.object.remove_category()
-        self.success_url = self.get_success_url() % self.object.id        
+        self.success_url = self.get_success_url() % self.object.id
+        signals.post_remove_classify_document.send(sender=self.__class__,document=self.object, user=self.request.user)                        
         return HttpResponseRedirect(self.get_success_url())
     
 
 class ClassifyDocAttributeCreateView(RedirectView):
+    
     url = "/document/%s/classify"
+    
     def get_redirect_url(self, **kwargs):
         return self.url % (self.kwargs["document"])        
+    
     def post(self, request, *args, **kwargs):
         doc_id = self.kwargs["document"]
         att_id = self.kwargs["attribute"]
@@ -153,3 +169,19 @@ class PermissionDocView(TemplateView):
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(PermissionDocView, self).dispatch(*args, **kwargs)    
+    
+    
+class AuditDocView(ListView):
+    model=AuditLog
+    template_name = "app/document/document_audit.xhtml"
+    def get_context_data(self, **kwargs):
+        context = super(AuditDocView,self).get_context_data(**kwargs)
+        context.update({'doc':get_object_or_404(Document,id=self.kwargs['document'])})
+        return context    
+    def get_queryset(self):
+        content_type = ContentType.objects.get(app_label="document", model="document")
+        self.queryset = AuditLog.objects.filter(content_type=content_type,object_id=self.kwargs['document']).order_by('-logged')
+        return super(AuditDocView,self).get_queryset()
+    @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))    
+    def dispatch(self, *args, **kwargs):
+        return super(AuditDocView, self).dispatch(*args, **kwargs)       
