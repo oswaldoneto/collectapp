@@ -120,218 +120,222 @@
 
 {% block content %}
 
-<div id="leftside">	
-	
-	{% if query %}
-	
-		<form id="uic_facets_form" method="get" action="/search">
-			
-			{% csrf_token %}		
-		    {{form.selected_category}}
-		    {{form.selected_tag}}
-		    <input type="hidden" name="q" value="{% if form.q.value %}{{form.q.value}}{% endif %}">		
-			
+<div id="search-container">	
 
-			<div class="ui small vertical menu">
-								
-				<!-- Category Facets -->
-				{% if categories.fields.category %}
-					{% if form.selected_category.value %} 
-						<a id="uic_clear_category_facelet_link">
-						<div class="header item">
-							<i class="red folder icon"></i>
-							Categorias
-						</div>		
-						</a>																
-					{% else %}
-						<div class="header small item">
-							<i class="folder icon"></i>					
-							Categorias
-						</div>		
-					{% endif %}
-					{% for cat in categories.fields.category %}
-						<dd>
-							<a rel="uic_category_facelet_link" href="{{cat.0}}" class="item">
-								<div class="ui small {% if form.selected_category.value %}red{% else %}green{% endif %} label">{{cat.1}}</div>
-			    				{{cat.0}}
-							</a>
-						</dd>
-					{% endfor %}
-				{% endif %}
+	{% if categories.fields.category or tags.fields.tags   %}
 
-				<!-- Tags Facets -->
-				{% if tags.fields.tags %}
-					{% if form.selected_tag.value %} 
-						<a id="uic_clear_tag_facelet_link">
-						<div class="header item">
-							<i class="red tags icon"></i>
-							Tags
-						</div>		
-						</a>																
-					{% else %}
-						<div class="header item">
-							<i class="tags icon"></i>					
-							Tags
-						</div>		
-					{% endif %}
-					{% for tag in tags.fields.tags %}
+	    <div id="left-search-container">	   
+	    	 	
+			<div class="margin_right_default">
 					
-						{% if form.selected_tag.value %}
-							{% if tag.0 == form.selected_tag.value  %}
-								<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
-									<div class="ui small red label">{{tag.1}}</div>
-				    				{{tag.0}}
-								</a>
-							{% endif %}				
-						{% else %}
-							<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
-								<div class="ui small green label">{{tag.1}}</div>
-			    				{{tag.0}}
-							</a>
-						{% endif %} 
-					{% endfor %}
-				{% endif %}
-
+				<form id="uic_facets_form" method="get" action="/search">
+					
+					{% csrf_token %}		
+				    {{form.selected_category}}
+				    {{form.selected_tag}}
+				    <input type="hidden" name="q" value="{% if form.q.value %}{{form.q.value}}{% endif %}">		
+					
+					<div class="ui small vertical menu">
+										
+						<!-- Category Facets -->
+						{% if categories.fields.category %}
+							{% if form.selected_category.value %} 
+								<a id="uic_clear_category_facelet_link">
+								<div class="header item">
+									<i class="red folder icon"></i>
+									Categorias
+								</div>		
+								</a>																
+							{% else %}
+								<div class="header small item">
+									<i class="folder icon"></i>					
+									Categorias
+								</div>		
+							{% endif %}
+							{% for cat in categories.fields.category %}
+								<dd>
+									<a rel="uic_category_facelet_link" href="{{cat.0}}" class="item">
+										<div class="ui small {% if form.selected_category.value %}red{% else %}green{% endif %} label">{{cat.1}}</div>
+					    				{{cat.0}}
+									</a>
+								</dd>
+							{% endfor %}
+						{% endif %}
+		
+						<!-- Tags Facets -->
+						{% if tags.fields.tags %}
+							{% if form.selected_tag.value %} 
+								<a id="uic_clear_tag_facelet_link">
+								<div class="header item">
+									<i class="red tags icon"></i>
+									Tags
+								</div>		
+								</a>																
+							{% else %}
+								<div class="header item">
+									<i class="tags icon"></i>					
+									Tags
+								</div>		
+							{% endif %}
+							{% for tag in tags.fields.tags %}
+							
+								{% if form.selected_tag.value %}
+									{% if tag.0 == form.selected_tag.value  %}
+										<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+											<div class="ui small red label">{{tag.1}}</div>
+						    				{{tag.0}}
+										</a>
+									{% endif %}				
+								{% else %}
+									<a rel="uic_tag_facelet_link" href="{{tag.0}}" class="item">
+										<div class="ui small green label">{{tag.1}}</div>
+					    				{{tag.0}}
+									</a>
+								{% endif %} 
+							{% endfor %}
+						{% endif %}
+		
+					</div>					
+				</form>							
 			</div>	
-		</form>	
-			
+	    </div>
+    
 	{% endif %}	
-
-</div>
-
-
-<div id="rightside">
-
-	<!-- Result -->
-	{% if query %}
-
-		<div class="margin_top_default margin_bottom_default">
-		<div class="ui primary segment">
-			<p>Encontrado <b>{{page.paginator.count}}</b> resultado{{page.paginator.count|pluralize}} para <b>"{{query}}"</b></p>
-		</div>
-		</div>
-
-		<!-- Result Itens -->
-		<div>
-			<div id="user-toolbar-options" class="hide">
-				<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
-				<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
+    
+    
+    <div id="right-search-container">
+        					
+		<!-- Result -->
+		{% if query and page.object_list %}
+	
+			<div class="margin_top_default margin_bottom_default">
+			<div class="ui primary segment">
+				<p>Encontrado <b>{{page.paginator.count}}</b> resultado{{page.paginator.count|pluralize}} para <b>"{{query}}"</b></p>
 			</div>
-			{% for result in page.object_list %}
-				<table class="table_result ui-corner-all">
-					{% get_public_perms result.object as public_permissions %}
-					{% get_obj_perms user for result.object as "document_permissions" %}
-					<tr>
-						<td>
-							<div class="margin_min_left margin_min_right">
-																
-								<!-- Files -->
-								<div class="floatl">
-									<div class="pagination margin_min_bottom" id="uic_{{forloop.counter}}_pages"></div>
-									<div style="float: left; width: 450px;">
-										{% if result.object.all_files %}	
-											<div class="list_carousel">
-												<ul id="uic_file_list_{{forloop.counter}}">		
-													{% for attach in result.object.all_files %}								
-														<li>
-															<div class="uic_file_tooltip floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
-																<a rel="uic_file-key_link" href="{{attach.file.key}}"></a>
-																<div>
-																	<span style="font-size: 20px"><i class="{{attach.file.filetype|imagery}}"></i></span> {% highlight attach.file.filename with query %}														
-																</div>
-																<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
-																<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
-																												
-															</div>													
-														</li>
-													{% endfor %}
-												</ul>
-											</div>
-										{% else %}
-											<div class="ui-state-disabled margin_min_bottom">												
-												Nenhum arquivo encontrado																																		
-											</div>													
-										{% endif %}	
+			</div>
+	
+			<!-- Result Itens -->
+			<div>
+				<div id="user-toolbar-options" class="hide">
+					<a id="uic_download-file_link"><i class="icon-cloud-download icon-2x"></i></a>
+					<a id="uic_visualize-file_link"><i class="icon-external-link-sign icon-2x"></i></a>
+				</div>
+				{% for result in page.object_list %}
+					<table class="table_result ui-corner-all">
+						{% get_public_perms result.object as public_permissions %}
+						{% get_obj_perms user for result.object as "document_permissions" %}
+						<tr>
+							<td>
+								<div class="margin_min_left margin_min_right">
+																	
+									<!-- Files -->
+									<div class="floatl">
+										<div class="pagination margin_min_bottom" id="uic_{{forloop.counter}}_pages"></div>
+										<div style="float: left; width: 450px;">
+											{% if result.object.all_files %}	
+												<div class="list_carousel">
+													<ul id="uic_file_list_{{forloop.counter}}">		
+														{% for attach in result.object.all_files %}								
+															<li>
+																<div class="uic_file_tooltip floatl margin_right_default margin_min_bottom ui-widget ui-widget-content ui-corner-all padding_default">
+																	<a rel="uic_file-key_link" href="{{attach.file.key}}"></a>
+																	<div>
+																		<span style="font-size: 20px"><i class="{{attach.file.filetype|imagery}}"></i></span> {% highlight attach.file.filename with query %}														
+																	</div>
+																	<p class="floatl ui-state-disabled margin_min_right" style="font-size: 0.8em">{{attach.file.filetype}}</p>
+																	<p class="floatr ui-state-disabled margin_min_left" style="font-size: 0.8em">{{attach.file.filesize|kilobytefy}}</p>
+																													
+																</div>													
+															</li>
+														{% endfor %}
+													</ul>
+												</div>
+											{% else %}
+												<div class="ui-state-disabled margin_min_bottom">												
+													Nenhum arquivo encontrado																																		
+												</div>													
+											{% endif %}	
+										</div>
+										{% if result.object.all_tags %}	
+											<div style="max-width: 450px;">
+												{% for tag in result.object.all_tags  %}
+													<div class="ui-state-active ui-corner-all floatl margin_min_bottom margin_min_right" style="padding: 2px">
+														<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
+													</div>
+												{% endfor %}									
+											</div>	
+										{% endif %}										
 									</div>
-									{% if result.object.all_tags %}	
-										<div style="max-width: 450px;">
-											{% for tag in result.object.all_tags  %}
-												<div class="ui-state-active ui-corner-all floatl margin_min_bottom margin_min_right" style="padding: 2px">
-													<p style="font-size: 0.8em; font-weight: bold">{% highlight tag.name with query %}</p>
+									
+									<!-- Classification -->								
+									<div class="floatl" style="max-width: 280px;">
+										{% if not result.object.category %}
+										{% else %}
+											<div style="" class="ui-corner-all padding_min">
+												<div class="">
+													<span class="bold">{% highlight result.object.category.title with query %}</span>
 												</div>
-											{% endfor %}									
-										</div>	
-									{% endif %}										
-								</div>
-								
-								<!-- Classification -->								
-								<div class="floatl" style="max-width: 280px;">
-									{% if not result.object.category %}
-									{% else %}
-										<div style="" class="ui-corner-all padding_min">
-											<div class="">
-												<span class="bold">{% highlight result.object.category.title with query %}</span>
-											</div>
-											{% if result.object.all_attributes %}
-												<div>
-													{% for att in result.object.all_attributes %}
-														{% if att.value and att.value.value %}
-															{% if att.value %}
-																<div class="margin_min_top">
-																	<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
-																	<small><i class="icon-angle-right ui-state-disabled"></i></small>
-																	<span>{% highlight att.value.value with query %}</span>
-																</div> 
+												{% if result.object.all_attributes %}
+													<div>
+														{% for att in result.object.all_attributes %}
+															{% if att.value and att.value.value %}
+																{% if att.value %}
+																	<div class="margin_min_top">
+																		<span class="ui-state-disabled" style="font-size: .8em; font-weight: bold; ">{{att.attribute.name}}</span>
+																		<small><i class="icon-angle-right ui-state-disabled"></i></small>
+																		<span>{% highlight att.value.value with query %}</span>
+																	</div> 
+																{% endif %}
 															{% endif %}
-														{% endif %}
-													{% endfor %}
-												</div>
-											{% endif %}											
-										</div>									
-									{% endif %}
+														{% endfor %}
+													</div>
+												{% endif %}											
+											</div>									
+										{% endif %}
+									</div>
 								</div>
-							</div>
-						</td>
-						<td class="hide">
-							<a rel="uic_preview_link" href="{{result.object.id}}">
-								<i class="icon-angle-right icon-4x"></i>
-							</a>							
-						</td>
-					</tr>	
-				</table>
-			{% endfor %}
-		</div>
-	
-		<!-- Bottom Pagination -->
-		<div class="margin_top_double">
-        {% if page.has_previous or page.has_next %}
-	        <div class="ui basic segment">
-	        	{% if page.has_previous %}
-		        	<div class="ui left floated header">
-	        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-							<div class="ui left labeled icon positive button">
-							  <i class="left arrow icon"></i>
-							  Anterior
-							</div>	        				
-				        </a>
-			        </div>	
-			    {% endif %}		        	
-	        	{% if page.has_next %}			       
-	        		<div class="ui right floated header">
-	        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
-							<div class="ui right labeled icon positive button">
-							  <i class="right arrow icon"></i>
-							  Próximo
-							</div>	        				
-		        		</a>
-		        	</div>
-		        {% endif %}
+							</td>
+							<td class="hide">
+								<a rel="uic_preview_link" href="{{result.object.id}}">
+									<i class="icon-angle-right icon-4x"></i>
+								</a>							
+							</td>
+						</tr>	
+					</table>
+				{% endfor %}
 			</div>
+		
+			<!-- Bottom Pagination -->
+			<div class="margin_top_double">
+	        {% if page.has_previous or page.has_next %}
+		        <div class="ui basic segment">
+		        	{% if page.has_previous %}
+			        	<div class="ui left floated header">
+		        			<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
+								<div class="ui left labeled icon positive button">
+								  <i class="left arrow icon"></i>
+								  Anterior
+								</div>	        				
+					        </a>
+				        </div>	
+				    {% endif %}		        	
+		        	{% if page.has_next %}			       
+		        		<div class="ui right floated header">
+		        			<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">
+								<div class="ui right labeled icon positive button">
+								  <i class="right arrow icon"></i>
+								  Próximo
+								</div>	        				
+			        		</a>
+			        	</div>
+			        {% endif %}
+				</div>
+			{% endif %}
+		</div>			
+	
 		{% endif %}
-	</div>			
-
-	{% endif %}
-	
+			
+    </div>
 </div>
-	
+			
 {% endblock %}

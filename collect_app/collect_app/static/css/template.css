@@ -79,16 +79,6 @@ a {
 	width: 500px;
 	text-align:center;
 }
-#leftside {
-	float: left;
-	width: 210px;
-}
-
-#rightside {
-	margin-bottom: 30px;
-	float: right;
-	width: 730px;
-}
 #footer {
 	position: absolute;
 	width: 962px;
