@@ -8,8 +8,10 @@ from django.dispatch.dispatcher import receiver
 
 
 class Event(models.Model):
+	id = models.IntegerField(primary_key=True)
 	description = models.CharField(max_length=160)
 	icon = models.CharField(max_length=30)
+
 
 class AuditLog(models.Model):
 	content_type = models.ForeignKey(ContentType,blank=True, null=True)

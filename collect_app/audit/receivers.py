@@ -171,8 +171,21 @@ def document_unshared_to_all_log(sender,**kwargs):
     
     log_detail = AuditLogDetail(audit_log=log,description="Todos Usuarios nao podem %s" % (_translate_permission(permission)))
     log_detail.save()
+    
 
-        
+@receiver(signals.post_download_attachment)    
+def download_attachment_log(sender,**kwargs):
+    user = kwargs.get("user")
+    doc = kwargs.get("document")
+    file = kwargs.get("file")
+
+    log = AuditLog( content_type=DOCUMENT_CONTENT_TYPE, object_id=doc.id, user=user, event=events.DOWNLOAD_ATTACHMENT )
+    log.save()
+    
+    log_detail = AuditLogDetail(audit_log=log,description="%s (%s)" % (file.filename, kilobytefy(file.filesize)))
+    log_detail.save()
+
+   
 def _translate_permission(permission):
     if permission == 'read_document':
         return "Visualizar"

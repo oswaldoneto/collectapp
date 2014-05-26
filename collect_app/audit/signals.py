@@ -24,4 +24,6 @@ post_document_shared_to_all = Signal(providing_args=["shared_from", "document", 
 
 post_document_unshared_to_all = Signal(providing_args=["shared_from", "document", "permission"])
 
+post_download_attachment = Signal(providing_args=["file", "document", "user"])
+
 

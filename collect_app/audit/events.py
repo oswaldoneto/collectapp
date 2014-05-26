@@ -16,3 +16,5 @@ REMOVE_CLASSIFY_DOCUMENT = Event.objects.get(id=6)
 DOCUMENT_SHARED = Event.objects.get(id=7)
 
 DOCUMENT_UNSHARED = Event.objects.get(id=8)
+
+DOWNLOAD_ATTACHMENT = Event.objects.get(id=9)
