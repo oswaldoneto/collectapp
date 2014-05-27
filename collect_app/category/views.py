@@ -88,7 +88,7 @@ def edit(request, category):
 			form.save()			
 			#TODO: Refactor #124 and #125
 			DocumentIndex().update()
-			return HttpResponseRedirect('/category/%s/edit' % cat.id)							
+			return HttpResponseRedirect('/category/list')							
 	else:
 		form = CategoryForm(instance=cat)
 	return render_to_response('app/category/category_form.xhtml',

@@ -78,7 +78,7 @@ def classify_log(sender,**kwargs):
 
     for doc_attr in DocumentAttribute.objects.filter(document=doc):
         value = InheritanceQuerySet(model=AbstractValue).select_subclasses().get(id=doc_attr.value.id)
-        log_detail = AuditLogDetail(audit_log=log,description="%s: %s" % (doc_attr.attribute.name, value))
+        log_detail = AuditLogDetail(audit_log=log,description="%s: %s" % (doc_attr.attribute.name, value.value))
         log_detail.save()
         
 
