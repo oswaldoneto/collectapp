@@ -25,6 +25,7 @@ $(document).ready(function() {
 	$("#uic_confirm_delete_button").click(function(){
 		$("#uic_delete_document_form").attr("action", sprintf("/document/%s/delete",document_id));  
 		$("#uic_delete_document_form").submit();
+		return false;
 	});
 	
 	$("#uic_dcm-audit_link").click(function(){

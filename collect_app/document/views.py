@@ -132,10 +132,13 @@ class ClassifyDocAttributeCreateView(RedirectView):
 
 
 class DocumentDeleteView(DeleteView):
+    
     success_url = "/search"
+    
     def get_object(self, queryset=None):
         obj = Document.objects.get(id=self.kwargs["document"])
         return obj
+    
     def delete(self, request, *args, **kwargs):
         #remove attach files
         conn = S3Connection()
@@ -158,7 +161,9 @@ class DocumentDeleteView(DeleteView):
 
             
 class PermissionDocView(TemplateView):
+    
     template_name = "app/document/document_permission.xhtml"
+    
     def get_context_data(self, **kwargs):
         context = super(PermissionDocView,self).get_context_data(**kwargs)
         context.update({'users':User.objects.all()})
@@ -166,22 +171,27 @@ class PermissionDocView(TemplateView):
         #context.update({'document':get_object_or_404(Document,id=self.kwargs['document'])})
         context.update({'doc':get_object_or_404(Document,id=self.kwargs['document'])})
         return context
+    
     @method_decorator(document_permission_or_403(('change_document',),'document'))
     def dispatch(self, *args, **kwargs):
         return super(PermissionDocView, self).dispatch(*args, **kwargs)    
     
     
 class AuditDocView(ListView):
+    
     model=AuditLog
     template_name = "app/document/document_audit.xhtml"
+    
     def get_context_data(self, **kwargs):
         context = super(AuditDocView,self).get_context_data(**kwargs)
         context.update({'doc':get_object_or_404(Document,id=self.kwargs['document'])})
-        return context    
+        return context
+        
     def get_queryset(self):
         content_type = ContentType.objects.get(app_label="document", model="document")
         self.queryset = AuditLog.objects.filter(content_type=content_type,object_id=self.kwargs['document']).order_by('-logged')
         return super(AuditDocView,self).get_queryset()
+    
     @method_decorator(document_permission_or_403(('read_document','change_document','delete_document'),'document'))    
     def dispatch(self, *args, **kwargs):
         return super(AuditDocView, self).dispatch(*args, **kwargs)       
