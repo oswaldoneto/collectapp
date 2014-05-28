@@ -157,9 +157,10 @@ class DocumentDeleteView(DeleteView):
         #remove classification
         doc.remove_category()
         #remove document related models
-        return super(DocumentDeleteView,self).delete(request, *args, **kwargs)
+        doc.delete()
+        return HttpResponseRedirect(self.get_success_url())
+        
 
-            
 class PermissionDocView(TemplateView):
     
     template_name = "app/document/document_permission.xhtml"

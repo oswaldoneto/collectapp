@@ -40,16 +40,16 @@
 	    	<h3>Voce tem certeza que deseja deletar o documento incluindo anexos e a classificação?</h3>
 	  	</div>
 	  	<div class="actions">	  		
-			<div id="uic_cancel_delete_button" class="ui button">
+			<div id="uic_cancel_delete_document_button" class="ui button">
 			  Não
 			</div>	  		
-	  		<div id="uic_confirm_delete_button" class="ui red right button">
+	  		<div id="uic_confirm_delete_document_button" class="ui red right button">
 			  Sim
 			</div>
 	  	</div>
 	</div>
 	
-   	<form id="uic_delete_document_form" method="post">
+   	<form id="uic_del_doc_form" method="post">
 		{% csrf_token %}
 	</form>
 
