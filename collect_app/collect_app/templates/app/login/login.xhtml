@@ -1,32 +1,59 @@
-{% extends "layout/template_login.xhtml" %}
+{% extends "layout/base.xhtml" %}
 {% block import_style %}
 	<style type="text/css">
 		@import url("{{STATIC_URL}}css/app/login.css");
+				
+		body {
+			background-color: #5C6166;
+		}
 	</style>
 {% endblock %}
+
 {% block startup_script %}
+	<script>
+		//TODO: SECURITY ISSUE USER DATA		
+		{% if form.errors.username %}
+			$(document).data("invalid_username",'true');		
+		{% endif %}
+		{% if form.errors.password %}
+			$(document).data("invalid_password",'true');	
+		{% endif %}
+		{% if form.errors and not form.errors.username and not form.errors.password %}
+			$(document).data("invalid_credentials",'true');			
+		{% endif %}
+	</script> 
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/login/login.js"></script>
 {% endblock %}
-{% block content %}		
-	<div>
-		<form method="post" action="/login/" class="ui-widget-content  ui-corner-all" >
-			{% csrf_token %}
-			<fieldset>
-				<input type="hidden" name="next" value="{{next}}">
-				<br>
-				{% if form.errors %}
-					<div class="ui-state-error ui-corner-all clear">
-						<p><span class="ui-icon ui-icon-alert" style="float:left; margin-left: 5px; margin-right: 5px;"></span>Usuário ou senha incorreto.</p>
-					</div>
-				{% endif %}				
-				<label for="id_username">Usuario</label>
-				<input id="id_username" type="text" name="username" maxlength="30" class="textfield"/>
-				<div class="error">{% if form.errors  %}{{form.username.errors}}{% endif  %}</div>				
-				<label for="id_password">Senha</label>
-				<input type="password" name="password" id="id_password" class="textfield" />		
-				<div class="error">{% if form.errors  %}{{form.password.errors}}{% endif  %}</div>				
-				<input type="submit" value="Conectar" id="uic_login" class="button" />
-			</fieldset>
-		</form>
-	</div>
+
+{% block body %}
+<div>
+	<form id="uic_login_form" method="post" action="/login/" class="">
+		{% csrf_token %}
+		<input type="hidden" name="next" value="{{next}}">
+		<div class="ui error form segment ui-widget" >
+		  <!-- TODO: Externalizar os estilos -->
+		  <div class="field" style="text-align: center">
+		  		<h1 style="display: inline">collect</h1><h1 style="color: #85B900; display: inline">app</h1>
+		  </div>				
+		  <div class="field 
+		  				{% if form.username.errors %}error{% endif  %}
+		  				{% if form.errors and not form.errors.username and not form.errors.password %}error{% endif  %}">
+				<div class="ui left icon input">
+				  	<input id="id_username" type="text" name="username" maxlength="30" class="textfield" placeholder="Usuário" {% if form.username.value %}value="{{form.username.value}}"{% endif %}  />
+				  	<i class="user icon"></i>
+				</div>
+		  </div>
+		  <div class="field 
+		  				{% if form.password.errors %}error{% endif  %}
+						{% if form.errors and not form.errors.username and not form.errors.password %}error{% endif  %}">
+				<div class="ui left icon input">
+					<input type="password" name="password" id="id_password" class="textfield" placeholder="Senha" />		
+				  	<i class="key icon"></i>
+				</div>
+		  </div>
+		  <div id="uic_login" class="ui small green button floatr">Log in</div>
+		</div>			
+	</form>	
+</div>
+
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout/template.xhtml" %}
+
+
+{% block startup_script %}
+	<script>
+        $(document).data("document_id",'{{doc.id}}')
+	</script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/app/document/document_context_menu.js"></script>
+{% endblock %}
+
+
+
+{% block content %}
+
+	{% include "app/document/document_context_menu.xhtml" with selected_index="4" %}
+	
+	<div class="ui small feed segment">
+		
+		{% for log in object_list %}
+		  	<div class="event">
+			    <div class="label">
+      				<i class="circular {{log.event.icon}} icon"></i>
+			    </div>
+			    <div class="content">
+			      <div class="date">
+			       {{log.logged}}
+			      </div>
+			      <div class="summary">
+			         <b>{{log.user.username}}</b> {{log.event.description}}.
+			      </div>
+			      
+				  {% for detail in log.auditlogdetail_set.all %}
+					  <div class="extra text">
+						{{detail.description}}								
+	      			  </div>			      
+				  {% endfor %}
+				  
+			    </div>
+			</div>
+		{% endfor %}
+		
+	</div>	
+			
+{% endblock %}

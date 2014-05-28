@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from tag.models import Tag
 
 class Category(models.Model):
-	title = models.CharField(max_length=100)
+	title = models.CharField(max_length=100, unique=True)
 	active = models.BooleanField()
 	description = models.TextField(blank=True)
 	created = models.DateField(auto_now=True)

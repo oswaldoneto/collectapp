@@ -12,8 +12,12 @@
 
 	<div class="floatl left-side">
 		<div class="left-side-center">
-			<input id="uic_tag_input" type="text" class="ui-widget ui-widget-content ui-corner-all" value="{{ request.GET.name }}"/>
-			<button id="uic_create_button">Criar</button>
+			<div class="ui input">
+				<input id="uic_tag_input" type="text" class="" value="{{ request.GET.name }}"/>
+			</div>
+			<div class="margin_top_default">
+				<div id="uic_create_button" class="ui fluid small positive button">Criar</div>			
+			</div>
 		</div>	
 	</div>
 	

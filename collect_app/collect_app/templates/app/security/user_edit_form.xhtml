@@ -26,21 +26,16 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/user_edit_form.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Segurança</li>
-        <li>Usuários</li>
-        <li>{{form.username.value}}</li>
-    </ul>
-{% endblock %}
-
-{% block security_title %}Editar Usuário{% endblock %}
+{% block security_title %}Alterar Usuário{% endblock %}
 {% block security_content %}
-	<div id="uic_delete_dialog" class="hide">Deseja excluir o usuário?</div>
-	<div id="accordion">
-		<h3><a href="#usuario">Dados do Usuário</a></h3>
-		<div>
+
+<div class="ui basic segment">	
+	<div class="ui fluid accordion">
+		<div class="active title">
+	    	<i class="dropdown icon"></i>
+	    	Dados do Usuário
+	  	</div>
+	  	<div class="active content">
 			<form id="uic_form" method="post">
 				{% csrf_token %}			
 				{% if form.errors %}
@@ -56,17 +51,23 @@
 					</tr>
 					<tr>
 						<td class="label"><label>Nome</label></td>
-						<td class="component">{{form.first_name}}</td>
+						<td class="component">
+							<div class="ui input" style="width: 400px;">{{form.first_name}}</div>
+						</td>
 						<td class="error">{{form.first_name.errors}}</td>						
 					</tr>
 					<tr>
 						<td class="label"><label>Sobrenome</label></td>
-						<td class="component">{{form.last_name}}</td>
+						<td class="component">
+							<div class="ui input" style="width: 400px;">{{form.last_name}}</div>
+						</td>
 						<td class="error">{{form.last_name.errors}}</td>						
 					</tr>
 					<tr>
 						<td class="label"><label>E-mail</label></td>
-						<td class="component">{{form.email}}</td>
+						<td class="component">
+							<div class="ui input" style="width: 400px;">{{form.email}}</div>
+						</td>
 						<td class="error">{{form.email.errors}}</td>						
 					</tr>
 					<tr>
@@ -91,30 +92,31 @@
 					</tr>
 				</table>
 				<div class="ui-form-button">
-					<input type="button" value="Salvar" id="uic_save_button"/>
-					<input type="button" value="Cancelar" id="uic_cancel_button"/>
+					<div id="uic_cancel_button" class="ui button">
+					  Cancelar
+					</div>	  		
+			  		<div id="uic_save_button" class="ui green right button">
+					  Salvar
+					</div>					
 				</div>			
 				<div class="clear"></div>			
-			</form>			
-		</div>   
-		<h3><a href="#permissao">Permissões</a></h3>
-		<div>
-			
-			
+			</form>
+	  	</div>
+	  	<div class="title">
+	    	<i class="dropdown icon"></i>
+	    	Permissão
+	  	</div>
+	  	<div class="content">
 			<!-- Success Feedback -->
-			<div id="uic_success_feedback" class="ui-widget ui-state-highlight ui-corner-all ui-feedback hide"> 
-				<p><span class="ui-icon ui-icon-info floatl"></span>
-				<strong>A permissão do usuário foi alterada.</strong></p>
-			</div>
-
-			<!-- Failure Feedback -->
-			<div id="uic_error_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide"> 
-				<p><span class="ui-icon ui-icon-alert floatl"></span> 
-				<strong>Ocorreu um erro em nossos servidores, estamos trabalhando para corrigir.</strong></p>
-			</div>
-			
+	  		<div id="uic_success_feedback" class="ui success message hide">	  			
+				A permissão do usuário foi alterada com sucesso
+	  		</div>			
+			<!-- Failure Feedback -->	  		
+	  		<div id="uic_error_feedback" class="ui error message hide">	  			
+				Erro ao atualizar a permissão
+	  		</div>									
 			<!-- TODO: Refactor style -->
-			<div style="height: 100px;">
+			<div class="margin_bottom_default">
 				<input type="checkbox" id="uic_classify_bundle_check"/>&nbsp;<b>Classificar Documentos</b>
 				<div style="margin-left: 20px;">
 					Permite adicionar, alterar e excluir Categorias.<br>
@@ -123,7 +125,7 @@
 					Definir permissões de acesso para Usuários e Grupos de uma Categoria. 
 				</div>
 			</div>
-			<div style="height: 50px">
+			<div class="margin_top_default">
 				<input type="checkbox" id="uic_accounts_bundle_check"/>&nbsp;<b>Gerenciar contas de usuários e grupos</b>
 				<div style="margin-left: 20px;">
 					Permite adicionar, alterar e excluir Usuário e Grupos.<br>
@@ -132,4 +134,5 @@
 			</div>
 		</div>
 	</div>
+</div>
 {% endblock %}

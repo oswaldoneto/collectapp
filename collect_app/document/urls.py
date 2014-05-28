@@ -5,13 +5,13 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from document.forms import DocumentClassifyForm
 from document.s3 import FormFieldsView
-from document.api import DocTagView, DocTagListView, DocAttachView,\
-    DocUserPermissionView, DocGroupPermissionView,\
-    DocPublicPermissionView, DocUserPermissionsView, DocGroupPermissionsView,\
-    DocPublicPermissionsView, DocNewAttachView, DocDetachView
 from document.views import ClassifyDocView, PreviewDocView,\
     ClassifyDocDeleteView, ClassifyDocAttributeCreateView, DocumentDeleteView,\
-    PermissionDocView
+    PermissionDocView, AuditDocView
+from document.api import DocTagView, DocTagListView, DocUserPermissionView,\
+    DocGroupPermissionView, DocPublicPermissionView, DocUserPermissionsView,\
+    DocGroupPermissionsView, DocPublicPermissionsView, DocAttachView,\
+    DocDetachView, DocNewAttachView
 
 urlpatterns = patterns('',
 
@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     (r'^document/(?P<document>\d+)/classify/category/(?P<category>\d+)$',login_required(ClassifyDocView.as_view())),
     (r'^document/(?P<document>\d+)/delete', login_required(DocumentDeleteView.as_view())),
     (r'^document/(?P<document>\d+)/permission', login_required(PermissionDocView.as_view())),
+    (r'^document/(?P<document>\d+)/audit', login_required(AuditDocView.as_view())),
 
     #JSON API
     (r'^api/document/(?P<document>\d+)/tag/(?P<tag>\d+)$', csrf_exempt(DocTagView.as_view())),

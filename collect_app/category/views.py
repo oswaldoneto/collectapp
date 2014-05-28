@@ -36,7 +36,7 @@ class AttributeOrderView(ListView):
 @csrf_protect
 @login_required
 def list(request):
-	categories = Category.objects.all()
+	categories = Category.objects.all().order_by('title')
 	return render_to_response('app/category/category_list.xhtml',
 							  {'categories':categories},
 							  context_instance=RequestContext(request))
@@ -88,7 +88,7 @@ def edit(request, category):
 			form.save()			
 			#TODO: Refactor #124 and #125
 			DocumentIndex().update()
-			return HttpResponseRedirect('/category/%s/edit' % cat.id)							
+			return HttpResponseRedirect('/category/list')							
 	else:
 		form = CategoryForm(instance=cat)
 	return render_to_response('app/category/category_form.xhtml',

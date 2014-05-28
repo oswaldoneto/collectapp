@@ -13,30 +13,23 @@ $(document).ready(function() {
 		return false;
 	});
 	$("#uic_dcm-delete_link").click(function(){
-		$("#uic_delete_dialog").dialog({
-			title:"Deletar Documento",
-			modal:true,
-			buttons:[
-				{
-					text: "Yes",
-					click: function() { 
-						$("#uic_delete_form").attr("action", sprintf("/document/%s/delete",document_id));  
-						$("#uic_delete_form").submit();
-						return false;								
-					}
-				},
-				{
-					text: "No",
-					click: function() { 
-						$(this).dialog("close"); 
-					}
-				}					
-			] 
-		});
-		return false;
+		$uic_delete_dialog = $('#uic_delete_document_dialog');		
+		$uic_delete_dialog.modal('show');
+		return false;		
 	});		
 	
+	$("#uic_cancel_delete_document_button").click(function(){
+		$('#uic_delete_dialog').modal('hide');				
+	});
+
+	$("#uic_confirm_delete_document_button").click(function(){				
+		$("#uic_del_doc_form").attr("action", sprintf("/document/%s/delete",document_id));
+		$("#uic_del_doc_form").submit();
+	});
 	
-	
+	$("#uic_dcm-audit_link").click(function(){
+		redirect(sprintf("/document/%s/audit",document_id));		
+		return false;		
+	});
 	
 });

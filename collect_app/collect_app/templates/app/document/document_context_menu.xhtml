@@ -4,88 +4,54 @@
 {% if doc %}
 	{% get_public_perms doc as public_permissions %}
 	{% get_obj_perms user for doc as "document_permissions" %}
-	
-	<form id="uic_delete_form" method="post">
-		{% csrf_token %}
-		<div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar o documento?</div>		
-	</form>
-	
-	<div class="ui-widget ui-widget-content ui-corner-all margin_top_default">
-		<dl class="ui-context-menu">
-			<dt>Documento</dt>
-			{% if "change_document" in public_permissions or "change_document" in document_permissions %}		
-				<dd>
-					<a>
-					<span>
-						{% include "app/document/upload_form.xhtml" %}
-					</span>
-					</a>		
-				</dd>
-			{% else %}	
-				<dd>
-					<a>
-					<span class="ui-state-disabled">
-						<i class="icon-cloud-upload ui-state-disabled"></i> Upload
-					</span>
-					</a>
-				</dd>					
-			{% endif %}
-			<dd>
-				<a id="uic_dcm-preview_link" href="">
-				<span>
-					<i class="icon-th-list"></i> Visualizar
-				</span>
-				</a>
-			</dd>		
-			{% if "change_document" in public_permissions or "change_document" in document_permissions %}		
-				<dd>
-					<a id="uic_dcm-classify_link">
-					<span>
-						<i class="icon-archive"></i> Classificação
-					</span>
-					</a>
-				</dd>
-				<dd>
-					<a id="uic_dcm-permission_link">
-					<span>
-						<i class="icon-unlock-alt"></i> Permissões
-					</span>
-					</a>
-				</dd>
-			{% else %}	
-				<dd>
-					<a>
-					<span class=" ui-state-disabled">
-						<i class="icon-archive ui-state-disabled"></i> Classificação
-					</span>
-					</a>
-				</dd>
-				<dd>
-					<a>
-					<span  class=" ui-state-disabled">
-						<i class="icon-unlock-alt ui-state-disabled"></i> Permissões
-					</span>
-					</a>
-				</dd>			
-			{% endif %}				
-			{% if "delete_document" in public_permissions or "delete_document" in document_permissions %}		
-				<dd>
-					<a id="uic_dcm-delete_link">
-					<span>
-						<i class="icon-trash"></i> Deletar
-					</span>
-					</a>
-				</dd>	
-			{% else %}
-				<dd>
-					<a>
-					<span class="ui-state-disabled">
-						<i class="icon-trash ui-state-disabled"></i> Deletar
-					</span>
-					</a>
-				</dd>			
-			{% endif %}
-		</dl>
+
+	<!-- Context Menu -->
+	<div class="ui secondary menu">
+		{% if "change_document" in public_permissions or "change_document" in document_permissions %}		
+	  		<a class="item">  			
+		   		{% include "app/document/upload_form.xhtml" %}
+	  		</a>
+		{% endif %}
+  		<a id="uic_dcm-preview_link" class="{% if selected_index == "0" %}active{% endif %} item">
+    		<i class="browser icon"></i> Ver
+  		</a>
+		{% if "change_document" in public_permissions or "change_document" in document_permissions %}
+	  		<a id="uic_dcm-classify_link" class="{% if selected_index == "2" %}active{% endif %} item">
+	    		<i class="folder icon"></i> Classificar
+	  		</a>		
+	  		<a id="uic_dcm-permission_link" class="{% if selected_index == "3" %}active{% endif %} item">
+	    		<i class="share sign icon"></i> Compartilhar
+	  		</a>
+		{% endif %}		
+  		<a id="uic_dcm-audit_link" class="{% if selected_index == "4" %}active{% endif %} item">
+    		<i class="time icon"></i> Auditar
+  		</a>
+		{% if "delete_document" in public_permissions or "delete_document" in document_permissions %}
+	  		<a id="uic_dcm-delete_link" class="item">
+	    		<i class="trash icon"></i> Deletar
+	  		</a>		
+		{% endif %}				
+  	</div>
+  	
+	<!-- Dialog Delete -->
+	<div id="uic_delete_document_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Voce tem certeza que deseja deletar o documento incluindo anexos e a classificação?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_document_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_document_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
 	</div>
+	
+   	<form id="uic_del_doc_form" method="post">
+		{% csrf_token %}
+	</form>
+
 {% endif %}
 

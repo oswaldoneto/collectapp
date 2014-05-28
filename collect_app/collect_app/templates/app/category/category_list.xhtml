@@ -2,89 +2,88 @@
 
 {% block category_script %}
 	<script type="text/javascript">
-		$(document).ready(function(){
-			/* Setting  */
-			$("#uic_category_table").dataTable({
-				"bJQueryUI": true,
-				"bPaginate": false,
-				"sPaginationType": "full_numbers",
-				"bFilter":false,
-				"bSort":true,
-				"bInfo":false,
-				"bAutoWidth":false,
-				"aoColumns": [{ "bSortable": false },null,null],
-				"aaSorting": [[ 1, "asc" ]],
-				"oLanguage": default_oLanguage				
-			});
-			$("#uic_open_button").button({ disabled: true });
-			$("#uic_delete_button").button({ disabled: true });
-
-			/* Events */
-			$("input:radio").click(function() {					 
-				$( "#uic_open_button" ).button({ disabled: false });
-				$( "#uic_delete_button" ).button({ disabled: false });
-			});
-				
-			//override from category_base.xhtml 
-			$('#uic_open_button').click(function() {					 
-				 var catId = $("input:radio[name=category_selected]:checked").val();
-				 var url = sprintf('/category/%s/edit',catId);
-				 redirect(url);
-			});
-			
-			//override from category_app.xhtml 
-			$("#uic_delete_button").click(function() {					 				
-				$("#uic_delete_dialog").dialog({ 
-					title:"Excluir Categoria",
-					buttons: [
-					{
-						text: "Yes",
-						click: function() { 
-							$("#uic_form").attr("action", sprintf('/category/%s/delete', $("input:radio[name=category_selected]:checked").val()));  
-							$("#uic_form").submit(); 
-						}
-					},
-					{
-						text: "No",
-						click: function() { 
-							$(this).dialog("close"); 
-						}
-					}					
-				] });
-			});
+	$(document).ready(function(){
+		$("a[rel=uic_open_link]").click(function(){
+			redirect(sprintf("/category/%s/edit",$(this).attr('href')));
+			return false;
 		});
+	
+		$("a[rel=uic_delete_link]").click(function(){
+			$uic_delete_dialog = $('#uic_delete_dialog');
+			$uic_delete_dialog.data("category_id",$(this).attr('href'));
+			$uic_delete_dialog.modal('show');
+			return false;
+		});
+	
+		$("#uic_cancel_delete_button").click(function(){
+			$('#uic_delete_dialog').modal('hide');				
+		});
+	
+		$("#uic_confirm_delete_button").click(function(){
+			$("#uic_form").attr("action", sprintf('/category/%s/delete',$('#uic_delete_dialog').data("category_id")));  
+			$("#uic_form").submit();
+		});
+	});
 	</script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Classificação</li>
-        <li>Categorias</li>
-    </ul>
-{% endblock %}
+{% block category_title %}Lista de Categorias{% endblock %}
 
-{% block category_title %}Categorias{% endblock %}
+{% block category_commands %}
+<div id="uic_new_button" class="ui green small button">
+	<i class="add icon"></i>
+  	incluir
+</div>
+{% endblock %}  
+
+
 {% block category_content %}	
-		<form id="uic_form">
-			{% csrf_token %}
-			<table id="uic_category_table" class="display">
-				<thead>
-					<tr>
-						<th style="width:1%"></th>
-						<th style="width:40%">Categoria</th>
-						<th style="width:43%">Descrição</th>								
+	<!-- Table -->
+	<form id="uic_form">
+		{% csrf_token %}
+		<table id="uic_category_table" class="ui table segment">
+			<thead>
+				<tr>
+					<th style="width:1%"></th>
+					<th>Categoria</th>
+					<th>Descrição</th>								
+					<th style="width:1%"></th>
+				</tr>
+			</thead>						
+			<tbody>
+				{% for category in categories %}
+					<tr>							
+						<td>
+							<a rel="uic_open_link" href="{{category.id}}">
+								<i class="open folder outline home icon"></i>
+							</a>
+						</td>
+						<td>{{category.title}}</td>
+						<td>{{category.description}}</td>
+						<td>
+							<a rel="uic_delete_link" href="{{category.id}}">									
+								<i class="remove home icon"></i>
+							</a>							
+						</td>
 					</tr>
-				</thead>						
-				<tbody>
-					{% for category in categories %}
-						<tr>
-							<td><input type="radio" name="category_selected" value="{{category.id}}"/></td>
-							<td>{{category.title}}</td>
-							<td>{{category.description}}</td>
-						</tr>
-					{% endfor %}					
-				</tbody>					
-			</table>
-		</form>		
+				{% endfor %}					
+			</tbody>					
+		</table>
+	</form>	
+	
+	<!-- Dialog to delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Deseja excluir a categoria selecionada?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>   		
 {% endblock %}

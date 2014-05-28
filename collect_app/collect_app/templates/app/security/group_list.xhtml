@@ -6,34 +6,65 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/group_list.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Segurança</li>
-        <li>Grupos</li>
-    </ul>
+{% block security_title %}Grupos{% endblock %}
+
+{% block security_command %}
+	<div id="uic_new_button" class="ui green small button">
+		<i class="add icon"></i>
+	  	incluir
+	</div>	
 {% endblock %}
 
-{% block security_title %}Grupos{% endblock %}
 {% block security_content %}
-	<div id="uic_delete_dialog" class="hide">Deseja excluir o grupo selecionado?</div>
+	
+	<!-- List Groups -->
 	<form id="uic_form" method="post">
 		{% csrf_token %}				
-		<table id="uic_group_table" class="display">
+		<table id="uic_group_table" class="ui table segment">
 			<thead>
 				<tr>
 					<th style="width:1%"></th>
-					<th style="style="width:98%"">Grupo</th>
+					<th>Grupo</th>
+					<th style="width:1%"></th>
 				</tr>
 			</thead>
 			<tbody>
 		        {% for group in object_list %}
 			        <tr>
-						<td><input type="radio" name="group_selected" value="{{group.id}}"/></td>
+						<td>
+							<a rel="uic_open_link" href="{{group.id}}">
+								<i class="open folder outline home icon"></i>
+							</a>
+						</td>
 						<td>{{ group.name }}</td>
+						<td>							
+							<a rel="uic_delete_link" href="{{group.id}}">									
+								<i class="remove home icon"></i>
+							</a>							
+						</td>
 					</tr>
 				{% endfor %}
 			</tbody>
 		</table>
 	</form>
+	
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+			<form id="uic_delete_form" method="post">
+				{% csrf_token %}			
+	    		<h3>Deseja excluir o grupo selecionado?</h3>
+			</form>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_group_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_group_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div> 		
+	
 {% endblock %}

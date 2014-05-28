@@ -1,6 +1,6 @@
 $(document).ready(function() {
-
-    $("#uic_create_button").button().click(function(){
+	
+	$("#uic_create_button").click(function(){
         var tag_name = $("#uic_tag_input").val();
         $.post("/api/tag",{
             'name':tag_name
@@ -21,9 +21,13 @@ $(document).ready(function() {
         "bSort":false,
         "bInfo":false,
         "bPaginate": false,
-        "sScrollY": "150px",
+        "sScrollY": "250px",
         "bFilter":true,
         "oLanguage": default_oLanguage
-
     });
+    
+    $(".dataTables_filter input").attr('placeholder','Buscar por...').focus();
+    
+    
+
 });

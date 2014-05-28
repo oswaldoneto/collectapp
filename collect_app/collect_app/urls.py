@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.views.generic.base import TemplateView
-
+from audit import receivers
 admin.autodiscover()
 
 handler500 = 'collect_app.views.server_error'

@@ -1,15 +1,12 @@
-from itertools import chain
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.dispatch.dispatcher import receiver
 from django.db.models.signals import post_save, post_delete
-from guardian.shortcuts import assign, get_perms_for_model
+from guardian.shortcuts import assign
 from tag.models import Tag
 from ext.db.models.query import InheritanceQuerySet
 from category.models import Category, Attribute
 from storage.models import FileStorage
-from guardian.managers import UserObjectPermissionManager
-from guardian.models import UserObjectPermission
 from guardian.utils import clean_orphan_obj_perms
 
 

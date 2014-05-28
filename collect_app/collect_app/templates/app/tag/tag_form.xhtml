@@ -1,186 +1,152 @@
 {% extends "layout/template.xhtml" %}
 
-{% block title %}Collect Project :: Tags{% endblock %}
+{% block title %}collect{% endblock %}
 
 {% block startup_script %}
 	<script type="text/javascript">
 		$(document).ready(function(){
-			/* Setting  */
-			var $uic_tag_table = $("#uic_tag_table").dataTable({
-				"bJQueryUI": true,
-				"bPaginate": false,
-				"bFilter":false,
-				"bSort":false,
-				"bInfo":false,
-				"bAutoWidth":false
-			});
-			var $uic_new_button = $("#uic_new_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-document"
-				}
-			});
-			var $uic_open_button = $("#uic_open_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-folder-open"
-				},
-			});				
-			var $uic_delete_button = $("#uic_delete_button").button({
-				text: true,
-				icons: {
-					primary: "ui-icon-trash"
-				},
-			});
-			{% if tag %}
-				$(":radio").filter('[value={{tag.id}}]').attr('checked', true);
-				showEditDialogForm();
-			{% else %}
-				$uic_open_button.button({ disabled: true });
-				$uic_delete_button.button({ disabled: true });
-				{% if form.errors %}
-					showCreateDialogForm();
-				{% endif %}							
-			{% endif %}
-			
-			/* Events  */
-			$("input:radio").click(function() {					 
-				$uic_open_button.button({ disabled: false });
-				$uic_delete_button.button({ disabled: false });
-			});
-
-			$uic_new_button.click(function() {
-				showCreateDialogForm();
+			$("a[rel=uic_open_link]").click(function(){				
+				redirect(sprintf("/tag/%s/edit",$(this).attr('href')));
 				return false;
 			});
-			$uic_open_button.click(function(){
-				 redirect(sprintf("/tag/%s/edit",$("input:radio[name=tag_selected]:checked").val()));
+
+			$("a[rel=uic_delete_link]").click(function(){				
+				$uic_delete_dialog = $('#uic_delete_dialog');
+				$uic_delete_dialog.data("tag_id",$(this).attr('href'));
+				$uic_delete_dialog.modal('show');
+				return false;
 			});
-			$uic_delete_button.click(function(){
-				showDeleteDialog($("input:radio[name=tag_selected]:checked").val());
+
+			$("#uic_cancel_delete_tag_button").click(function(){
+				$('#uic_delete_dialog').modal('hide');				
 			});
 			
-		});
-		
-		function showCreateDialogForm() {
-			$("#id_name").val("");
-			$("#uic_create_dialog").dialog({
-				title: "Adicionar Tag",
-				buttons: [
-					{
-						text: "Salvar",
-						click: function() {
-							$("#uic_create_form").attr("action","/tag/add");  
-							$("#uic_create_form").submit(); 										
-						}
-					},
-					{
-						text: "Cancelar",
-						click: function() {
-							$(this).dialog("close");
-						}
-					}
-				]
-			});				
-		}
-
-		function showEditDialogForm() {
-			$("#uic_create_dialog").dialog({
-				title: "Editar Tag",
-				buttons: [
-					{
-						text: "Salvar",
-						click: function() {
-							{% if tag %}
-								var url = sprintf("/tag/%s/edit",{{tag.id}});
-								$("#uic_create_form").attr("action",url);  
-								$("#uic_create_form").submit();
-							{% endif %}
-						}
-					},
-					{
-						text: "Cancelar",
-						click: function() {
-							$(this).dialog("close");
-						}
-					}
-				]
-			});				
-		}		
-		
-		function showDeleteDialog(tag_id) {
-			$("#uic_delete_dialog").dialog({ 
-				title: "Deletar Tag",
-				buttons: [
-					{
-						text: "Sim",
-						click: function() { 
-							$("#uic_delete_form").attr("action",sprintf("/tag/%s/delete", tag_id));  
-							$("#uic_delete_form").submit(); 
-						}
-					},
-					{
-						text: "N�o",
-						click: function() { 
-							$(this).dialog("close"); 
-						}
-					}					
-				] 
+			$("#uic_confirm_delete_tag_button").click(function(){
+				url = sprintf("/tag/%s/delete",$('#uic_delete_dialog').data("tag_id"));
+				$("#uic_delete_form").attr("action",url);  
+				$("#uic_delete_form").submit();				
 			});
-		}
-						
-	</script>
-{% endblock %}
+			
+			$("#uic_new_button").click(function(){
+				$("#uic_create_dialog").modal('show');				
+			});
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Classsificação</li>
-        <li>Tags</li>
-    </ul>
+			$("#uic_cancel_create_tag_button").click(function(){
+				$('#uic_create_dialog').modal('hide');				
+			});
+			
+			$("#uic_confirm_create_tag_button").click(function(){
+				{% if tag %}					
+					url = sprintf("/tag/%s/edit",'{{tag.id}}');
+				{% else %}
+					url = "/tag/add"			
+				{% endif %}
+				$("#uic_create_form").attr("action",url);  
+				$("#uic_create_form").submit();				
+			});
+
+			{% if tag %}
+				$("#uic_create_dialog").modal('show');				
+			{% else %}
+				{% if form.errors %}
+					$("#uic_create_dialog").modal('show');				
+				{% endif %}							
+			{% endif %}
+		});
+	</script>
 {% endblock %}
 
 {% block content %}
 
-	<div class="ui-app-header">
-		<div class="ui-app-title">Tags</div>
-		<div class="ui-app-command">
-			<button id="uic_new_button">Novo</button>
-			<button id="uic_open_button">Abrir</button>
-			<button id="uic_delete_button">Deletar</button>
-		</div>
-	</div>
+	<!-- Header -->
+    <div class="ui-app-header">
+        <div class="ui-app-title">
+	   		<h4 class="ui header">Tags</h4>
+        </div>
+        <div class="ui-app-command">
+			<div id="uic_new_button" class="ui green small button">
+				<i class="add icon"></i>
+			  	incluir
+			</div>
+        </div>
+    </div>
 
-	<table id="uic_tag_table" class="display">
+	<!-- Table Tags -->
+	<table id="uic_tag_table" class="ui table segment">
 		<thead>
 			<tr>
 				<th style="width:1%"></th>
 				<th>Tag</th>
+				<th style="width:1%"></th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for t in tag_list %}
 				<tr>
-					<td><input type="radio" id="uic_tag_radio" name="tag_selected" value="{{t.id}}"/></td>
+					<td>
+						<a rel="uic_open_link" href="{{t.id}}">
+							<i class="open folder outline home icon"></i>
+						</a>
+					</td>
 					<td>{{t.name}}</td>
+					<td>
+						<a rel="uic_delete_link" href="{{t.id}}">									
+							<i class="remove home icon"></i>
+						</a>							
+					</td>					
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 	
-	<div id="uic_create_dialog" class="hide">
-		<form id="uic_create_form" method="post">
-			{% csrf_token %}
-			<label>Tag</label>
-			<div>{{form.name}}</div>
-			<div>{{form.name.errors}}</div>
-		</form>
-	</div>
+	<!-- Dialog Create and Edit -->
+	<div id="uic_create_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="header">
+	    	Tag
+	  	</div>		
+	  	<div class="content">	  		
+		  	{% if form.errors %}
+	  		<div class="ui error message">	  			
+				{{form.name.errors}}
+	  		</div>
+		  	{% endif %}	  			
+			<form id="uic_create_form" method="post">
+				{% csrf_token %}
+				<div>
+					<div class="ui input" style="width: 500px">						
+						{{form.name}}
+					</div>
+				</div>
+			</form>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_create_tag_button" class="ui button">
+			  Cancelar
+			</div>	  		
+	  		<div id="uic_confirm_create_tag_button" class="ui green right button">
+			  Salvar
+			</div>
+	  	</div>
+	</div>   		
 	
-	<div id="uic_delete_dialog" class="hide">
-		<form id="uic_delete_form" method="post">
-			{% csrf_token %}			
-			Voce tem certeza que deseja deletar este ítem?
-		</form>
-	</div>
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+			<form id="uic_delete_form" method="post">
+				{% csrf_token %}			
+	    		<h3>Deseja excluir a tag selecionada?</h3>
+			</form>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_tag_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_tag_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div> 	
+	
 {% endblock %}

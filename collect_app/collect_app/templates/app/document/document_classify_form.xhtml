@@ -7,7 +7,7 @@
 {% block import_style %}
     <style type="text/css">
         #id_category {
-            width: 744px
+            width: 900px
         }
         #uic_tag_table tr:first-child td:first-child {
             width: 1%;
@@ -32,14 +32,7 @@
                header: "Selecione uma categoria",
                selectedList: 1
             });
-            $uic_save_button = $("#uic_save_button").button();
-            $uic_cancel_button = $("#uic_cancel_button").button();
-            $uic_unclassify_button = $("#uic_unclassify_button").button({
-                text: true,
-                icons: {
-                    primary: "ui-icon-trash"
-                }
-            });
+            $uic_save_button = $("#uic_save_button");
             $uic_addattr_button = $(".uic_addattr_button").button({
                 text: true,
                 icons: {
@@ -67,70 +60,49 @@
                 $("#uic_form").submit();
                 return false;
             });
-            $uic_cancel_button.click(function(){
-                {% if params.document %}
-                    redirect(sprintf("/document/%s/preview","{{params.document}}"));
-                {% else %}
-                    redirect("/document/new/classify");
-                {% endif %}
-                return false;
+            $("#uic_unclassify_button").click(function() {
+                doc_id = "{{params.document}}";            	
+				$uic_delete_dialog = $('#uic_delete_dialog');
+				$uic_delete_dialog.data("document_id",doc_id);
+				$uic_delete_dialog.modal('show');
+				return false;				
             });
-            $uic_unclassify_button.click(function() {
-                $("#uic_delete_dialog").dialog({
-                    title:"Deletar Classificação",
-                    buttons:[
-                        {
-                            text: "Yes",
-                            click: function() {
-                                $("#uic_form").attr("action", sprintf("/document/%s/classify/delete","{{params.document}}"));
-                                $("#uic_form").submit();
-                                return false;
-                            }
-                        },
-                        {
-                            text: "No",
-                            click: function() {
-                                $(this).dialog("close");
-                            }
-                        }
-                    ]
-                });
-            });
+            
+			$("#uic_cancel_delete_class_button").click(function(){
+				$('#uic_delete_dialog').modal('hide');				
+			});
+	
+			$("#uic_confirm_delete_class_button").click(function(){
+				$("#uic_form").attr("action", sprintf("/document/%s/classify/delete",$('#uic_delete_dialog').data("document_id")));  
+				$("#uic_form").submit();
+			});            
         });
     </script>
 {% endblock %}
 
-
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Documento</li>
-        <li>Classificação</li>
-    </ul>
-{% endblock %}
-
-{% block context_menu %}
-    {% include "app/document/document_context_menu.xhtml" %}
-{% endblock %}
-
 {% block content %}
 
-    <!--------------------------------------------->
-    <!-- TODO: Refactor export style to css file -->
-    <!--------------------------------------------->
+	{% include "app/document/document_context_menu.xhtml" with selected_index="2"  %}
+	
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Voce tem certeza que deseja deletar a classificação do documento?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_class_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_class_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>	
+	
 
-    <div class="ui-app-header">
-        <div class="ui-app-title">Classificação do Documento</div>
-        <div class="ui-app-command">
-            {% if show_tags %}
-                <div class="floatr">
-                    <button id="uic_unclassify_button">Deletar Classificação</button>
-                </div>
-                <div id="uic_delete_dialog" class="hide">Voce tem certeza que deseja deletar a classificação deste documento?</div>
-            {% endif %}
-        </div>
-    </div>
-    <form id="uic_form" method="post" class="ui-form ui-widget ui-widget-content ui-corner-all">
+	<div class="ui segment">	    
+    <form id="uic_form" method="post" class="ui-form ui-widget">
         {% csrf_token %}
 
         <!--------------------------------------------->
@@ -149,12 +121,15 @@
                     {% if field.html_name != "category" %}
                         <tr>
                             <td class="label">{{field.label}}</td>
-                            <td class="component">{{field}}</td>
+                            <td class="component">
+                            	<div class="ui input" style="width: 500px">
+                            	{{field}}
+                            	</div>
+                            </td>
                             <td class="error">{{field.errors}}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
-
                 {% if new_attributes %}
                     {% for new_attr in new_attributes  %}
                         <tr>
@@ -166,12 +141,12 @@
                         </tr>
                     {% endfor %}
                 {% endif %}
-
-
             </table>
-            <div class="ui-form-button">
-                <input type="button" value="Save" id="uic_save_button">
-                <input type="button" value="Cancel" id="uic_cancel_button">
+            <div class="ui-form-button margin_top_default">                
+	          {% if show_tags %}
+			  <div id="uic_unclassify_button" class="ui small negative button">Deletar</div>
+	          {% endif %}
+			  <div id="uic_save_button" class="ui small positive button">Salvar</div>
             </div>
         {% endif %}
         <div class="clear"></div>
@@ -180,5 +155,9 @@
         <!-- TODO: Ticket #1                         -->
         <!--------------------------------------------->
     </form>
+   	</div>
+    
+    
+</div>
 
 {% endblock %}

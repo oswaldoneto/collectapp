@@ -6,57 +6,77 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/app/security/user_list.js"></script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Segurança</li>
-        <li>Usuários</li>
-    </ul>
+{% block security_title %}Usuários{% endblock %}
+
+{% block security_command %}
+	<div id="uic_new_button" class="ui green small button">
+		<i class="add icon"></i>
+	  	incluir
+	</div>	
 {% endblock %}
 
-{% block security_title %}Usuários{% endblock %}
 {% block security_content %}
-	<div id="uic_delete_dialog" class="hide">Deseja excluir o usuário selecionado?</div>
 	
-	
-	{% if messages %}
-		<div id="uic_tag_feedback" class="ui-widget ui-state-error ui-corner-all ui-feedback clear"> 
-			<span class="ui-icon ui-icon-alert floatl"></span>
-			<p id="uic_tag_message">{% for message in messages %}{{ message }}{% endfor %}</p>
-		</div>
-	{% endif %}		
-	
-
-	
+	<!-- List User -->
 	<form id="uic_form" method="post">
 		{% csrf_token %}						
-		<table id="uic_user_table" class="display">
+		<table id="uic_user_table" class="ui table segment">
 			<thead>
 				<tr>
 					<th style="width:1%"></th>
-					<th style="style="width:25%"">Usuário</th>
-					<th style="style="width:25%"">Nome</th>
-					<th style="style="width:25%"">Sobrenome</th>
-					<th style="style="width:23%"">Status</th>
+					<th>Usuário</th>
+					<th>Nome</th>
+					<th>Sobrenome</th>
+					<th>Status</th>
+					<th style="width:1%"></th>
 				</tr>
 			</thead>
 			<tbody>
 		        {% for user in object_list %}
 			        <tr>
-						<td><input type="radio" name="user_selected" value="{{user.id}}"/></td>
+						<td>
+							<a rel="uic_open_link" href="{{user.id}}">
+								<i class="open folder outline home icon"></i>
+							</a>
+						</td>
 						<td>{{ user.username }}</td>
 						<td>{{ user.first_name }}</td>
 						<td>{{ user.last_name }}</td>
 						<td>
 							{% if user.is_active %}
-	    						<div class="widthfull"><span class="ui-icon ui-icon-check centered"></div>
+	    						<div class="widthfull">Ativo</div>
 							{% else %}
-	    						<div class="widthfull"><span class="ui-icon ui-icon-close centered"></div>
+	    						<div class="widthfull">Inativo</div>
 							{% endif %}
+						</td>
+						<td>							
+							<a rel="uic_delete_link" href="{{user.id}}">									
+								<i class="remove home icon"></i>
+							</a>							
 						</td>
 					</tr>
 				{% endfor %}
 			</tbody>
 		</table>
 	</form>
+	
+	<!-- Dialog Delete -->
+	<div id="uic_delete_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+			<form id="uic_delete_form" method="post">
+				{% csrf_token %}			
+	    		<h3>Deseja excluir o usuário selecionado?</h3>
+			</form>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_user_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_user_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div> 		
+	
 {% endblock %}

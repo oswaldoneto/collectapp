@@ -1,23 +1,16 @@
 $(document).ready(function() {		
-	$.post("/security/permissions",{
-		'group':object_id
-	}, function(data){
-		$("#uic_classify_bundle_check").attr('checked', data.classify_bundle);
-		$("#uic_accounts_bundle_check").attr('checked', data.manageacc_bundle);
-	})
-	.error(function(){
-	});							
-	$( "#accordion" ).accordion({
-		autoHeight: false,
-		navigation: true
-	});
-	$("#uic_save_button").button().click(function(){
+	
+	$('.ui.accordion').accordion();
+	
+	$("#uic_save_button").click(function(){
 		$("#uic_form").attr("action",sprintf("/security/group/%s/edit",object_id));		
 		$("#uic_form").submit(); 						
 	});
-	$("#uic_cancel_button").button().click(function(){
+	
+	$("#uic_cancel_button").click(function(){
 		redirect("/security/group/list");				 								
 	});			
+
 	$("#uic_classify_bundle_check").click(function() {
 		var url = null;
 		if ($("#uic_classify_bundle_check").is(":checked")) {
@@ -39,6 +32,7 @@ $(document).ready(function() {
 			$("#uic_error_feedback").show("fast");
 		});							
 	});
+	
 	$("#uic_accounts_bundle_check").click(function() {
 		var url = null;
 		if ($("#uic_accounts_bundle_check").is(":checked")) {
@@ -60,4 +54,13 @@ $(document).ready(function() {
 			$("#uic_error_feedback").show("fast");
 		});							
 	});			
+	
+	$.post("/security/permissions",{
+		'group':object_id
+	}, function(data){
+		$("#uic_classify_bundle_check").attr('checked', data.classify_bundle);
+		$("#uic_accounts_bundle_check").attr('checked', data.manageacc_bundle);
+	})
+	.error(function(){
+	});	
 });	

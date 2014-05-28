@@ -3,15 +3,7 @@
 {% load guardian_tags %}
 {% load permission_checker %}
 {% load kilobytefy %}
-
 {% load verbatim %}
-
-{% block title %}Collect Project :: Documento{% endblock %}
-
-{% block import_style %}
-    <style type="text/css">
-    </style>
-{% endblock %}
 
 {% block startup_script %}
 
@@ -30,29 +22,14 @@
     </script>
 {% endblock %}
 
-{% block trail %}
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li>Documento</li>
-        <li>Visualizar</li>
-    </ul>
-{% endblock %}
-
-{% block context_menu %}
-    {% include "app/document/document_context_menu.xhtml" %}
-{% endblock %}
-
 {% block content %}
 
-    <div class="ui-app-header">
-        <div class="ui-app-title">Visualizar Documento</div>
-    </div>
-    <div class="clear"></div>
+	{% include "app/document/document_context_menu.xhtml" with selected_index="0" %}
 
     <div>
 
         <!-- Files -->
-        <div class="floatl">
+        <div class="floatl margin_r_double">
             <table class="simple_table ui-corner-all">
                 <tbody>
                     {% if not document %}
@@ -72,7 +49,7 @@
                                 <td style="text-align: right"><p class="margin_l_double ui-state-disabled">{{attach.file.filesize|kilobytefy}}</p></td>
                                 <td style="width: 5px">
                                     <a rel="uic_delete_file_link" href="{{attach.file.key}}">
-                                        <i class="icon-trash icon-large"></i>
+                                        <i class="remove home icon"></i>                                                                                
                                     </a>
                                 </td>
                             </tr>
@@ -93,30 +70,28 @@
                 <div>
                     <table class="attribute_table">
                         <tbody>
-                            {% for doc_att in attribute_list %}
-                                <tr>
-                                    <td style="font-size: 1.2em; font-weight: bold;" >
-                                        <span class="ui-state-disabled">{{doc_att.attribute.name}}</span>
-                                        <small><i class="icon-angle-right ui-state-disabled"></i></small>
-                                    </td>
-                                    <td style="font-size: 1.2em">{{doc_att.value.value}}</td>
-                                </tr>
+                            {% for doc_att in attribute_list %}                            	
+                            	{% if doc_att.value and doc_att.value.value %}
+	                                <tr>
+	                                    <td style="font-size: 1.2em; font-weight: bold;" >
+	                                        <span class="ui-state-disabled">{{doc_att.attribute.name}}</span>
+	                                        <small><i class="icon-angle-right ui-state-disabled"></i></small>
+	                                    </td>
+	                                    <td style="font-size: 1.2em">{{doc_att.value.value}}</td>
+	                                </tr>                            	
+                            	{% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             {% endif %}
         </div>
-
         <div class="clear"></div>
 
         <!-- Tags -->
         <div class="margin_top_double">
-            <div class="floatl" style="margin-top: 8px; margin-right: 5px">
-                <span class="bold">Tags</span>
-            </div>
             <div class="floatr">
-                <div class="floatl" style="width: 690px">
+                <div class="floatl" style="width: 910px">
                     <!--
                     <div id="uic_tag_feedback"  class="ui-widget ui-state-error ui-corner-all ui-feedback hide">
                         <span class="ui-icon ui-icon-alert floatl"></span><p id="uic_tag_message"></p>
@@ -137,9 +112,24 @@
         </div>
 
     </div>
+    
+    
+	<!-- Dialog Delete Attach -->
+	<div id="uic_delete_attachment_dialog" class="ui small modal ui-widget">
+		<i class="close icon"></i>
+	  	<div class="content">
+	    	<h3>Voce tem certeza que deseja deletar o anexo?</h3>
+	  	</div>
+	  	<div class="actions">	  		
+			<div id="uic_cancel_delete_attach_button" class="ui button">
+			  Não
+			</div>	  		
+	  		<div id="uic_confirm_delete_attach_button" class="ui red right button">
+			  Sim
+			</div>
+	  	</div>
+	</div>
+    
 
-    <div class="clear"></div>
-
-    <!-- -->
 
 {% endblock %}
