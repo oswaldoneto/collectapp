@@ -28,9 +28,9 @@ class TextSearchView(SearchView):
         for item in result:
             if get_perms(self.request.user,item.object) or get_public_perms(item.object):
                 filtered.append(item)
-        if len(filtered) == 0:            
-            es = ElasticSearch(settings.HAYSTACK_CONNECTIONS['default']['URL'])
-            es.health()
+        #if len(filtered) == 0:
+        #    es = ElasticSearch(settings.HAYSTACK_CONNECTIONS['default']['URL'])
+        #    es.health()
         return filtered
 
     

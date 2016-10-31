@@ -1,0 +1,9 @@
+Django==1.4
+boto==2.9.5
+django-guardian==1.1.1
+django-haystack==2.0.0
+pyelasticsearch==0.6.1
+requests==2.11.1
+simplejson==3.10.0
+six==1.10.0
+winappdbg==1.5
